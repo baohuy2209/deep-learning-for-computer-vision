@@ -5,8 +5,8 @@ from pathlib import Path
 
 # === CẤU HÌNH ===
 SOURCE_DIR = "../data/raw/aptos_gaus_filter/gaussian_filtered_images/gaussian_filtered_images"  # sửa lại đường dẫn
-OUTPUT_DIR = "../data/raw/sample_200"
-N_SAMPLE = 200
+OUTPUT_DIR = "../data/raw/sample_50"
+N_SAMPLE = 50
 SEED = 42
 
 random.seed(SEED)

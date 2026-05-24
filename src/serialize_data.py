@@ -3,8 +3,8 @@ from PIL import Image
 from pathlib import Path
 import pickle
 
-SOURCE_DIR = "../data/sample_200"
-OUTPUT_FILE = "../data/sample_200/sample_dataset.pkl"
+SOURCE_DIR = "../data/raw/sample_50"
+OUTPUT_FILE = "../data/processed/sample_50/sample_dataset.pkl"
 IMG_SIZE = (300, 300)  
 
 classes = sorted([d.name for d in Path(SOURCE_DIR).iterdir() if d.is_dir()])
