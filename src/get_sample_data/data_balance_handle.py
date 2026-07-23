@@ -5,12 +5,14 @@ import csv
 from pathlib import Path
 from collections import defaultdict
 # === CẤU HÌNH ===
-SOURCE_DIR = "../../data/raw/aptos/test_images/test_images"  # sửa lại đường dẫn
-CSV_PATH = "../../data/raw/aptos/test.csv"
-OUTPUT_DIR = "../../data/raw/aptos_test_images"
-N_SAMPLE = 200
+SOURCE_DIR = "../../data/raw/zipEyepacs/train"  # sửa lại đường dẫn
+CSV_PATH = "../../data/raw/zipEyepacs/trainLabels.csv/trainLabels.csv"
+OUTPUT_DIR = "../../data/raw/zipEyepacs_train_images/full_data"
+N_SAMPLE = 10000
+IMAGE_NAME="image" # images || idcode 
+LEVEL="level" # level || diagnosis
+IMAGE_TYPE="jpeg" # png || jpeg 
 SEED = 42
-
 random.seed(SEED)
 # Map số nhãn -> tên class chuẩn APTOS
 LABEL_MAP = {
@@ -24,10 +26,10 @@ class_to_files = defaultdict(list)
 with open(CSV_PATH, newline="", encoding="utf-8") as f:
     reader = csv.DictReader(f) 
     for row in reader: 
-        id_code = row["id_code"].strip()
-        diagnosis = int(row["diagnosis"].strip())
+        id_code = row[IMAGE_NAME].strip()
+        diagnosis = int(row[LEVEL].strip())
         class_name = LABEL_MAP[diagnosis]
-        img_path = Path(SOURCE_DIR)/f"{id_code}.png"
+        img_path = Path(SOURCE_DIR)/f"{id_code}.{IMAGE_TYPE}"
         if img_path.exists():
             class_to_files[class_name].append(img_path)
         else: 
