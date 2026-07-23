@@ -3,8 +3,8 @@ from PIL import Image
 from pathlib import Path
 import pickle
 
-SOURCE_DIR = "../../data/raw/sample_200"
-OUTPUT_FILE = "../../data/processed/aptos/sample_200/sample_dataset.pkl"
+SOURCE_DIR = "../../data/raw/aptos_test_images_gaus"
+OUTPUT_FILE = "../../data/processed/aptos/test_images_gaus/sample_dataset.pkl"
 IMG_SIZE = (300, 300)
 
 CLASS_ORDER = ["No_DR", "Mild", "Moderate", "Severe", "Proliferate_DR"]

@@ -5,9 +5,9 @@ import csv
 from pathlib import Path
 from collections import defaultdict
 # === CẤU HÌNH ===
-SOURCE_DIR = "../../data/raw/aptos/train_images/train_images"  # sửa lại đường dẫn
-CSV_PATH = "../../data/raw/aptos/train_1.csv"
-OUTPUT_DIR = "../../data/raw/sample_200"
+SOURCE_DIR = "../../data/raw/aptos/test_images/test_images"  # sửa lại đường dẫn
+CSV_PATH = "../../data/raw/aptos/test.csv"
+OUTPUT_DIR = "../../data/raw/aptos_test_images"
 N_SAMPLE = 200
 SEED = 42
 
