@@ -6,8 +6,8 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 
-# Cài đặt thư viện: pip install xgboost
-from xgboost import XGBClassifier
+# Cài đặt thư viện: pip install lightgbm
+from lightgbm import LGBMClassifier
 
 # ==========================================
 # 1. ĐỌC DỮ LIỆU
@@ -20,9 +20,9 @@ y           = data['labels']
 class_names = data['class_names'] 
 
 # ==========================================
-# 2. TIỀN XỬ LÝ (GIỐNG VỚI SVM)
+# 2. TIỀN XỬ LÝ
 # ==========================================
-print("Đang tiến hành tiền xử lý dữ liệu cho XGBoost...")
+print("Đang tiến hành tiền xử lý dữ liệu cho LightGBM...")
 
 # Duỗi phẳng ảnh (Flatten)
 N = X.shape[0]
@@ -48,24 +48,26 @@ X_test_pca = pca.transform(X_test_scaled)
 print(f"Số lượng đặc trưng (features) đã giảm từ {X_flatten.shape[1]} xuống còn {X_train_pca.shape[1]}!")
 
 # ==========================================
-# 3. KHỞI TẠO VÀ HUẤN LUYỆN XGBOOST
+# 3. KHỞI TẠO VÀ HUẤN LUYỆN LIGHTGBM
 # ==========================================
-print("\nBắt đầu huấn luyện mô hình XGBoost...")
+print("\nBắt đầu huấn luyện mô hình LightGBM...")
 start_time = time.time()
 
-# Cấu hình XGBoost cho bài toán phân loại đa lớp (Multi-class classification)
-xgb_model = XGBClassifier(
-    objective='multi:softprob', # Dùng cho đa lớp, trả về xác suất
-    num_class=5,                # Khai báo đúng 5 nhãn (0, 1, 2, 3, 4)
-    tree_method='hist',         # Dùng thuật toán histogram giúp tăng tốc độ train cực nhanh
-    learning_rate=0.1,          # Tốc độ học (có thể tinh chỉnh sau)
-    max_depth=6,                # Độ sâu tối đa của mỗi cây
-    n_estimators=100,           # Số lượng cây quyết định
-    random_state=42
+# Cấu hình LightGBM cho bài toán phân loại đa lớp
+lgb_model = LGBMClassifier(
+    objective='multiclass',      # Từ khóa cho bài toán đa lớp trong LightGBM
+    num_class=5,                 # Khai báo đúng 5 nhãn (0, 1, 2, 3, 4)
+    learning_rate=0.1,           # Tốc độ học
+    max_depth=6,                 # Độ sâu tối đa của mỗi cây
+    n_estimators=100,            # Số lượng cây quyết định
+    class_weight='balanced',     # THÊM MỚI: Tự động cân bằng dữ liệu cho các nhãn hiếm
+    random_state=42,
+    n_jobs=-1,                   # Tận dụng đa luồng CPU để train siêu tốc
+    verbose=-1                   # Tắt các cảnh báo (warnings) rác của LightGBM trong console
 )
 
 # Train model
-xgb_model.fit(X_train_pca, y_train)
+lgb_model.fit(X_train_pca, y_train)
 
 end_time = time.time()
 print(f"✅ Đã huấn luyện xong! Thời gian: {end_time - start_time:.2f} giây")
@@ -74,7 +76,7 @@ print(f"✅ Đã huấn luyện xong! Thời gian: {end_time - start_time:.2f} g
 # 4. ĐÁNH GIÁ MÔ HÌNH
 # ==========================================
 print("\nĐang dự đoán tập Test...")
-y_pred = xgb_model.predict(X_test_pca)
+y_pred = lgb_model.predict(X_test_pca)
 
 acc = accuracy_score(y_test, y_pred)
 print(f"\n🏆 ĐỘ CHÍNH XÁC TỔNG THỂ (Accuracy): {acc * 100:.2f}%\n")
