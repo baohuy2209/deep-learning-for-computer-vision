@@ -1,5 +1,6 @@
 py-env
 .venv
+.venv-win
 /data/raw/zipEyepacs.zip
 /data/raw/aptos_gaus_filter.zip
 /data/raw/

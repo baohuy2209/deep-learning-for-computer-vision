@@ -1,0 +1,10 @@
+pandas
+matplotlib
+seaborn
+opencv-python
+scikit-learn
+xgboost
+lightgbm
+tqdm
+kagglehub
+ipykernel
