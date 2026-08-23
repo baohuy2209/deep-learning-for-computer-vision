@@ -2,7 +2,7 @@ py-env
 .venv
 .venv-win
 /data/processed/hybrid
-/data/raw/
+/data/raw
 .specify
 .agents
 specs
