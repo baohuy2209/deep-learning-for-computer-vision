@@ -6,7 +6,7 @@ from pathlib import Path
 # ============================================================
 # CẤU HÌNH
 # ============================================================
-SOURCE_DIR  = "../data/sample_200"   # thư mục chứa các folder class
+SOURCE_DIR  = "../data/raw/samples/aptos/sample_200"   # thư mục chứa các folder class
 OUTPUT_DIR  = "../data/processed"    # nơi lưu file .npy
 IMG_SIZE    = (300, 300)             # resize về kích thước này
 BATCH_SIZE  = 32
