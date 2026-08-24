@@ -3,7 +3,7 @@ from pathlib import Path
 import kagglehub
 
 # Tải dataset về cache
-cache_path = kagglehub.dataset_download("mariaherrerot/idrid-dataset")
+cache_path = kagglehub.dataset_download("abdullahshafi315/indian-diabetic-retinopathy-image-datasetidrid")
 
 # Đường dẫn thư mục đích: data/raw/idrid
 target_dir = Path("../../data/raw/idrid")

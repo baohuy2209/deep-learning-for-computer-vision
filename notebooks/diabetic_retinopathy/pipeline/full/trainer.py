@@ -141,13 +141,15 @@ class DRTrainer:
         self.optimizer = optimizer
         self.lr_scheduler = lr_scheduler
         self.device = device
-        self.use_amp = use_amp and (device == "cuda")
+        device_str = str(device)
+        self.device_type = "cuda" if "cuda" in device_str else "cpu"
+        self.use_amp = use_amp and (self.device_type == "cuda")
         self.class_weights = class_weights.to(device) if class_weights is not None else None
         self.grad_clip = grad_clip
         self.checkpoint_dir = checkpoint_dir
         os.makedirs(checkpoint_dir, exist_ok=True)
         
-        self.scaler = torch.cuda.amp.GradScaler(enabled=self.use_amp)
+        self.scaler = torch.amp.GradScaler(self.device_type, enabled=self.use_amp)
 
     def train_epoch(self, dataloader: DataLoader) -> Dict[str, float]:
         """Runs one full training epoch over the dataset."""
@@ -163,8 +165,8 @@ class DRTrainer:
             
             self.optimizer.zero_grad()
             
-            # Forward pass with Automatic Mixed Precision
-            with torch.cuda.amp.autocast(enabled=self.use_amp):
+            # Forward pass with Automatic Mixed Precision (AMP)
+            with torch.amp.autocast(self.device_type, enabled=self.use_amp):
                 outputs = self.model(global_img, local_patches)
                 loss = self.model.compute_loss(outputs, targets, class_weights=self.class_weights)
                 
@@ -204,7 +206,7 @@ class DRTrainer:
             local_patches = batch["local_patches"].to(self.device, non_blocking=True)
             targets = batch["label"].to(self.device, non_blocking=True)
             
-            with torch.cuda.amp.autocast(enabled=self.use_amp):
+            with torch.amp.autocast(self.device_type, enabled=self.use_amp):
                 outputs = self.model(global_img, local_patches)
                 loss = self.model.compute_loss(outputs, targets, class_weights=self.class_weights)
                 

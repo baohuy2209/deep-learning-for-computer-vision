@@ -15,23 +15,25 @@ graph TD
     A --> C[DDR Dataset - 12,522 ảnh]
     A --> D[DeepDRiD - 1,200 ảnh]
     A --> E[IDRiD - 455 ảnh]
+    A --> D[DeepDRiD - 2,000 ảnh]
+    A --> E[IDRiD - 516 ảnh]
     A --> F[Messidor-2 - 1,744 ảnh]
     A --> G[EyePACS Kaggle - 35,126 ảnh]
     B & C & D & E & F & G --> H[Hợp Nhất & Chuẩn Hóa Schema Chung]
-    H --> I[53,977 Ảnh Đáy Mắt Hợp Nhất]
+    H --> I[55,570 Ảnh Đáy Mắt Hợp Nhất]
 ```
 
 ### 1.1. Bảng Tổng Hợp Thông Số Kỹ Thuật 6 Bộ Dữ Liệu
 
 | Tên Dataset | Nguồn gốc / Đơn vị thu thập | Thiết bị Camera chụp | Độ phân giải gốc (px) | Số lượng ảnh | Số bệnh nhân định danh | Định dạng file |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **APTOS 2019** | Aravind Eye Hospital (Ấn Độ) | Nhiều loại camera tại các trạm y tế nông thôn | Đa dạng ($1050 \times 1050$ đến $4288 \times 2848$) | 2,930 | 2,930 (Mỗi ID là 1 ca khám) | `.png` |
-| **DDR** | Bệnh viện tại Trung Quốc | Topcon TRC-NW8, Canon CR-2, Kowa VX-10 | $1024 \times 1024$ đến $3000 \times 3000$ | 12,522 | 12,522 (ID mã hóa theo ảnh) | `.jpg` |
-| **DeepDRiD** | Thử thách ISBI 2020 (Trung Quốc) | Topcon TRC-NW400 (Chụp đa góc 2 mắt) | $2124 \times 2056$ | 1,200 | 300 (4 ảnh/bệnh nhân: 2 mắt, 2 góc) | `.jpg` |
-| **IDRiD** | Bệnh viện Mắt Nanded (Ấn Độ) | Kowa VX-10 $\alpha$ ($50^\circ$ FOV) | $4288 \times 2848$ (Cực cao) | 455 | 455 (Bệnh nhân riêng biệt) | `.jpg` |
-| **Messidor-2** | Bệnh viện ĐH Brest & Saint-Étienne (Pháp) | Topcon TRC NW6 ($45^\circ$ FOV) | $1440 \times 960$ đến $2304 \times 1536$ | 1,744 | 711 (Chụp 2 mắt mỗi bệnh nhân) | `.jpg` |
-| **EyePACS** | Kaggle Challenge (EyePACS, Mỹ) | Đa dạng camera lâm sàng toàn cầu | $2000 \times 1500$ đến $4752 \times 3168$ | 35,126 | 17,563 (Chụp cặp 2 mắt Trái/Phải) | `.jpeg` |
-| **TỔNG CỘNG** | **Đa trung tâm toàn cầu** | **Hơn 8 dòng thiết bị quang học** | **$1024 \to 4288$ px** | **53,977** | **34,481 bệnh nhân duy nhất** | - |
+| **APTOS 2019** | Aravind Eye Hospital (Ấn Độ) | Đa dạng máy chụp đáy mắt kỹ thuật số | $1886 \times 1458$ (Biến thiên) | 3,662 | 3,662 (Bệnh nhân ẩn danh) | `.png` |
+| **DDR** | Đa bệnh viện đối tác (Trung Quốc) | Đa dạng thiết bị lâm sàng | $816 \times 734$ ($1.05\text{x}$) | 12,522 | 12,522 (Ảnh đã tiền xử lý ROI) | `.jpg` |
+| **DeepDRiD** | Thử thách ISBI 2020 (Trung Quốc) | Topcon TRC-NW400 (Chụp đa góc 2 mắt) | $1820 \times 1872$ | 2,000 | 500 (4 ảnh/bệnh nhân: 2 mắt, 2 góc) | `.jpg` |
+| **IDRiD** | Bệnh viện Mắt Nanded (Ấn Độ) | Kowa VX-10 $\alpha$ ($50^\circ$ FOV) | $4288 \times 2848$ (Cực cao) | 516 | 516 (Gộp Train + Test) | `.jpg` |
+| **Messidor-2** | Bệnh viện ĐH Brest & Saint-Étienne (Pháp) | Topcon TRC NW6 ($45^\circ$ FOV) | $512 \times 512$ ($1.00\text{x}$) | 1,744 | 1,744 (Chụp 2 mắt mỗi bệnh nhân) | `.jpg` |
+| **EyePACS** | Kaggle Challenge (EyePACS, Mỹ) | Đa dạng camera lâm sàng toàn cầu | $3651 \times 2490$ ($1.46\text{x}$) | 35,126 | 35,126 (Chụp cặp 2 mắt Trái/Phải) | `.jpeg` |
+| **TỔNG CỘNG** | **Đa trung tâm toàn cầu** | **Hơn 8 dòng thiết bị quang học** | **$512 \to 4288$ px** | **55,570** | **53,970 bệnh nhân duy nhất** | - |
 
 ---
 
@@ -70,23 +72,23 @@ Toàn bộ nhãn của 6 bộ dữ liệu được ánh xạ thống nhất về
 
 | Dataset | Tổng ảnh | Grade 0 (No DR) | Grade 1 (Mild) | Grade 2 (Moderate) | Grade 3 (Severe) | Grade 4 (Proliferative) | Tỷ lệ Referable DR (Grade $\ge 2$) |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **APTOS 2019** | 2,930 | 1,444 (49.3%) | 305 (10.4%) | 799 (27.3%) | 158 (5.4%) | 224 (7.6%) | 40.3% |
-| **DDR** | 12,522 | 6,266 (50.0%) | 626 (5.0%) | 4,269 (34.1%) | 557 (4.4%) | 804 (6.4%) | 45.0% |
-| **DeepDRiD** | 1,200 | 548 (45.7%) | 120 (10.0%) | 268 (22.3%) | 128 (10.7%) | 136 (11.3%) | 44.3% |
-| **IDRiD** | 455 | 134 (29.5%) | 20 (4.4%) | 136 (29.9%) | 74 (16.3%) | 91 (20.0%) | 66.2% |
+| **APTOS 2019** | 3,662 | 1,805 (49.3%) | 370 (10.1%) | 999 (27.3%) | 193 (5.3%) | 295 (8.1%) | 40.7% |
+| **DDR** | 12,522 | 6,266 (50.0%) | 630 (5.0%) | 4,477 (35.8%) | 236 (1.9%) | 913 (7.3%) | 45.0% |
+| **DeepDRiD** | 2,000 | 680 (34.0%) | 356 (17.8%) | 392 (19.6%) | 392 (19.6%) | 180 (9.0%) | 48.2% |
+| **IDRiD** | 516 | 168 (32.6%) | 25 (4.8%) | 168 (32.6%) | 93 (18.0%) | 62 (12.0%) | 62.6% |
 | **Messidor-2** | 1,744 | 1,017 (58.3%) | 270 (15.5%) | 347 (19.9%) | 75 (4.3%) | 35 (2.0%) | 26.2% |
 | **EyePACS** | 35,126 | 25,810 (73.5%) | 2,443 (7.0%) | 5,292 (15.1%) | 873 (2.5%) | 708 (2.0%) | 19.6% |
-| **HỢP NHẤT** | **53,977** | **35,219 (65.2%)** | **3,784 (7.0%)** | **11,111 (20.6%)** | **1,865 (3.5%)** | **1,998 (3.7%)** | **27.8%** |
+| **HỢP NHẤT** | **55,570** | **35,746 (64.3%)** | **4,094 (7.4%)** | **11,675 (21.0%)** | **1,862 (3.4%)** | **2,193 (3.9%)** | **28.3%** |
 
 ### 3.2. Nhận Xét Về Mất Cân Bằng & Điểm Yếu Của Mô Hình
 
 ```
-Phân Bố Hợp Nhất 53,977 Ảnh:
-[Grade 0: 65.2%] ████████████████████████████████████████████████████████
-[Grade 1:  7.0%] ███████
-[Grade 2: 20.6%] ████████████████████
-[Grade 3:  3.5%] ████
-[Grade 4:  3.7%] ████
+Phân Bố Hợp Nhất 55,570 Ảnh:
+[Grade 0: 64.3%] ████████████████████████████████████████████████████████
+[Grade 1:  7.4%] ███████
+[Grade 2: 21.0%] ████████████████████
+[Grade 3:  3.4%] ████
+[Grade 4:  3.9%] ████
 ```
 
 1. **Sự thống trị của Grade 0:** Chiếm tới **65.2%** toàn bộ tập dữ liệu (đặc biệt trong EyePACS chiếm 73.5%). Nếu huấn luyện không có chiến lược cân bằng (Class Balancing / Weighted Loss), mô hình sẽ có xu hướng tối ưu hóa bằng cách dự đoán đa số là Grade 0, khiến độ nhạy (Sensitivity) trên các ca bệnh nguy cấp sụt giảm nghiêm trọng.

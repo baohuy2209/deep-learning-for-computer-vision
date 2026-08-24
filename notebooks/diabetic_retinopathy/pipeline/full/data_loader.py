@@ -86,8 +86,8 @@ def get_base_raw_dir(custom_path: Optional[str] = None) -> str:
 DATASET_CONFIG: Dict[str, Dict[str, Any]] = {
     "APTOS": {
         "name": "APTOS 2019",
-        "csv_path": os.path.join("aptos", "train_1.csv"),
-        "img_dir": os.path.join("aptos", "train_images", "train_images"),
+        "csv_path": os.path.join("aptos", "aptos_total.csv"),
+        "img_dir": os.path.join("aptos", "aptos_total_images"),
         "id_col": "id_code",
         "label_col": "diagnosis",
         "id_suffix": ".png",
@@ -99,13 +99,13 @@ DATASET_CONFIG: Dict[str, Dict[str, Any]] = {
         "img_dir": os.path.join("ddr", "DR_grading", "DR_grading"),
         "id_col": "id_code",
         "label_col": "diagnosis",
-        "id_suffix": "",
+        "id_suffix": ".jpg",
         "nested_patient": False
     },
     "DeepDRiD": {
         "name": "DeepDRiD",
-        "csv_path": os.path.join("deepdrid", "DeepDRiD-master", "regular_fundus_images", "regular-fundus-training", "regular-fundus-training.csv"),
-        "img_dir": os.path.join("deepdrid", "DeepDRiD-master", "regular_fundus_images", "regular-fundus-training", "Images"),
+        "csv_path": os.path.join("deepdrid", "deepdrid_total.csv"),
+        "img_dir": os.path.join("deepdrid", "deepdrid_total_images"),
         "id_col": "image_id",
         "label_col": "patient_DR_Level",
         "id_suffix": ".jpg",
@@ -113,9 +113,9 @@ DATASET_CONFIG: Dict[str, Dict[str, Any]] = {
     },
     "IDRiD": {
         "name": "IDRiD",
-        "csv_path": os.path.join("idrid", "idrid_labels.csv"),
-        "img_dir": os.path.join("idrid", "Imagenes", "Imagenes"),
-        "id_col": "id_code",
+        "csv_path": os.path.join("idrid", "idrid_total.csv"),
+        "img_dir": os.path.join("idrid", "idrid_total_images"),
+        "id_col": "image_id",
         "label_col": "diagnosis",
         "id_suffix": ".jpg",
         "nested_patient": False
