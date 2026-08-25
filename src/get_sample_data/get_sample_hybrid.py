@@ -10,10 +10,10 @@ import pandas as pd
 # === CẤU HÌNH ===
 CSV_PATH = "../../data/processed/hybrid/train_balanced_metadata.csv"
 
-SOURCE_DIR = "../../data/processed/hybrid/300x300/train"
+SOURCE_DIR = "../../data/processed/hybrid/native_cropped/train"
 
-OUTPUT_DIR = "../../data/raw/samples/hybrid/300x300/sample_50"
-OUTPUT_CSV_PATH = "../../data/raw/samples/hybrid/300x300/sample_50_metadata.csv"
+OUTPUT_DIR = "../../data/raw/samples/hybrid/native_cropped/sample_50"
+OUTPUT_CSV_PATH = "../../data/raw/samples/hybrid/native_cropped/sample_50_metadata.csv"
 
 N_SAMPLE = 50
 LEVEL = "diagnosis"  # Cột chứa nhãn bệnh lý

@@ -1,90 +1,111 @@
-# Tài Liệu Kỹ Thuật & Nghiên Cứu: Pipeline Phân Loại Bệnh Võng Mạc Tiểu Đường (Diabetic Retinopathy)
+# Technical Documentation: Multi-Scale Ordinal Multiple Instance Learning Pipeline for Diabetic Retinopathy Grading
 
-> **Dự án:** Deconstructing Domain Shift in Diabetic Retinopathy Grading: A Multi-Scale Multiple Instance Learning Approach with Ordinal Regression  
-> **Thư mục mã nguồn:** [`notebooks/diabetic_retinopathy/pipeline`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline)  
-> **Ngôn ngữ tài liệu:** Tiếng Việt  
-
----
-
-## 📌 Giới Thiệu Tổng Quan
-
-Hệ thống tài liệu này được biên soạn từ việc phân tích chi tiết toàn bộ mã nguồn, cấu hình thử nghiệm và dữ liệu thực tế tại thư mục [`notebooks/diabetic_retinopathy/pipeline`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline). Hệ thống được thiết kế để giải quyết bài toán sụp đổ hiệu năng ngoại miền (**Domain Shift**) và duy trì tính thứ bậc y khoa (**Ordinal Severity Grading**) trong phân loại 5 giai đoạn Bệnh võng mạc tiểu đường (ICDRS 0–4).
+> **Project:** Deconstructing Domain Shift in Diabetic Retinopathy Grading: A Multi-Scale Multiple Instance Learning Approach with Ordinal Regression  
+> **Source Code Directory:** [`notebooks/diabetic_retinopathy/pipeline/`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline)  
+> **Documentation Language:** English (Academic & Technical Specification)  
 
 ---
 
-## 🗂️ Cấu Trúc Tài Liệu
+## 📌 Executive Overview
 
-Bộ tài liệu được chia thành các chuyên đề chuyên sâu trong thư mục [`documents/`](file:///d:/Github/deep-learning-for-computer-vision/documents):
+This documentation repository provides a comprehensive and synchronized technical reference for the deep learning pipeline, experimental protocols, patient-level sterile benchmarks, and multi-center Leave-One-Dataset-Out (LODO) evaluations located in [`notebooks/diabetic_retinopathy/pipeline`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline).
+
+The system is designed to resolve two fundamental bottlenecks in automated medical retinal screening:
+1. **Imaging Domain Shift & Generalization Collapse:** Mitigating performance degradation when deploying AI across heterogeneous fundus cameras, illuminations, and patient populations.
+2. **Resolution Collapse & Ordinal Severity Preservation:** Eliminating focal microaneurysm destruction caused by image downsampling and preserving strictly monotonic disease progression across the 5 international clinical grades (ICDRS 0–4).
+
+---
+
+## 🗂️ Documentation Architecture
+
+The documentation suite in [`documents/`](file:///d:/Github/deep-learning-for-computer-vision/documents) is structured into four specialized monographs:
 
 ```plaintext
 documents/
-├── README.md                              # (File này) Tổng quan hệ thống tài liệu
-├── dataset_eda_summary.md                 # Báo cáo chuyên sâu phân tích dữ liệu EDA (55,509 ảnh, 6 datasets)
-├── 01_datasets_analysis.md                # Phân tích toàn diện 6 bộ dữ liệu DR & Vấn đề rò rỉ dữ liệu
-├── 02_pipeline_architecture.md            # Kiến trúc Pipeline xử lý hoàn chỉnh (Multi-Scale MIL + Ordinal)
-└── 03_paper_outline_and_methodology.md    # Outline chi tiết bài báo khoa học & Thiết kế thực nghiệm Ablation
+├── README.md                                                 # (This File) Master Documentation Hub & Repository Map
+├── 01_datasets_analysis.md                                   # Comprehensive 6-Dataset Analysis & Bilateral Leakage Elimination
+├── 02_pipeline_architecture.md                               # End-to-End Pipeline Architecture & Component Formulations
+├── 03_paper_outline_and_methodology.md                       # Complete Research Paper Outline, Hypotheses & Experimental Design
+└── 04_factorial_baseline_and_domain_shift_framework.md      # Factorial Baseline Matrix & Multi-Center LODO Evaluation Framework
 ```
 
 ---
 
-## 📑 Tóm Tắt Các Tài Liệu Thành Phần
+## 🗺️ Source Code Directory Map
 
-### 1. [Báo Cáo Phân Tích Dữ Liệu Chuyên Sâu EDA (dataset_eda_summary.md)](file:///d:/Github/deep-learning-for-computer-vision/documents/dataset_eda_summary.md)
-* **Tổng quan phân tích 55,509 ảnh:** Đánh giá định lượng toàn diện trên 6 tập dữ liệu (APTOS 2019, DDR, DeepDRiD, IDRiD, Messidor-2, EyePACS).
-* **Kiểm toán vô trùng (Data Integrity & Sanity Audit):** Phân chia cấp bệnh nhân (`patient_id`), chống rò rỉ dữ liệu qua cặp mắt (Left/Right eyes).
-* **Phân tích Dịch chuyển Miền (Domain Shift):** 
-  * *Label Shift:* Phân hóa tỷ lệ mất cân bằng từ $6.77\text{x}$ (IDRiD) đến $36.00\text{x}$ (EyePACS), Grade 0 chiếm 64.33% trong khi Grade 3 chỉ 3.34%.
-  * *Covariate / Photometric Shift:* Sai lệch kích thước ($512\times 512$ vuông đến $4288\times 2848$ SLR 3:2), độ lệch màu kênh Xanh dương ($\mu_B$ từ $15.8$ đến $41.1$), và độ sắc nét quang học.
-* **Biện luận phương pháp:** Cơ sở lý thuyết y sinh học bảo vệ Ben Graham Color Constancy, Green-Channel CLAHE, Dual-Branch Multi-Scale MIL, Ordinal Heads (CLM / CORAL / CORN), và Continuous QWK Loss.
-* **Bảng tổng hợp đặc trưng Master:** Tra cứu nhanh thông số kỹ thuật, xuất xứ, thiết bị, và vai trò của từng bộ dữ liệu.
+The engineering codebase is organized into four complementary subsystems:
 
-### 2. [Phân Tích 6 Bộ Dữ Liệu & Rò Rỉ Dữ Liệu Bệnh Nhân (01_datasets_analysis.md)](file:///d:/Github/deep-learning-for-computer-vision/documents/01_datasets_analysis.md)
-* **6 Bộ Dữ Liệu:** APTOS 2019, DDR, DeepDRiD, IDRiD, Messidor-2, EyePACS (Tổng cộng hơn 53,900 ảnh).
-* **Phân bố nhãn ICDRS:** Mất cân bằng dữ liệu nghiêm trọng (Lớp 0 chiếm đa số, Lớp 1 và Lớp 3 là các nhóm thiểu số nguy cơ cao).
-* **Vấn đề Data Leakage cấp bệnh nhân:** Rò rỉ thông tin qua hai mắt của cùng một bệnh nhân (Left/Right eyes) và giải pháp phân chia vô trùng `GroupKFold` / `GroupShuffleSplit`.
-* **Đặc tính kỹ thuật & Lệch miền:** Độ phân giải gốc ($4288 \times 2848$ đến $1024 \times 1024$), thiết bị chụp (Topcon, Zeiss, Canon), sự khác biệt về độ sáng, độ tương phản và độ sắc nét Laplacian.
-
-### 2. [Kiến Trúc Pipeline Xử Lý Hoàn Chỉnh (02_pipeline_architecture.md)](file:///d:/Github/deep-learning-for-computer-vision/documents/02_pipeline_architecture.md)
-* **Giai đoạn 1: Hợp nhất & Phân chia Vô trùng (Strict Sterile Split):** Cơ chế `GroupShuffleSplit` theo `patient_id` và giao thức kiểm thử ngoại miền `Leave-One-Dataset-Out` (LODO).
-* **Giai đoạn 2: Tiền xử lý như một Biến số Ablation:** 
-  * Auto-crop ROI loại bỏ viền đen không chẩn đoán.
-  * Tách biệt rõ ràng 3 luồng tiền xử lý (Baseline Denoise, Ben Graham, Green Channel + CLAHE).
-  * **Quy tắc cốt lõi:** Tuyệt đối không xếp chồng Ben Graham + CLAHE và không sử dụng Gaussian Blur ở bước cuối của CLAHE để bảo toàn vi phình mạch (Microaneurysms - dấu hiệu độc quyền của Lớp 1).
-* **Giai đoạn 3: Trích xuất Đặc trưng Lai Đa tỷ lệ (Global + MIL Local):**
-  * *Nhánh Global (Ngữ cảnh toàn cục):* $300 \times 300$ qua ResNet-50 + CBAM Attention $\to F_{Global} \in \mathbb{R}^{2048}$.
-  * *Nhánh Local (Chi tiết tổn thương vi mô):* $K=16$ patches $128 \times 128$ qua cơ chế cửa sổ trượt MIL loại trừ đĩa thị $\to$ EfficientNet-B0 $\to$ 1D Max-Pooling $\to F_{Local} \in \mathbb{R}^{1280}$.
-  * *Dung hợp đặc trưng:* Concat $[F_{Global}, F_{Local}] \to$ 2-layer MLP $\to D_{Latent} = 512$.
-* **Giai đoạn 4: Phân loại Thứ bậc & Tối ưu hóa:**
-  * 5 Cấu hình đầu ra: Softmax_CE, Softmax_QWK, CORAL, CORN, và **CLM_QWK (Champion Model - Cumulative Link Model clog-log)**.
-  * Hàm mất mát vi phân QWK (Continuous Differentiable Quadratic Weighted Kappa Loss).
-  * Bộ cân bằng lấy mẫu: Effective Number of Samples (ENS) & `WeightedRandomSampler`.
-* **Giai đoạn 5: Định lượng XAI (Explainable AI):**
-  * Grad-CAM trên Local Patches, đánh giá độ trúng đích qua IoU / Pointing Game đối chiếu với Ground-Truth Segmentation Mask của IDRiD.
-* **Hệ thống Mô hình Đối chuẩn (Benchmark Baselines):**
-  * *Tier 1 (Single Anchor):* ResNet50, EfficientNet-B0, DenseNet121.
-  * *Tier 2 (Complex SOTA):* EfficientNetB0_MSAG, Hybrid_EffB0_ViT, EfficientNet-B3, DFD_Net_Nominal.
-
-### 3. [Outline Chi Tiết Bài Báo Nghiên Cứu (03_paper_outline_and_methodology.md)](file:///d:/Github/deep-learning-for-computer-vision/documents/03_paper_outline_and_methodology.md)
-* **Tiêu đề bài báo:** *Deconstructing Domain Shift in Diabetic Retinopathy Grading: A Multi-Scale Multiple Instance Learning Approach with Ordinal Regression*
-* **Cấu trúc 6 chương chuẩn quốc tế:**
-  1. Introduction (Nghịch lý Domain Shift & Đóng góp khoa học).
-  2. Related Work (Domain Shift, MIL trong ảnh võng mạc, Hồi quy thứ bậc).
-  3. Methodology (Toán học của Patient-level split, Preprocessing, Dual-Branch MIL, và CLM Head).
-  4. Experimental Setup (Giao thức LODO, Bộ metric bắt buộc: $\Delta_{QWK}$, Per-grade recall, Within-1-grade accuracy, Monotonicity Violations, IoU).
-  5. Results and Analysis (5 mảng phân tích Ablation: Output Head, Tiền xử lý ảnh, Cứu vãn Lớp 1 bằng MIL, Cứu vãn Lớp 3 bằng Global Context, Định lượng XAI trên IDRiD).
-  6. Discussion & Conclusion (Nguyên nhân cốt lõi gây sụp đổ ngoại miền và tiêu chuẩn đánh giá mới).
+```plaintext
+notebooks/diabetic_retinopathy/pipeline/
+├── eda/
+│   └── eda_6_datasets.ipynb               # Exploratory Data Analysis across 6 multi-center cohorts (55,509 images)
+├── merge-dataset/
+│   └── merge-dataset.ipynb                # Harmonization schema, patient-ID parsing, quota balancing, ROI auto-cropping
+├── full/                                  # Modular, Production-Grade Python Subsystem
+│   ├── preprocessing.py                   # Auto-crop ROI, 3 preprocessing streams (Ben Graham, Green CLAHE, Minimal)
+│   ├── data_loader.py                     # Data ingestion, GroupShuffleSplit, LODO generator, Dual-Branch PyTorch Dataset
+│   ├── models.py                          # ResNet-50+CBAM (Global), EfficientNet-B0+MIL (Local), Multimodal Fusion MLP
+│   ├── losses_and_heads.py                # 5 Output Heads (Softmax CE/QWK, CORAL, CORN, CLM_QWK), Continuous QWK Loss
+│   ├── trainer.py                         # DRTrainer (Mixed Precision AMP, Callbacks), FastHeadTrainer, Clinical Metrics
+│   └── baselines.py                       # 5 Baseline model classes (ResNet50, EffNetB0, DenseNet121, MSAG, ViT)
+└── model/                                 # Self-Contained Experimental Jupyter Notebooks
+    ├── main_model.ipynb                   # Proposed Full Architecture (Dual-Branch MIL + CLM_QWK) & 4-Panel Dashboard
+    ├── main_model_ablation.ipynb          # Fast-Probing Ablation on 5 Heads (Cached Latents) & 5 Publication Figures
+    ├── main_model_lodo.ipynb              # 6-Fold Leave-One-Dataset-Out (LODO) Generalization Benchmark Suite
+    ├── resnet50_baseline.ipynb            # Baseline 1: Vanilla ResNet-50 (Global Stream Anchor)
+    ├── efficientnetb0_baseline.ipynb      # Baseline 2: Vanilla EfficientNet-B0 (Local Stream Anchor)
+    ├── densenet121_baseline.ipynb         # Baseline 3: DenseNet-121 (Dense Feature Reuse Baseline)
+    ├── efficientnetb0_msag.ipynb          # Baseline 4: EfficientNet-B0 + Multi-Scale Spatial Attention Gating (MSAG)
+    └── efficientnetb0_vit.ipynb           # Baseline 5: Hybrid EfficientNetB0-Vision Transformer (ViT)
+```
 
 ---
 
-## 🔗 Liên Kết Nhanh Tới File Mã Nguồn
+## 📑 Executive Summaries of Monograph Documents
 
-| Thành phần | Đường dẫn mã nguồn | Mô tả |
+### 1. [01. Comprehensive Dataset Analysis & Patient-Level Leakage Audit](file:///d:/Github/deep-learning-for-computer-vision/documents/01_datasets_analysis.md)
+* **Multi-Center Cohort Ingestion (55,509 Images):** Harmonization of APTOS 2019, EyePACS, Messidor-2, IDRiD, DeepDRiD, and DDR.
+* **Elimination of Bilateral Data Leakage:** Mathematical proof and implementation of `GroupShuffleSplit` on `patient_id` ensuring zero cross-eye contamination between Train, Validation, and Test sets.
+* **Multi-Dimensional Domain Shift Analysis:** Quantifying Label Shift ($6.77\text{x}$ to $36.00\text{x}$ class imbalance), Covariate Shift ($512\times 512$ to $4288\times 2848$), and Photometric / Illumination Shift ($\mu_B$ channel drift).
+
+### 2. [02. End-to-End Pipeline Architecture & Mathematical Formulations](file:///d:/Github/deep-learning-for-computer-vision/documents/02_pipeline_architecture.md)
+* **Stage 1 (Data & Multi-Source Quota Allocation):** Two-tier quota balancing algorithm preventing large datasets (EyePACS) from overwhelming specialized clinical cohorts (IDRiD, Messidor-2).
+* **Stage 2 (Preprocessing Ablation):** Selective Green-channel CLAHE contrast enhancement without Gaussian smoothing to protect focal microaneurysms.
+* **Stage 3 (Dual-Branch Multi-Scale MIL Backbone):**
+  * *Global Context Stream ($300 \times 300$):* ResNet-50 + CBAM Attention capturing 4-quadrant vascular geometry for **Grade 3**.
+  * *Local MIL Stream ($K=16, 128 \times 128$):* EfficientNet-B0 scanning native-resolution patches with optic disc masking for **Grade 1**.
+  * *Multimodal Fusion:* $3328\text{-d} \to \text{Mish MLP} \to 512\text{-d}$ Latent Space.
+* **Stage 4 (Ordinal Classification & Feature Cache):** Mathematical formulation of the **Champion CLM_QWK Head** (clog-log link, strictly monotonic cutpoints, Continuous Differentiable QWK Loss).
+* **Stage 5 (Quantitative XAI):** Grad-CAM saliency verification against IDRiD ophthalmologist ground-truth masks (IoU and Pointing Game).
+
+### 3. [03. Research Paper Outline, Hypotheses & Methodology](file:///d:/Github/deep-learning-for-computer-vision/documents/03_paper_outline_and_methodology.md)
+* **Standard 6-Chapter Paper Structure:** Introduction, Related Work, Methodology, Experimental Setup, Results & Analysis (verifying Hypotheses $H_1$ to $H_5$), Discussion & Conclusion.
+* **Master Comparative Benchmarking:** Comprehensive comparative tables pitting the proposed model against all 5 baseline architectures across in-domain and out-of-domain metrics.
+
+### 4. [04. Factorial Baseline Matrix & Deconstructive Domain Shift Framework](file:///d:/Github/deep-learning-for-computer-vision/documents/04_factorial_baseline_and_domain_shift_framework.md)
+* **Methodological Critique of Prior Art:** Analysis of confounding variables, in-domain over-optimization traps, and the clinical fallacy of binary classification.
+* **The 3-Axis Factorial Baseline Matrix:** Factorizing models along (1) Spatial Representation, (2) Output Loss Formulations, and (3) Preprocessing Pipelines.
+* **Empirical Verification of Core Hypotheses:** Quantified results for $H_1$ (Mild DR pixel-loss recovery), $H_2$ (Severe DR 4-2-1 context aggregation), and $H_3$ (Softmax boundary collapse elimination).
+
+---
+
+## 🔗 Quick Access Codebase Index
+
+| Pipeline Component | Source File Link | Functionality & Key Implementation |
 | :--- | :--- | :--- |
-| **Data Loader** | [`notebooks/diabetic_retinopathy/pipeline/full/data_loader.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/data_loader.py) | Ingestion 6 dataset, GroupKFold theo bệnh nhân, LODO generator, PyTorch Dual-Branch Dataset |
-| **Preprocessing** | [`notebooks/diabetic_retinopathy/pipeline/full/preprocessing.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/preprocessing.py) | Auto-crop ROI, 3 chế độ tiền xử lý Ablation, torchvision transforms |
-| **Dual-Branch Model** | [`notebooks/diabetic_retinopathy/pipeline/full/models.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/models.py) | ResNet50 + CBAM (Global), EfficientNet-B0 + MIL Max-Pooling (Local), Fusion MLP |
-| **Losses & Heads** | [`notebooks/diabetic_retinopathy/pipeline/full/losses_and_heads.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/losses_and_heads.py) | Softmax_CE, Softmax_QWK, CORAL, CORN, CLM_QWK, Continuous QWK Loss |
-| **Baselines** | [`notebooks/diabetic_retinopathy/pipeline/full/baselines.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/baselines.py) | Tier 1 (ResNet50, EffNetB0, DenseNet121) & Tier 2 (MSAG, Hybrid ViT, EffNetB3, DFD-Net) |
-| **Trainer & Metrics** | [`notebooks/diabetic_retinopathy/pipeline/full/trainer.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/trainer.py) | Training loop AMP, tính toán QWK, $\Delta_{QWK}$, Within-1 Acc, Referable DR, Monotonicity Violations |
-| **Main Experiment** | [`notebooks/diabetic_retinopathy/pipeline/main_experiment.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/main_experiment.ipynb) | Notebook chạy toàn bộ thử nghiệm LODO 6-fold |
-| **EDA Notebook** | [`notebooks/diabetic_retinopathy/pipeline/eda/eda_6_datasets.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/eda/eda_6_datasets.ipynb) | Khảo sát phân bố, kích thước ảnh, độ sáng, độ sắc nét của 6 datasets |
+| **Data Ingestion & LODO** | [`pipeline/full/data_loader.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/data_loader.py) | Ingests 6 cohorts, GroupShuffleSplit by patient, LODO generator, DualBranch Dataset |
+| **Image Preprocessing** | [`pipeline/full/preprocessing.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/preprocessing.py) | Auto-crop ROI, 3 preprocessing streams, native patch sliding window generator |
+| **Backbone Models** | [`pipeline/full/models.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/models.py) | CBAM Attention, GlobalBranch, LocalMILBranch with 1D Max-Pooling, Fusion MLP |
+| **Losses & Heads** | [`pipeline/full/losses_and_heads.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/losses_and_heads.py) | Softmax CE/QWK, CORAL, CORN, Cumulative Link Model (CLM), Continuous QWK Loss |
+| **Baseline Models** | [`pipeline/full/baselines.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/baselines.py) | Standardized implementations of ResNet-50, EffNet-B0, DenseNet-121, MSAG, ViT |
+| **Training Engine** | [`pipeline/full/trainer.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/trainer.py) | Mixed-precision AMP DRTrainer, FastHeadTrainer, metric suite ($\Delta_{\text{QWK}}$, RMV, XAI) |
+| **Proposed Full Notebook** | [`pipeline/model/main_model.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model.ipynb) | End-to-end training of proposed Dual-Branch CLM model & 4-panel clinical dashboard |
+| **Head Ablation Notebook** | [`pipeline/model/main_model_ablation.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_ablation.ipynb) | Fast latent probing of 5 output heads & auto-generation of Figures 1, 3, 4, 5 |
+| **6-Fold LODO Notebook** | [`pipeline/model/main_model_lodo.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb) | Full execution of 6-Fold Leave-One-Dataset-Out cross-domain evaluation suite |
+| **ResNet-50 Baseline** | [`pipeline/model/resnet50_baseline.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/resnet50_baseline.ipynb) | Global stream anchor baseline (ResNet-50 GAP) verifying Hypothesis $H_2$ |
+| **EffNet-B0 Baseline** | [`pipeline/model/efficientnetb0_baseline.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/efficientnetb0_baseline.ipynb) | Local stream anchor baseline on $300\times 300$ input verifying Hypothesis $H_1$ |
+| **DenseNet-121 Baseline** | [`pipeline/model/densenet121_baseline.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/densenet121_baseline.ipynb) | Dense connectivity baseline evaluating feature accumulation under nominal CE |
+| **EffNet-B0 + MSAG** | [`pipeline/model/efficientnetb0_msag.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/efficientnetb0_msag.ipynb) | Multi-scale feature attention baseline proving the downsampling pixel-loss flaw |
+| **Hybrid EffNet-ViT** | [`pipeline/model/efficientnetb0_vit.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/efficientnetb0_vit.ipynb) | Hybrid CNN-Transformer baseline assessing domain overfitting and convergence |
+| **EDA Notebook** | [`pipeline/eda/eda_6_datasets.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/eda/eda_6_datasets.ipynb) | 55,509-image distribution, resolution, color channels, and Laplacian sharpness |
+| **Dataset Merging** | [`pipeline/merge-dataset/merge-dataset.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb) | Patient ID parsing, multi-source quota allocation, metadata generation |

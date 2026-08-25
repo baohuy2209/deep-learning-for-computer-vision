@@ -1,0 +1,45 @@
+[INFO | 2026-08-24 17:00:32,061 | DRTrainer] Beginning Training for 100 Epochs on Device: cuda
+[INFO | 2026-08-24 17:17:31,857 | DRTrainer] [Epoch 01/100 - 1019.8s] Train Loss: 2.6016 | Train QWK: 0.3872 || Val Loss: 3.3134 | Val QWK: 0.2236 | Val Within-1: 61.0% | Val Ref-Sens: 96.1% | LR: 9.76e-05
+[INFO | 2026-08-24 17:17:35,259 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.2236)
+[INFO | 2026-08-24 17:34:44,774 | DRTrainer] [Epoch 02/100 - 1029.5s] Train Loss: 2.2894 | Train QWK: 0.6588 || Val Loss: 3.1039 | Val QWK: 0.5134 | Val Within-1: 76.5% | Val Ref-Sens: 75.1% | LR: 9.05e-05
+[INFO | 2026-08-24 17:34:48,204 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.5134)
+[INFO | 2026-08-24 17:51:34,398 | DRTrainer] [Epoch 03/100 - 1006.2s] Train Loss: 2.0822 | Train QWK: 0.7741 || Val Loss: 3.0914 | Val QWK: 0.4298 | Val Within-1: 73.2% | Val Ref-Sens: 83.2% | LR: 7.96e-05
+[INFO | 2026-08-24 18:08:20,007 | DRTrainer] [Epoch 04/100 - 1005.6s] Train Loss: 1.9450 | Train QWK: 0.8058 || Val Loss: 3.6344 | Val QWK: 0.4648 | Val Within-1: 72.0% | Val Ref-Sens: 54.8% | LR: 6.58e-05
+[INFO | 2026-08-24 18:25:27,559 | DRTrainer] [Epoch 05/100 - 1027.6s] Train Loss: 1.9474 | Train QWK: 0.8008 || Val Loss: 3.2334 | Val QWK: 0.5163 | Val Within-1: 75.6% | Val Ref-Sens: 62.3% | LR: 5.05e-05
+[INFO | 2026-08-24 18:25:30,997 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.5163)
+[INFO | 2026-08-24 18:43:12,292 | DRTrainer] [Epoch 06/100 - 1061.3s] Train Loss: 1.7984 | Train QWK: 0.8458 || Val Loss: 2.9536 | Val QWK: 0.4954 | Val Within-1: 76.2% | Val Ref-Sens: 78.9% | LR: 3.52e-05
+[INFO | 2026-08-24 19:00:03,916 | DRTrainer] [Epoch 07/100 - 1011.6s] Train Loss: 1.8772 | Train QWK: 0.7968 || Val Loss: 3.0888 | Val QWK: 0.5538 | Val Within-1: 77.0% | Val Ref-Sens: 73.7% | LR: 2.14e-05
+[INFO | 2026-08-24 19:00:07,438 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.5538)
+[INFO | 2026-08-24 19:18:53,015 | DRTrainer] [Epoch 08/100 - 1125.6s] Train Loss: 1.7972 | Train QWK: 0.8320 || Val Loss: 2.9877 | Val QWK: 0.5684 | Val Within-1: 79.0% | Val Ref-Sens: 68.9% | LR: 1.05e-05
+[INFO | 2026-08-24 19:18:55,834 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.5684)
+[INFO | 2026-08-24 19:38:24,208 | DRTrainer] [Epoch 09/100 - 1168.4s] Train Loss: 1.7815 | Train QWK: 0.8364 || Val Loss: 2.9668 | Val QWK: 0.5906 | Val Within-1: 80.2% | Val Ref-Sens: 75.6% | LR: 3.42e-06
+[INFO | 2026-08-24 19:38:26,844 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.5906)
+[INFO | 2026-08-24 19:57:33,106 | DRTrainer] [Epoch 10/100 - 1146.3s] Train Loss: 1.8162 | Train QWK: 0.8254 || Val Loss: 2.9628 | Val QWK: 0.5679 | Val Within-1: 79.9% | Val Ref-Sens: 67.8% | LR: 1.00e-06
+[INFO | 2026-08-24 20:16:18,827 | DRTrainer] [Epoch 11/100 - 1125.7s] Train Loss: 1.8480 | Train QWK: 0.7981 || Val Loss: 2.9179 | Val QWK: 0.5821 | Val Within-1: 80.2% | Val Ref-Sens: 71.2% | LR: 3.42e-06
+[INFO | 2026-08-24 20:35:37,120 | DRTrainer] [Epoch 12/100 - 1158.3s] Train Loss: 1.7226 | Train QWK: 0.8789 || Val Loss: 2.9216 | Val QWK: 0.5923 | Val Within-1: 81.0% | Val Ref-Sens: 78.9% | LR: 1.05e-05
+[INFO | 2026-08-24 20:35:40,045 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.5923)
+[INFO | 2026-08-24 20:55:17,067 | DRTrainer] [Epoch 13/100 - 1177.0s] Train Loss: 1.7248 | Train QWK: 0.8790 || Val Loss: 2.9464 | Val QWK: 0.5900 | Val Within-1: 80.5% | Val Ref-Sens: 72.5% | LR: 2.14e-05
+[INFO | 2026-08-24 21:15:11,809 | DRTrainer] [Epoch 14/100 - 1194.7s] Train Loss: 1.6721 | Train QWK: 0.8836 || Val Loss: 2.9323 | Val QWK: 0.6138 | Val Within-1: 81.1% | Val Ref-Sens: 76.5% | LR: 3.52e-05
+[INFO | 2026-08-24 21:15:14,585 | DRTrainer]   -> Saved new best model checkpoint to './checkpoints/dual_branch_clm_qwk_best.pth' (Val QWK: 0.6138)
+[INFO | 2026-08-24 21:33:05,398 | DRTrainer] [Epoch 15/100 - 1070.8s] Train Loss: 1.7367 | Train QWK: 0.8574 || Val Loss: 3.3773 | Val QWK: 0.4725 | Val Within-1: 71.8% | Val Ref-Sens: 50.6% | LR: 5.05e-05
+[INFO | 2026-08-24 21:33:05,399 | DRTrainer]   -> [ReduceLROnPlateau] Val loss stagnant for 4 epochs. Reducing LR: 5.05e-05 -> 2.53e-05
+[INFO | 2026-08-24 21:49:40,622 | DRTrainer] [Epoch 16/100 - 995.2s] Train Loss: 1.7760 | Train QWK: 0.8369 || Val Loss: 2.9915 | Val QWK: 0.5865 | Val Within-1: 80.1% | Val Ref-Sens: 68.0% | LR: 3.27e-05
+[INFO | 2026-08-24 22:06:21,403 | DRTrainer] [Epoch 17/100 - 1000.8s] Train Loss: 1.8040 | Train QWK: 0.8251 || Val Loss: 2.9411 | Val QWK: 0.5676 | Val Within-1: 79.8% | Val Ref-Sens: 70.6% | LR: 3.95e-05
+[INFO | 2026-08-24 22:23:05,723 | DRTrainer] [Epoch 18/100 - 1004.3s] Train Loss: 1.9035 | Train QWK: 0.7750 || Val Loss: 2.8917 | Val QWK: 0.5703 | Val Within-1: 81.3% | Val Ref-Sens: 68.2% | LR: 4.49e-05
+[INFO | 2026-08-24 22:39:42,315 | DRTrainer] [Epoch 19/100 - 996.6s] Train Loss: 1.7386 | Train QWK: 0.8591 || Val Loss: 3.1051 | Val QWK: 0.6104 | Val Within-1: 78.3% | Val Ref-Sens: 72.7% | LR: 4.83e-05
+[INFO | 2026-08-24 22:56:25,984 | DRTrainer] [Epoch 20/100 - 1003.7s] Train Loss: 1.6497 | Train QWK: 0.8872 || Val Loss: 2.9044 | Val QWK: 0.5853 | Val Within-1: 81.1% | Val Ref-Sens: 78.2% | LR: 4.95e-05
+[INFO | 2026-08-24 23:12:54,832 | DRTrainer] [Epoch 21/100 - 988.8s] Train Loss: 1.7511 | Train QWK: 0.8401 || Val Loss: 3.0387 | Val QWK: 0.5568 | Val Within-1: 77.7% | Val Ref-Sens: 63.2% | LR: 4.83e-05
+[INFO | 2026-08-24 23:29:42,512 | DRTrainer] [Epoch 22/100 - 1007.7s] Train Loss: 1.7916 | Train QWK: 0.8159 || Val Loss: 2.9101 | Val QWK: 0.5911 | Val Within-1: 80.5% | Val Ref-Sens: 75.4% | LR: 4.49e-05
+[INFO | 2026-08-24 23:29:42,513 | DRTrainer]   -> [ReduceLROnPlateau] Val loss stagnant for 4 epochs. Reducing LR: 4.49e-05 -> 2.24e-05
+[INFO | 2026-08-24 23:46:22,426 | DRTrainer] [Epoch 23/100 - 999.9s] Train Loss: 1.6459 | Train QWK: 0.8916 || Val Loss: 2.9260 | Val QWK: 0.5962 | Val Within-1: 80.9% | Val Ref-Sens: 69.5% | LR: 1.98e-05
+[INFO | 2026-08-25 00:03:08,556 | DRTrainer] [Epoch 24/100 - 1006.1s] Train Loss: 1.6318 | Train QWK: 0.8895 || Val Loss: 3.0353 | Val QWK: 0.5517 | Val Within-1: 76.7% | Val Ref-Sens: 59.4% | LR: 1.65e-05
+[INFO | 2026-08-25 00:19:28,698 | DRTrainer] [Epoch 25/100 - 980.1s] Train Loss: 1.6593 | Train QWK: 0.8792 || Val Loss: 2.9114 | Val QWK: 0.5917 | Val Within-1: 80.3% | Val Ref-Sens: 72.7% | LR: 1.28e-05
+[INFO | 2026-08-25 00:35:54,951 | DRTrainer] [Epoch 26/100 - 986.3s] Train Loss: 1.7295 | Train QWK: 0.8346 || Val Loss: 3.0606 | Val QWK: 0.5887 | Val Within-1: 79.0% | Val Ref-Sens: 65.6% | LR: 9.19e-06
+[INFO | 2026-08-25 00:35:54,952 | DRTrainer]   -> [ReduceLROnPlateau] Val loss stagnant for 4 epochs. Reducing LR: 9.19e-06 -> 4.59e-06
+[INFO | 2026-08-25 00:52:30,536 | DRTrainer] [Epoch 27/100 - 995.6s] Train Loss: 1.7630 | Train QWK: 0.8324 || Val Loss: 2.9331 | Val QWK: 0.5964 | Val Within-1: 80.3% | Val Ref-Sens: 74.5% | LR: 3.14e-06
+[INFO | 2026-08-25 01:09:04,163 | DRTrainer] [Epoch 28/100 - 993.6s] Train Loss: 1.6613 | Train QWK: 0.8716 || Val Loss: 2.9690 | Val QWK: 0.5768 | Val Within-1: 78.9% | Val Ref-Sens: 65.8% | LR: 1.99e-06
+[INFO | 2026-08-25 01:25:51,359 | DRTrainer] [Epoch 29/100 - 1007.2s] Train Loss: 1.6453 | Train QWK: 0.8762 || Val Loss: 2.9302 | Val QWK: 0.6026 | Val Within-1: 80.7% | Val Ref-Sens: 72.2% | LR: 1.25e-06
+[INFO | 2026-08-25 01:42:22,718 | DRTrainer] [Epoch 30/100 - 991.4s] Train Loss: 1.6820 | Train QWK: 0.8674 || Val Loss: 2.9549 | Val QWK: 0.6024 | Val Within-1: 81.0% | Val Ref-Sens: 69.1% | LR: 1.00e-06
+[INFO | 2026-08-25 01:42:22,719 | DRTrainer]   -> [EarlyStopping] Validation loss unimproved for 12 epochs. Stopping training early!
+
+🎉 Huấn luyện thành công toàn bộ Pipeline!
