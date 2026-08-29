@@ -21,9 +21,9 @@ graph TD
     B --> B2["Stream 2: Ben Graham Vasculature"]
     B --> B3["Stream 3: Green Channel CLAHE (No Final Blur)"]
 
-    C --> C1["Global Only (ResNet-50 / EfficientNet)"]
-    C --> C2["Local Only (Sliding-Window MIL Patches v2)"]
-    C --> C3["Dual-Branch Fused (Global + Local Dual Pool)"]
+    C --> C1["Global Only (ResNet-50 + NonLocal + CBAM + Quadrant Tokens, 4096-d)"]
+    C --> C2["Local Only (Sliding-Window MIL Patches v2 Dual Pool, 2560-d)"]
+    C --> C3["Dual-Branch Fused (Global + Local Dual Pool, 6656 -> 512-d)"]
 
     D --> D1["1. Softmax_CE (Nominal Classification)"]
     D --> D2["2. Softmax_QWK (Quadratic Penalty Loss)"]
@@ -46,9 +46,9 @@ graph TD
 
 ## 3. Factor 2: Multi-Scale Architectural Backbone Ablation ($H_1, H_2$)
 
-1. **Global Context Branch ($512 \times 512$):** ResNet-50 with CBAM attention. Encodes multi-quadrant hemorrhage density and venous beading for **Grade 3 ($H_2$)**.
-2. **Local MIL Branch (Sliding-Window v2):** EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches (stride $s=48$, retinal FOV filter $\ge 0.5$) with Dual Aggregation (Max-Pooling + Masked Gated Attention). Preserves native-resolution focal microaneurysms for **Grade 1 ($H_1$)**.
-3. **Dual-Branch Fused Model:** Multimodal concatenation projected through a 2-layer LayerNorm MLP to a $512\text{-d}$ shared latent representation.
+1. **Global Context Branch ($512 \times 512$):** ResNet-50 with `NonLocalBlock2D` + `CBAM` attention + `QuadrantTokenAggregator` $\to F_{\text{Global}} \in \mathbb{R}^{4096}$ ($2048\text{ GAP} + 2048\text{ Quadrant Tokens}$). Encodes multi-quadrant hemorrhage density and provides the explicit relational mechanism to verify the 4-2-1 clinical diagnostic rule for **Grade 3 ($H_2$)**.
+2. **Local MIL Branch (Sliding-Window v2):** EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches (stride $s=48$, retinal FOV filter $\ge 0.5$) with Dual Aggregation (1D Max-Pooling + Masked Gated Attention) $\to F_{\text{Local}} \in \mathbb{R}^{2560}$. Preserves native-resolution focal microaneurysms for **Grade 1 ($H_1$)**.
+3. **Dual-Branch Fused Model:** Multimodal concatenation ($4096 + 2560 = 6656\text{-d}$) projected through a 2-layer LayerNorm MLP with `Mish` activation to a $512\text{-d}$ shared latent representation $\mathbf{z} \in \mathbb{R}^{512}$.
 
 ---
 

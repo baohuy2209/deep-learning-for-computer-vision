@@ -44,7 +44,7 @@ notebooks/diabetic_retinopathy/pipeline/
 ├── full/                                  # Modular, Production-Grade Python Subsystem
 │   ├── preprocessing.py                   # 4-step FOV mask, 3 preprocessing streams (Ben Graham, Green CLAHE, Minimal)
 │   ├── data_loader.py                     # Data ingestion, GroupShuffleSplit, LODO generator, Dual-Branch PyTorch Dataset
-│   ├── models.py                          # ResNet-50+CBAM (Global 512x512), EffNet-B0 Dual Pool (Sliding-Window MIL), Fusion MLP
+│   ├── models.py                          # ResNet-50+NonLocal+CBAM+QuadrantTokens (4096-d), EffNet-B0 Dual Pool (2560-d), Fusion MLP (6656->512)
 │   ├── losses_and_heads.py                # 5 Output Heads (Softmax CE/QWK, CORAL, CORN, CLM_QWK), Continuous QWK Loss
 │   ├── trainer.py                         # DRTrainer (AMP, QWK Warmup), FastHeadTrainer, Clinical Metrics, FundusGradCAM
 │   └── visualization.py                   # Unified Publication Visualization Module (Figs 1 to 8, 300 DPI)
@@ -68,11 +68,11 @@ notebooks/diabetic_retinopathy/pipeline/
 * **Stage 1 (Data & Sterile Split):** Patient-level grouping and multi-source quota allocation algorithm.
 * **Stage 2 (4-Step FOV & Preprocessing Ablation):** Otsu's adaptive thresholding, morphological Close+Open (ellipse 25x25), largest component filtering, and $15\text{px}$ boundary erosion; selective Green-channel CLAHE contrast enhancement without terminal Gaussian smoothing.
 * **Stage 3 (Dual-Branch Multi-Scale MIL Backbone):**
-  * *Global Context Stream ($512 \times 512$):* ResNet-50 + CBAM Attention capturing 4-quadrant vascular geometry for **Grade 3 ($H_2$)**.
-  * *Local Sliding-Window MIL Stream (v2):* EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches ($s=48$, FOV filter $\ge 0.5$) with Dual Pooling (Max-Pooling + Masked Gated Attention) for **Grade 1 ($H_1$)**.
-  * *Multimodal Fusion:* $4608\text{-d} \to \text{LayerNorm MLP} \to 512\text{-d}$ Latent Space.
+  * *Global Context Stream ($512 \times 512$):* ResNet-50 + `NonLocalBlock2D` + `CBAM` Attention + `QuadrantTokenAggregator` (4-quadrant Transformer relational encoding) capturing vascular geometry and verifying the clinical 4-2-1 rule for **Grade 3 ($H_2$)** $\to F_{\text{Global}} \in \mathbb{R}^{4096}$.
+  * *Local Sliding-Window MIL Stream (v2):* EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches ($s=48$, FOV filter $\ge 0.5$, dynamic $M \in [32, 64]$ / eval dense sweep) with Dual Pooling (Max-Pooling + Masked Gated Attention) $\to F_{\text{Local}} \in \mathbb{R}^{2560}$ for **Grade 1 ($H_1$)**.
+  * *Multimodal Fusion:* $6656\text{-d} \to \text{LayerNorm MLP} \to 512\text{-d}$ Latent Space $\mathbf{z}$.
 * **Stage 4 (Ordinal Classification & 5 Heads):** Champion CLM_QWK Head ($\text{clog-log}$ link, strictly monotonic cutpoints, Continuous Differentiable QWK Loss with linear warmup).
-* **Stage 5 (Explainable AI & Saliency):** FundusGradCAM with memory-safe hook cleanup.
+* **Stage 5 (Explainable AI & Saliency):** FundusGradCAM with memory-safe hook cleanup and quantitative evaluation against IDRiD pixel lesion masks.
 
 ### 3. [03. Research Paper Outline, Hypotheses & Methodology](file:///d:/Github/deep-learning-for-computer-vision/documents/03_paper_outline_and_methodology.md)
 * **Standard 6-Chapter Paper Structure:** Introduction, Related Work, Methodology, Experimental Setup, Results & Analysis (verifying Hypotheses $H_1$ to $H_5$), Discussion & Conclusion.
@@ -91,7 +91,7 @@ notebooks/diabetic_retinopathy/pipeline/
 | :--- | :--- | :--- |
 | **Data Ingestion & LODO** | [`pipeline/full/data_loader.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/data_loader.py) | Ingests 6 cohorts, GroupShuffleSplit by patient, LODO generator, DualBranch Dataset |
 | **Image Preprocessing** | [`pipeline/full/preprocessing.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/preprocessing.py) | 4-step FOV segmentation (`compute_fov_mask`), 3 preprocessing streams, sliding-window patch extractor |
-| **Backbone Models** | [`pipeline/full/models.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/models.py) | CBAM Attention, GlobalBranch (512x512), LocalMILBranch (Sliding-Window Dual Pool with patch_mask), Fusion MLP |
+| **Backbone Models** | [`pipeline/full/models.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/models.py) | Non-Local Block, CBAM Attention, QuadrantTokenAggregator, GlobalBranch (4096-d), LocalMILBranch (2560-d), Fusion MLP (6656 -> 512-d) |
 | **Losses & Heads** | [`pipeline/full/losses_and_heads.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/losses_and_heads.py) | Softmax CE/QWK, CORAL, CORN, Cumulative Link Model (CLM), Continuous QWK Loss |
 | **Trainer & Evaluation** | [`pipeline/full/trainer.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/trainer.py) | DRTrainer (AMP, QWK Warmup), FundusGradCAM with hook cleanup, Clinical Metrics |
 | **Visualization Suite** | [`pipeline/full/visualization.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/visualization.py) | Publication-ready renderers for Figs 1 to 8 (300 DPI, academic aesthetics) |

@@ -25,16 +25,16 @@ graph TD
     end
 
     subgraph "Stage 3: Dual-Branch Multi-Scale MIL Backbone"
-        F3 --> G1["Global Context Branch (512x512)<br/>ResNet-50 + CBAM Attention"]
+        F3 --> G1["Global Context Branch (512x512)<br/>ResNet-50 + NonLocal + CBAM + Quadrant Tokens"]
         F3 --> G2["Local MIL Branch (Sliding-Window v2)<br/>Native Overlap s=48, p=128 + FOV Filter >= 0.5<br/>Train: M in [32, 64] | Eval: Dense Grid <= 256"]
-        G1 --> H1["F_Global (2048-d)"]
-        G2 --> H2["Dual Pooling: MaxPool + Gated Attention (Masked)<br/>F_Local (2560-d)"]
-        H1 & H2 --> I["Multimodal Fusion LayerNorm MLP (4608 -> 512)<br/>Latent Severity Embedding (512-d)"]
+        G1 --> H1["F_Global (4096-d: 2048 GAP + 2048 Quadrant Tokens)"]
+        G2 --> H2["Dual Pooling: 1D MaxPool + Masked Gated Attention<br/>F_Local (2560-d: 1280 Max + 1280 Att)"]
+        H1 & H2 --> I["Multimodal Fusion LayerNorm MLP (6656 -> 512)<br/>Latent Severity Embedding z in R^512"]
     end
 
     subgraph "Stage 4: Ordinal Severity Classification"
-        I --> J1[Softmax + CE]
-        I --> J2[Softmax + CE + QWK]
+        I --> J1[Softmax + CE Baseline]
+        I --> J2[Softmax + CE + Continuous QWK]
         I --> J3[CORAL Ordinal BCE]
         I --> J4[CORN Conditional CE]
         I --> J5["Champion: CLM (clog-log) + Continuous QWK Loss<br/>Linear Warmup + Monotonic Cutpoints"]
@@ -42,7 +42,7 @@ graph TD
 
     subgraph "Stage 5: Explainable AI Verification"
         G1 -.-> K1[FundusGradCAM with Hook Cleanup]
-        K1 --> L[Qualitative Heatmap Grid & IDRiD Pixel Mask Saliency]
+        K1 --> L[Qualitative Heatmaps & IDRiD Pixel Mask Saliency Metrics]
     end
 ```
 
@@ -117,18 +117,21 @@ Module [`models.py`](file:///d:/Github/deep-learning-for-computer-vision/noteboo
                    │                               - Patch Size: 128x128, Stride: s=48 px
                ResNet-50                           - Overlapping Scanning + FOV Filter >= 0.5
                    │                               - Train: Random M in [32, 64] patches/epoch
-             CBAM Attention                        - Eval: Dense Full Grid (up to 256 patches)
+           NonLocalBlock2D (H*W Relational)        - Eval: Dense Full Grid (up to 256 patches)
                    │                                                   │
-           F_Global (2048-d)                                    EfficientNet-B0
+             CBAM Attention                                     EfficientNet-B0
                    │                                                   │
-                   │                                         Dual Aggregation Pooling:
-                   │                                         1. 1D Max-Pooling (Grade 1 MA)
-                   │                                         2. Gated Attention Pooling (Masked)
+        ┌──────────┴──────────┐                              Dual Aggregation Pooling:
+        ▼                     ▼                              1. 1D Max-Pooling (Grade 1 MA, H1)
+     Global GAP       QuadrantTokenAggregator                2. Masked Gated Attention (H2)
+     (2048-d)         (4-Quadrant Transformer, 2048-d)                 │
+        └──────────┬──────────┘                                F_Local (2560-d)
+                   ▼                                                   │
+           F_Global (4096-d)                                           │
                    │                                                   │
-                   │                                           F_Local (2560-d)
                    └─────────────────────────┬─────────────────────────┘
                                              ▼
-                                [Multimodal Fusion (4608-d)]
+                                [Multimodal Fusion (6656-d)]
                                              │
                                  LayerNorm Projection MLP
                                              │
@@ -137,20 +140,23 @@ Module [`models.py`](file:///d:/Github/deep-learning-for-computer-vision/noteboo
                          [Champion CLM_QWK Ordinal Regression Head]
 ```
 
-### 4.1. Global Context Branch (ResNet-50 + CBAM Attention)
+### 4.1. Global Context Branch (ResNet-50 + Non-local + CBAM + Quadrant Tokens)
 * **Input:** Full retinal view at $512 \times 512 \times 3$ (or $300 \times 300$).
 * **Backbone:** ResNet-50 (ImageNet pretrained).
-* **Attention Mechanism:** Convolutional Block Attention Module (CBAM) placed after Layer 4 ($2048$ channels):
-  * *Channel Attention:*
-    $$\mathbf{M}_c(F) = \sigma\Big(W_1\big(W_0(\text{AvgPool}(F))\big) + W_1\big(W_0(\text{MaxPool}(F))\big)\Big)$$
-  * *Spatial Attention:*
-    $$\mathbf{M}_s(F') = \sigma\Big(f^{7\times 7}\big([\text{AvgPool}(F'); \text{MaxPool}(F')]\big)\Big)$$
-* **Output:** Global Average Pooling $\to F_{\text{Global}} \in \mathbb{R}^{2048}$.
-* **Clinical Purpose:** Aggregates multi-focal hemorrhages and venous beading across all 4 retinal quadrants for **Grade 3 (Severe NPDR, $H_2$)**.
+* **Attention & Relational Mechanisms:**
+  1. **NonLocalBlock2D (Wang et al., 2018):** Full spatial self-attention over the $H \times W$ feature map after Layer 4 ($2048$ channels). Enables long-range spatial dependencies so lesions in one quadrant directly inform representations across distant quadrants.
+  2. **CBAM Attention:** Sequential Channel Attention followed by $7 \times 7$ Spatial Attention:
+     $$\mathbf{M}_c(F) = \sigma\Big(W_1\big(W_0(\text{AvgPool}(F))\big) + W_1\big(W_0(\text{MaxPool}(F))\big)\Big)$$
+     $$\mathbf{M}_s(F') = \sigma\Big(f^{7\times 7}\big([\text{AvgPool}(F'); \text{MaxPool}(F')]\big)\Big)$$
+  3. **QuadrantTokenAggregator:** Splits the feature map into the 4 clinical retinal quadrants (top-left, top-right, bottom-left, bottom-right). Pools each quadrant into a token and passes them through a 1-layer Transformer encoder with learned positional embeddings (`quadrant_pos_embed`). Explicitly verifies the **ICDR 4-2-1 clinical diagnostic rule for Grade 3 Severe NPDR ($H_2$)**:
+     - Hemorrhages in all 4 quadrants
+     - Venous beading in $\ge 2$ quadrants
+     - Intraretinal Microvascular Abnormalities (IRMA) in $\ge 1$ quadrant
+* **Output:** Concatenation of Global Average Pooling ($2048\text{-d}$) and Quadrant Token Summary ($2048\text{-d}$) $\to F_{\text{Global}} \in \mathbb{R}^{4096}$.
 
 ### 4.2. Local Multiple Instance Learning Branch (Sliding-Window v2 + EfficientNet-B0)
 * **Sliding-Window Overlapping Extraction (`extract_mil_patches_sliding`):**
-  * Replaces rigid $4 \times 4$ partitioning with a dense sliding window: patch size $p = 128$, stride $s = 48\text{ px}$ (overlap ratio $> 62\%$).
+  * Replaces rigid non-overlapping partitioning with a dense sliding window: patch size $p = 128$, stride $s = 48\text{ px}$ (overlap ratio $> 62\%$).
   * **Adaptive Retinal FOV Filtering:** Slices patch mask from `compute_fov_mask` and enforces $\text{mean}(\text{mask}_{\text{patch}}) \ge 0.5$, discarding uninformative black background and corner patches.
   * **Dual Operational Modes:**
     1. *Training Mode:* Stochastically samples $M \in [32, 64]$ patches per epoch from valid FOV candidates (spatial regularization + bounded VRAM budget).
@@ -165,9 +171,9 @@ Module [`models.py`](file:///d:/Github/deep-learning-for-computer-vision/noteboo
 * **Output:** Concatenated feature vector $F_{\text{Local}} = [F_{\text{Max}} \,\|\, F_{\text{Att}}] \in \mathbb{R}^{2560}$.
 
 ### 4.3. Multimodal Fusion Layer
-* Concatenation: $F_{\text{Fused}} = [F_{\text{Global}} \,\|\, F_{\text{Local}}] \in \mathbb{R}^{4608}$.
+* Concatenation: $F_{\text{Fused}} = [F_{\text{Global}} \,\|\, F_{\text{Local}}] \in \mathbb{R}^{6656}$ ($4096 + 2560$).
 * Nonlinear projection MLP (using `LayerNorm` for numerical stability across variable patch counts and small batch sizes):
-  $$\text{Linear}(4608 \to 512) \to \text{LayerNorm} \to \text{Mish}() \to \text{Dropout}(0.3) \to \text{Linear}(512 \to 512) \to \text{LayerNorm}$$
+  $$\text{Linear}(6656 \to 512) \to \text{LayerNorm} \to \text{Mish}() \to \text{Dropout}(0.3) \to \text{Linear}(512 \to 512) \to \text{LayerNorm}$$
 * Output: Fused latent severity embedding $\mathbf{z} \in \mathbb{R}^{512}$.
 
 ---
@@ -200,4 +206,4 @@ Module [`models.py`](file:///d:/Github/deep-learning-for-computer-vision/noteboo
 
 * **Target Layer:** Layer 4 ($2048$ channels) of the ResNet-50 Global Context Branch.
 * **Hook Lifecycle Safety:** Forward/backward activation hooks are explicitly removed post-computation using registered handles to prevent GPU VRAM leaks during long evaluation runs.
-* **Clinical Saliency Verification:** Evaluated qualitatively on multi-quadrant hemorrhages and compared with ground-truth lesion masks on the IDRiD dataset.
+* **Clinical Saliency Verification:** Evaluated qualitatively on multi-quadrant hemorrhages and compared with ground-truth lesion masks on the IDRiD dataset via Mean IoU and Pointing Game accuracy.
