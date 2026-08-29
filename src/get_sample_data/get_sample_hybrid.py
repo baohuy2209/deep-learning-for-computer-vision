@@ -1,89 +1,56 @@
-import csv
 import os
-import random
-import shutil
-from collections import defaultdict
 from pathlib import Path
 
 import pandas as pd
 
-# === CẤU HÌNH ===
-CSV_PATH = "../../data/processed/hybrid/train_balanced_metadata.csv"
+# === 1. CẤU HÌNH ĐƯỜNG DẪN ===
+BASE_RAW_DIR = Path("../../data/raw/hybrid")
+BASE_SAMPLE_DIR = Path("../../data/raw/samples/hybrid")
 
-SOURCE_DIR = "../../data/processed/hybrid/native_cropped/train"
+# File metadata gốc của tập Train
+CSV_TRAIN_SOURCE = BASE_RAW_DIR / "val_metadata.csv"
+if not CSV_TRAIN_SOURCE.exists():
+    CSV_TRAIN_SOURCE = BASE_RAW_DIR / "val_balanced_metadata.csv"
 
-OUTPUT_DIR = "../../data/raw/samples/hybrid/native_cropped/sample_50"
-OUTPUT_CSV_PATH = "../../data/raw/samples/hybrid/native_cropped/sample_50_metadata.csv"
+# Đường dẫn file CSV sample đầu ra
+OUTPUT_CSV_PATH = BASE_SAMPLE_DIR / "val_sample_50_metadata.csv"
+OUTPUT_CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-N_SAMPLE = 50
-LEVEL = "diagnosis"  # Cột chứa nhãn bệnh lý
+N_SAMPLE_PER_CLASS = 50  # 50 ảnh/lớp x 5 lớp = 250 dòng
 SEED = 42
-random.seed(SEED)
 
-# Đọc toàn bộ dataframe gốc
-df_original = pd.read_csv(CSV_PATH)
+# === 2. ĐỌC DỮ LIỆU & LẤY MẪU THEO CLASS ===
+print(f"⏳ Đang đọc dữ liệu từ: {CSV_TRAIN_SOURCE.resolve()}...")
+df_train = pd.read_csv(CSV_TRAIN_SOURCE)
+df_train["diagnosis"] = df_train["diagnosis"].astype(int)
 
-class_to_rows = defaultdict(list)
+# Kiểm tra sự tồn tại của file ảnh theo native_path
+df_train["_exists"] = df_train["native_path"].apply(
+    lambda p: os.path.exists(str(p))
+)
+df_valid = df_train[df_train["_exists"]].drop(columns=["_exists"])
 
-# Bước 1: Đọc metadata và gom nhóm theo class (diagnosis)
-for idx, row in df_original.iterrows():
-    diagnosis = int(str(row[LEVEL]).strip())
-    class_name = str(diagnosis)
+# Lấy mẫu ngẫu nhiên cho từng lớp
+sampled_dfs = []
+for grade in sorted(df_valid["diagnosis"].unique()):
+    subset = df_valid[df_valid["diagnosis"] == grade]
+    n_take = min(len(subset), N_SAMPLE_PER_CLASS)
+    sampled = subset.sample(n_take, random_state=SEED)
+    sampled_dfs.append(sampled)
+    print(f"  • Class {grade}: Lấy {len(sampled)} / {len(subset)} mẫu.")
 
-    # Lấy tên file ảnh từ cột native_path hoặc tên file gốc
-    file_name = Path(row["native_path"]).name
+df_sample = (
+    pd.concat(sampled_dfs, ignore_index=True)
+    .sample(frac=1.0, random_state=SEED)
+    .reset_index(drop=True)
+)
 
-    # Xây dựng đường dẫn nguồn dựa trên SOURCE_DIR và class_name (hoặc cấu trúc thư mục của bạn)
-    # Nếu thư mục nguồn của bạn có phân chia theo class_name (vd: train/0/, train/1/):
-    img_path = Path(SOURCE_DIR) / class_name / file_name
-
-    # Hoặc nếu SOURCE_DIR chứa thẳng tất cả ảnh không chia folder con, bạn dùng:
-    # img_path = Path(SOURCE_DIR) / file_name
-
-    if img_path.exists():
-        row_dict = row.to_dict()
-        row_dict["valid_img_path"] = img_path
-        class_to_rows[class_name].append(row_dict)
-    else:
-        print(f"⚠️ Không tìm thấy ảnh thực tế tại: {img_path}")
-
-# Bước 2: Lấy N_SAMPLE ảnh cho mỗi class, copy ảnh và xây dựng danh sách metadata mới
-sampled_rows = []
-
-for class_name, rows in class_to_rows.items():
-    if len(rows) < N_SAMPLE:
-        print(f"⚠️ Class {class_name}: chỉ có {len(rows)} ảnh, lấy hết")
-        sampled = rows
-    else:
-        sampled = random.sample(rows, N_SAMPLE)
-
-    out_dir = Path(OUTPUT_DIR) / f"{class_name}"
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    for item in sampled:
-        src_path = item["valid_img_path"]
-        file_name = src_path.name
-        dst_path = out_dir / file_name
-
-        # Copy ảnh vào thư mục sample
-        shutil.copy(src_path, dst_path)
-
-        # Cập nhật lại đường dẫn trong metadata trỏ thẳng tới thư mục sample mới
-        item["native_path"] = str(dst_path)
-        # Xóa trường tạm trước khi ghi file
-        del item["valid_img_path"]
-
-        sampled_rows.append(item)
-
-    print(f"✅ Class {class_name}: Đã copy {len(sampled)} ảnh thành công.")
-
-# Bước 3: Lưu DataFrame metadata mới cho tập sample
-os.makedirs(Path(OUTPUT_CSV_PATH).parent, exist_ok=True)
-df_sample = pd.DataFrame(sampled_rows)
+# === 3. XUẤT FILE CSV METADATA SAMPLE ===
 df_sample.to_csv(OUTPUT_CSV_PATH, index=False)
 
-print(f"\n🎉 HOÀN TẤT!")
-print(f"📁 Thư mục ảnh sample: {OUTPUT_DIR}")
-print(
-    f"📄 File CSV metadata sample: {OUTPUT_CSV_PATH} (Đã tổng hợp đầy đủ {len(df_sample)} mẫu)."
-)
+print("\n" + "=" * 60)
+print("✅ TẠO SAMPLE METADATA THÀNH CÔNG (KHÔNG COPY FILE ẢNH)!")
+print(f"📄 File CSV: {OUTPUT_CSV_PATH.resolve()}")
+print(f"📊 Tổng số mẫu: {len(df_sample)} dòng.")
+print(df_sample["diagnosis"].value_counts().sort_index())
+print("=" * 60)

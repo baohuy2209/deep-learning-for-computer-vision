@@ -28,10 +28,10 @@ graph TD
 | **APTOS 2019** | Aravind Eye Hospital (India) | Diverse clinical fundus cameras | $1886 \times 1458$ (Variable) | 3,662 | 3,662 (Anonymous Patients) | `.png` |
 | **DDR** | Multi-hospital partners (China) | Diverse clinical systems | $816 \times 734$ (ROI-cropped) | 12,522 | 12,522 | `.jpg` |
 | **DeepDRiD** | ISBI 2020 Challenge (China) | Topcon TRC-NW400 (Bilateral multi-angle) | $1820 \times 1872$ | 2,000 | 500 (4 views/patient) | `.jpg` |
-| **IDRiD** | Nanded Eye Hospital (India) | Kowa VX-10 $\alpha$ ($50^\circ$ FOV) | $4288 \times 2848$ (Ultra-High) | 516 | 516 (Combined Train+Test) | `.jpg` |
-| **Messidor-2** | Brest & Saint-Étienne Hospitals (France) | Topcon TRC NW6 ($45^\circ$ FOV) | $512 \times 512$ (1.00x) | 1,744 | 872 (Paired OS/OD views) | `.jpg` |
+| **IDRiD** | Nanded Eye Hospital (India) | Kowa VX-10 $\alpha$ ($50^\circ$ FOV) | $4288 \times 2848$ (Ultra-High) | 516 | 413 (Patient Suffix ID) | `.jpg` |
+| **Messidor-2** | Brest & Saint-Etienne Hospitals (France) | Topcon TRC NW6 ($45^\circ$ FOV) | $512 \times 512$ (1.00x) | 1,744 | 872 (Paired OS/OD views) | `.jpg` |
 | **EyePACS** | EyePACS Telehealth (USA) | Diverse field screening cameras | $3651 \times 2490$ (Variable) | 35,126 | 17,563 (Paired Left/Right) | `.jpeg` |
-| **MASTER POOL** | **Global Multi-Center** | **>8 Camera Optical Systems** | **$512 \to 4288$ px** | **55,570** | **53,970 Unique Patients** | - |
+| **MASTER POOL** | **Global Multi-Center** | **>8 Camera Optical Systems** | **$512 \to 4288$ px** | **55,570** | **35,532 Unique Patients** | - |
 
 ---
 
@@ -91,21 +91,28 @@ In diabetic retinopathy cohorts, patients undergo bilateral fundus photography (
 Performing naive random image-level splitting places the left eye in the training set and the right eye in the validation/test set. The deep neural network easily learns patient-specific identity shortcuts rather than true generalizable diabetic lesions, yielding artificially inflated validation metrics that catastrophically collapse upon external clinical deployment.
 
 ```
-❌ WRONG (Naive Image-Level Split):
+INCORRECT (Naive Image-Level Split):
 Patient 104 Left Eye  ──► [Train Set] ──┐  Model memorizes patient-specific optical artifacts
                                         ├─► (False High Accuracy / Silent Leakage)
 Patient 104 Right Eye ──► [Test Set]  ──┘
 
-✅ CORRECT (Strict Patient-Level Grouping):
+CORRECT (Strict Patient-Level Grouping):
 Patient 104 (Both Eyes) ────────────────► [Train Set ONLY]  (Zero Test Overlap)
 Patient 208 (Both Eyes) ────────────────► [Test Set ONLY]   (True Generalization Test)
 ```
 
 ### 4.2. Algorithmic Enforcement in `data_loader.py`
 The data loader parses patient identifiers across dataset naming conventions via `parse_patient_and_side`:
-* **Messidor-2:** Image name format `20051020_44982_0100_PP.tif` $\to \text{patient\_id} = \text{44982}$.
-* **EyePACS:** Image name format `10_left.jpeg` / `10_right.jpeg` $\to \text{patient\_id} = \text{10}$.
-* **DeepDRiD:** Image name format `104_l1.jpg`, `104_r2.jpg` $\to \text{patient\_id} = \text{104}$.
+* **IDRiD:** Image name `IDRiD_042.jpg` or `train_IDRiD_042.jpg` $\to$ extracts suffix `042` $\to \text{patient\_id} = \text{IDRiD::042}$.
+* **Messidor-2:** Image name format `20051020_44982_0100_PP.tif` $\to \text{patient\_id} = \text{Messidor-2::20051020}$.
+* **EyePACS:** Image name format `10_left.jpeg` / `10_right.jpeg` $\to \text{patient\_id} = \text{EyePACS::10}$.
+* **DeepDRiD:** Image name format `104_l1.jpg`, `104_r2.jpg` $\to \text{patient\_id} = \text{DeepDRiD::104}$.
+* **DDR:** Image name format `007-0004-000.jpg` $\to \text{patient\_id} = \text{DDR::007-0004}$.
+* **APTOS:** Image name format `000c1434d8d7.png` $\to \text{patient\_id} = \text{APTOS::000c1434d8d7}$.
 
 Splits are strictly executed using `GroupShuffleSplit` on `patient_id` satisfying:
 $$\mathcal{P}_{\text{Train}} \cap \mathcal{P}_{\text{Val}} = \emptyset, \quad \mathcal{P}_{\text{Train}} \cap \mathcal{P}_{\text{Test}} = \emptyset$$
+
+### 4.3. 2-Tier Data Storage & Splitting Architecture
+1. **Tier 1 (Harmonized Native Images):** Standardized images cropped to the retinal ROI are stored once under `hybrid/native_cropped/{dataset_key}/{image_id}.jpg` (JPEG quality 95).
+2. **Tier 2 (Sterile Partitioning):** The master dataset is partitioned into 70% Train, 15% Validation, and 15% Test using patient-level grouping. Multi-source quota balancing is applied **strictly to the training set** (`train_metadata.csv`). Validation (`val_metadata.csv`) and Test (`test_metadata.csv`) sets preserve their natural clinical prevalence without artificial balancing.

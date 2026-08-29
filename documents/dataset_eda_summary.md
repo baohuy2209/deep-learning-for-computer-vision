@@ -1,91 +1,92 @@
-# Báo Cáo Phân Tích Dữ Liệu Chuyên Sâu (Exploratory Data Analysis Report)
-## Đánh Giá Đa Trung Tâm Trên 6 Bộ Dữ Liệu Võng Mạc Đái Tháo Đường (55,570 Ảnh Quỹ Mắt)
+# Exploratory Data Analysis (EDA) Report
+## Multi-Center Evaluation Across 6 Diabetic Retinopathy Fundus Datasets (55,570 Fundus Photographs)
 
-**Tác giả:** Đội ngũ Nghiên cứu Deep Learning Y tế (Medical Computer Vision Research Group)  
-**Tập dữ liệu khảo sát:** APTOS 2019, DDR, DeepDRiD, IDRiD, Messidor-2, EyePACS (Kaggle)  
-**Tài liệu tham chiếu:** [eda_6_datasets.ipynb](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/eda/eda_6_datasets.ipynb) | [01_datasets_analysis.md](file:///d:/Github/deep-learning-for-computer-vision/documents/01_datasets_analysis.md) | [02_pipeline_architecture.md](file:///d:/Github/deep-learning-for-computer-vision/documents/02_pipeline_architecture.md)
-
----
-
-## TÓM TẮT HÀNH CHÍNH (EXECUTIVE SUMMARY)
-
-Trong phân loại bệnh Võng mạc Đái tháo đường (Diabetic Retinopathy - DR) dựa trên ảnh chụp đáy mắt màu (Color Fundus Photography - CFP), thách thức cốt lõi cản trở việc triển khai mô hình học sâu vào thực tế lâm sàng không nằm ở độ phức tạp của mạng nơ-ron, mà xuất phát từ **hiện tượng Dịch chuyển Miền (Domain Shift)** trầm trọng và **Mất cân bằng nhãn thứ bậc (Ordinal Class Imbalance)** giữa các trung tâm y tế.
-
-Báo cáo này tổng hợp kết quả phân tích thống kê và trực quan hóa từ **55,570 ảnh chụp quỹ mắt** thuộc 6 bộ dữ liệu quốc tế sau khi đã chuẩn hóa và hợp nhất toàn diện IDRiD (516 ảnh gồm đầy đủ Training và Testing set). Kết quả kiểm toán dữ liệu làm rõ ba hiện tượng quan trọng:
-1. **Dữ liệu phân mảnh và nguy cơ Rò rỉ Dữ liệu (Data Leakage):** Nhiều bệnh nhân có đồng thời 2 mắt (Left/Right) hoặc nhiều góc chụp. Phân chia ngẫu nhiên thông thường (Random Stratified Split) sẽ gây rò rỉ đặc trưng giải phẫu hệ mạch của cùng một bệnh nhân sang tập kiểm thử, làm sai lệch kết quả đánh giá lâm sàng.
-2. **Dịch chuyển Phân phối Nhãn (Label Shift / Prior Probability Shift):** Tỷ lệ mắc bệnh dao động từ 73.5% ảnh bình thường (Grade 0) trong tập sàng lọc cộng đồng (EyePACS) đến 67.4% ảnh có bệnh tại các phòng khám chuyên khoa mắt (IDRiD). Độ lệch nhãn tối đa giữa các lớp lên tới **36.45x**, khiến hàm mất mát Cross-Entropy thông thường bị vô hiệu hóa đối với các cấp độ bệnh nặng (Grade 3 & 4).
-3. **Dịch chuyển Đặc trưng Ảnh & Quang sai Thiết bị (Covariate / Sensor Shift):** Kích thước cảm biến dao động từ ảnh vuông nén chuẩn hóa ($512 \times 512$) đến ảnh SLR độ phân giải cao ($4288 \times 2848$). Phân tích màu sắc 3 kênh chỉ ra sự phân hóa cường độ kênh Xanh dương ($\mu_{Blue}$) từ $17.55$ đến $37.78$ giữa các hãng máy chụp (Topcon, Canon, Zeiss, Kowa, Centervue), trong khi độ sắc nét (Laplacian focus score) giảm sâu ở các tập sàng lọc thực tế do đục thủy tinh thể.
-
-Dựa trên bằng chứng định lượng, báo cáo thiết lập cơ sở lý luận bảo vệ kiến trúc **Mạng học đa thang đo đa phiên bản (Dual-Branch Multi-Scale MIL)**, cơ chế tiền xử lý chuẩn hóa màu (**Ben Graham & Green-Channel CLAHE**), đầu phân loại thứ bậc (**Cumulative Link Models - CLM/CORAL/CORN**) kết hợp hàm mất mát vi phân **Continuous QWK Loss**, và giao thức kiểm thử ngoại miền **Leave-One-Dataset-Out (LODO)**.
-
-```
-+----------------------------------------------------------------------------------------------------+
-|                                 TỔNG THỂ DỮ LIỆU ĐA TRUNG TÂM                                       |
-|                                55,570 Ảnh Quỹ Mắt (CFP)                                            |
-+----------------------------------------------------------------------------------------------------+
-       |                                      |                                      |
-       v                                      v                                      v
- [APTOS 2019]                            [EyePACS]                              [IDRiD]
- 3,662 ảnh                               35,126 ảnh                             516 ảnh (Train+Test)
- Ấn Độ (Aravind Eye Hospital)           Hoa Kỳ (Telehealth Screening)          Ấn Độ (Eye Clinic)
- Sensor: 1886x1458 (1.25x)               Sensor: 3651x2490 (1.46x)              Sensor: 4288x2848 (1.51x)
-       |                                      |                                      |
-       v                                      v                                      v
-   [DDR]                                [DeepDRiD]                            [Messidor-2]
- 12,522 ảnh                              2,000 ảnh (500 BN, 4 góc)             1,744 ảnh
- Trung Quốc (Multi-Hospital)             Trung Quốc (Dual-Eye, Two-Field)       Pháp (3 Bệnh viện ĐH)
- Sensor: 816x734 (1.05x)                 Sensor: 1820x1872 (0.97x)              Sensor: 512x512 (1.00x)
-```
+**Author:** Medical Computer Vision Research Group  
+**Target Datasets:** APTOS 2019, DDR, DeepDRiD, IDRiD, Messidor-2, EyePACS (Kaggle)  
+**Reference Documents:** [eda_6_datasets.ipynb](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/eda/eda_6_datasets.ipynb) | [01_datasets_analysis.md](file:///d:/Github/deep-learning-for-computer-vision/documents/01_datasets_analysis.md) | [02_pipeline_architecture.md](file:///d:/Github/deep-learning-for-computer-vision/documents/02_pipeline_architecture.md)
 
 ---
 
-## 1. KIỂM TRA TÍNH TOÀN VẸN VÀ GIAO THỨC CHỐNG RÒ RỈ DỮ LIỆU (DATA INTEGRITY & SANITY AUDIT)
+## Executive Summary
 
-### 1.1 Nguy cơ Rò rỉ Dữ liệu Cấp Bệnh nhân (Patient-level Data Leakage)
-Trong chẩn đoán nhãn khoa, hai mắt của cùng một cá thể chia sẻ các yếu tố bệnh sinh học toàn thân (huyết áp, đường huyết HbA1c, thời gian mắc đái tháo đường, kiểu hình giải phẫu vi mạch võng mạc). 
+In Diabetic Retinopathy (DR) grading from Color Fundus Photography (CFP), the primary obstacle preventing successful real-world clinical deployment is not model parameter capacity, but severe **Domain Shift** and **Ordinal Class Imbalance** across different healthcare centers.
 
-Nếu áp dụng phép phân chia ngẫu nhiên truyền thống ở cấp độ hình ảnh (Image-level Stratification):
-* Ảnh mắt trái ($I_{L}$) nằm ở tập Huấn luyện (Train) trong khi ảnh mắt phải ($I_{R}$) của cùng bệnh nhân nằm ở tập Kiểm thử (Validation/Test).
-* Mạng nơ-ron tích chập (CNN) có xu hướng "ghi nhớ" hình thái học hệ thống mạch máu đáy mắt và sắc tố võng mạc của bệnh nhân thay vì học các tổn thương vi phẫu bệnh lý (Microaneurysms, Hemorrhages, Hard Exudates, Neovascularization).
-* Hiện tượng này tạo ra **độ chính xác ảo (over-optimistic performance)** trong quá trình phát triển nhưng mô hình sẽ suy giảm độ chính xác đột ngột khi triển khai trên bệnh nhân mới.
+This report synthesizes the statistical and empirical findings from **55,570 standardized fundus photographs** across 6 international cohorts following complete harmonization of the IDRiD dataset (516 images across combined training and testing splits). The data audit highlights three primary phenomena:
+1. **Patient-Level Data Fragmentation & Leakage Risk:** Many patients possess bilateral examinations (Left/Right eyes) or multi-field views. Standard naive random splitting (Random Stratified Split) causes patient-level anatomical vascular features to leak between training and testing sets, producing deceptive validation performance.
+2. **Label Shift / Prior Probability Shift:** Disease prevalence varies dramatically, ranging from 73.5% normal images (Grade 0) in community screening programs (EyePACS) to 67.4% disease-positive cases in tertiary referral ophthalmology clinics (IDRiD). The maximum class imbalance reaches **36.45x**, rendering standard Cross-Entropy loss ineffective for severe and proliferative stages (Grades 3 & 4).
+3. **Covariate / Sensor Shift:** Sensor dimensions vary from standardized square crops ($512 \times 512$) to ultra-high-resolution SLR fundus cameras ($4288 \times 2848$). Three-channel color analysis reveals significant Blue channel intensity shifts ($\mu_{Blue}$) from $17.55$ to $37.78$ across camera manufacturers (Topcon, Canon, Zeiss, Kowa, Centervue), while focus sharpness scores degrade substantially in community cohorts due to real-world cataracts and corneal reflections.
 
-### 1.2 Giao thức Phân nhóm Vô trùng Tuyệt đối (Strict Patient-level Grouping)
-Pipeline thực hiện phân tách mã định danh bệnh nhân (`patient_id`) và phân loại hướng mắt (`side` $\in \{\text{left}, \text{right}\}$) bằng thuật toán phân tích chuỗi quy tắc (Regex/String parsing):
-* **DeepDRiD:** 2,000 ảnh được thu thập từ 500 bệnh nhân (mỗi bệnh nhân gồm 4 ảnh: 2 ảnh mắt trái góc trung tâm/hoàng điểm và 2 ảnh mắt phải góc đĩa thị). Thuật toán bóc tách tiền tố `image_id.split('_')[0]` gom toàn bộ 4 ảnh của 1 bệnh nhân thành một đơn vị duy nhất trước khi phân chia tập dữ liệu.
-* **EyePACS:** Tách nhãn định danh từ cấu trúc `<patient_id>_<left|right>.jpeg`, đảm bảo 35,126 ảnh được nhóm chặt chẽ theo cặp mắt của từng cá thể.
-* **IDRiD:** Đã gộp toàn bộ 413 ảnh Training và 103 ảnh Testing thành 516 ảnh chuẩn mực tại `idrid_total.csv`, định danh dạng `train_IDRiD_xxx` và `test_IDRiD_xxx`.
-* **Quy tắc phân chia:** Bắt buộc sử dụng `GroupKFold` hoặc `StratifiedGroupKFold` theo `patient_id`. Tuyệt đối không cho phép bất kỳ ảnh nào của cùng một bệnh nhân xuất hiện ở cả hai phía của biên giới Train/Test.
+Based on quantitative evidence, this report establishes the rationale supporting the **Dual-Branch Multi-Scale Multiple Instance Learning (MIL)** architecture, color constancy preprocessing (**Ben Graham & Green-Channel CLAHE**), ordinal regression heads (**Cumulative Link Models - CLM/CORAL/CORN**) with continuous **Continuous QWK Loss**, and the **Leave-One-Dataset-Out (LODO)** evaluation protocol.
 
-### 1.3 Bảng Kiểm toán Toàn vẹn Dữ liệu Hợp nhất (Consolidated Data Audit Table)
+```
++----------------------------------------------------------------------------------------------------+
+|                                  MULTI-CENTER DATASET OVERVIEW                                     |
+|                                    55,570 Fundus Images (CFP)                                      |
++----------------------------------------------------------------------------------------------------+
+       |                                      |                                      |
+       v                                      v                                      v
+  [APTOS 2019]                            [EyePACS]                              [IDRiD]
+  3,662 images                            35,126 images                          516 images (Train+Test)
+  India (Aravind Eye Hospital)            USA (Telehealth Screening)             India (Eye Clinic)
+  Sensor: 1886x1458 (1.25x)               Sensor: 3651x2490 (1.46x)              Sensor: 4288x2848 (1.51x)
+       |                                      |                                      |
+       v                                      v                                      v
+    [DDR]                                [DeepDRiD]                            [Messidor-2]
+  12,522 images                           2,000 images (500 pts, 4 views)        1,744 images
+  China (Multi-Hospital)                  China (Dual-Eye, Two-Field)            France (3 Univ. Hospitals)
+  Sensor: 816x734 (1.05x)                 Sensor: 1820x1872 (0.97x)              Sensor: 512x512 (1.00x)
+```
 
-Kết quả trích xuất tự động từ hàm `load_and_standardize_dataset()` trong file `eda_6_datasets.ipynb`:
+---
+
+## 1. Data Integrity & Anti-Leakage Protocol
+
+### 1.1 Risk of Patient-Level Data Leakage
+In clinical ophthalmology, paired eyes from the same individual share systemic physiological factors (blood pressure, glycemic control via HbA1c, disease duration, retinal microvascular geometry).
+
+Applying standard image-level random partitioning creates silent data leakage:
+* The left eye ($I_L$) is placed in the Training set while the right eye ($I_R$) of the same patient resides in the Validation/Test set.
+* Convolutional neural networks memorize patient-specific vascular morphology and fundus pigmentation rather than generalizable pathological micro-lesions (Microaneurysms, Hemorrhages, Hard Exudates, Neovascularization).
+* This creates **over-optimistic performance** during development that fails upon clinical deployment to unseen patients.
+
+### 1.2 Strict Patient-Level Grouping Protocol
+The data loader extracts unique patient identifiers (`patient_id`) and ocular laterality (`side` in `{left, right}`) via deterministic parsing rules:
+* **DeepDRiD:** 2,000 images from 500 patients (4 views per patient: central and disc-centered). The parser isolates `image_id.split('_')[0]`, grouping all 4 images of a patient into a single partition unit.
+* **EyePACS:** Parses the `<patient_id>_<left|right>.jpeg` structure, ensuring all 35,126 images are strictly grouped by patient identity.
+* **IDRiD:** Merged 413 training and 103 test images into 516 standardized records in `idrid_total.csv`, standardizing names as `train_IDRiD_xxx` and `test_IDRiD_xxx`.
+* **Partitioning Rule:** Enforces `GroupShuffleSplit` on `patient_id` such that:
+  $$\mathcal{P}_{\text{Train}} \cap \mathcal{P}_{\text{Val}} = \emptyset, \quad \mathcal{P}_{\text{Train}} \cap \mathcal{P}_{\text{Test}} = \emptyset$$
+
+### 1.3 Consolidated Data Audit Table
+
+Audit results extracted via `load_and_standardize_dataset()` in `eda_6_datasets.ipynb`:
 
 | Dataset Key | Dataset Name | Total Records | Valid Records | Duplicates | Null Labels | Invalid Labels | Unique Patients | Left Eyes | Right Eyes | Ingestion Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | `APTOS` | **APTOS 2019** | 3,662 | 3,662 | 0 | 0 | 0 | 3,662 | 0* | 0* | PASSED (100%) |
 | `DDR` | **DDR Dataset** | 12,522 | 12,522 | 0 | 0 | 0 | 12,522 | 0* | 0* | PASSED (100%) |
 | `DeepDRiD` | **DeepDRiD** | 2,000 | 2,000 | 0 | 0 | 0 | 500 | 999 | 1,001 | PASSED (100%) |
-| `IDRiD` | **IDRiD** | 516 | 516 | 0 | 0 | 0 | 516 | 0* | 0* | PASSED (100%) |
-| `Messidor-2`| **Messidor-2** | 1,744 | 1,744 | 0 | 0 | 0 | 1,744 | 0* | 0* | PASSED (100%) |
-| `EyePACS` | **EyePACS (Kaggle)** | 35,126 | 35,126 | 0 | 0 | 0 | 35,126 | 17,563 | 17,563 | PASSED (100%) |
-| **TOTAL** | **Combined Cohort** | **55,570** | **55,570** | **0** | **0** | **0** | **53,970** | **18,562** | **18,564** | **STERILE (100%)** |
+| `IDRiD` | **IDRiD** | 516 | 516 | 0 | 0 | 0 | 413 | 0* | 0* | PASSED (100%) |
+| `Messidor-2`| **Messidor-2** | 1,744 | 1,744 | 0 | 0 | 0 | 872 | 0* | 0* | PASSED (100%) |
+| `EyePACS` | **EyePACS (Kaggle)** | 35,126 | 35,126 | 0 | 0 | 0 | 17,563 | 17,563 | 17,563 | PASSED (100%) |
+| **TOTAL** | **Combined Cohort** | **55,570** | **55,570** | **0** | **0** | **0** | **35,532** | **18,562** | **18,564** | **STERILE (100%)** |
 
-*\*Ghi chú:* Các bộ dữ liệu như APTOS, DDR, IDRiD, Messidor-2 mã hóa mã định danh ẩn danh dạng UUID đơn nhất (`id_code`), không công khai trường nhãn mắt trái/phải trong tệp nhãn gốc. Pipeline chuẩn hóa tự động xử lý an toàn bằng cách gán `patient_id = id_code`.
+*\*Note:* Patient IDs are prefixed as `{dataset_key}::{patient_id}` to prevent cross-dataset namespace collisions.
 
 ---
 
-## 2. PHÂN TÍCH DỊCH CHUYỂN MIỀN CHUYÊN SÂU (DOMAIN SHIFT ANALYSIS)
+## 2. In-Depth Domain Shift Analysis
 
-### 2.1 Dịch chuyển Phân phối Nhãn (Label Shift / Prior Probability Shift $P(Y)$)
+### 2.1 Label Shift / Prior Probability Shift $P(Y)$
 
-Thang đo phân loại bệnh võng mạc đái tháo đường quốc tế ICDRS (International Clinical Diabetic Retinopathy Severity) phân cấp 5 mức độ tổn thương:
-* **Grade 0 (No DR):** Không có vi phình mạch hoặc xuất huyết.
-* **Grade 1 (Mild NPDR):** Chỉ có các vi phình mạch nhỏ (Microaneurysms).
-* **Grade 2 (Moderate NPDR):** Nhiều hơn vi phình mạch nhưng chưa đạt ngưỡng Severe NPDR (xuất huyết rải rác, xuất tiết cứng/mềm).
-* **Grade 3 (Severe NPDR):** Quy tắc 4-2-1 (>20 điểm xuất huyết võng mạc ở cả 4 góc phần tư, tĩnh mạch chuỗi hạt ở $\ge 2$ góc, hoặc IRMA rõ ở $\ge 1$ góc).
-* **Grade 4 (Proliferative DR - PDR):** Tăng sinh tân mạch (Neovascularization), xuất huyết dịch kính/trước võng mạc, bong võng mạc co kéo.
+The International Clinical Diabetic Retinopathy Severity (ICDRS) scale defines 5 disease grades:
+* **Grade 0 (No DR):** No microaneurysms or retinal hemorrhages.
+* **Grade 1 (Mild NPDR):** Microaneurysms (MA) only.
+* **Grade 2 (Moderate NPDR):** More than microaneurysms, but less than Severe NPDR (scattered hemorrhages, hard/soft exudates).
+* **Grade 3 (Severe NPDR):** 4-2-1 rule (>20 intraretinal hemorrhages in all 4 quadrants, venous beading in $\ge 2$ quadrants, or prominent IRMA in $\ge 1$ quadrant).
+* **Grade 4 (Proliferative DR - PDR):** Neovascularization, vitreous/preretinal hemorrhage, fibrous proliferation.
 
-#### Bảng Phân Bố Số Lượng và Tỷ Lệ Phần Trăm Chi Tiết Giữa 6 Bộ Dữ Liệu:
+#### Detailed Severity Breakdown Across 6 Cohorts:
 
 | Dataset | Total Images | Grade 0 (No DR) | Grade 1 (Mild) | Grade 2 (Moderate) | Grade 3 (Severe) | Grade 4 (PDR) | Imbalance Ratio (Max / Min) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -97,38 +98,38 @@ Thang đo phân loại bệnh võng mạc đái tháo đường quốc tế ICDR
 | **EyePACS** | 35,126 | 25,810 (73.5%) | 2,443 (7.0%) | 5,292 (15.1%) | 873 (2.5%) | 708 (2.0%) | **36.45x** |
 | **COMBINED POOL** | **55,570** | **35,746 (64.33%)**| **4,094 (7.37%)** | **11,675 (21.01%)**| **1,862 (3.35%)** | **2,193 (3.95%)** | **19.20x** |
 
-#### Đánh giá Y sinh & Lâm sàng về Dịch chuyển Nhãn:
-1. **Phân hóa bối cảnh lâm sàng (Screening vs. Tertiary Referral Hospital):**
-   * **EyePACS (Kaggle)** phản ánh chương trình tầm soát đái tháo đường diện rộng tại cộng đồng ở Hoa Kỳ, dẫn đến lớp Grade 0 chiếm ưu thế áp đảo (**73.5%**), trong khi các ca nặng đe dọa thị lực Grade 3 và Grade 4 chỉ chiếm tương ứng **2.5%** và **2.0%**. Hệ số mất cân bằng đạt mức báo động **36.45x**.
-   * Trái lại, **IDRiD** được thu thập tại bệnh viện mắt chuyên khoa tuyến 3 (Eye Clinic tại Nanded, Ấn Độ). Tỷ lệ Grade 3 và 4 lên tới **30.0%** (Grade 3: 18.0%, Grade 4: 12.0%), cao hơn gấp 7 lần so với EyePACS. Tỷ lệ Grade 0 chỉ chiếm 32.6%.
-2. **Sự sụp đổ của hàm Cross-Entropy Loss truyền thống:**
-   * Khi huấn luyện mô hình phân loại thông thường (Softmax + Cross-Entropy) trên tập dữ liệu tổng hợp 55,570 ảnh (nơi Grade 0 chiếm 64.33% và Grade 3 chỉ chiếm 3.35%), gradient của các mẫu Grade 0 sẽ áp đảo không gian cập nhật trọng số. Mô hình nhanh chóng hội tụ về điểm tối ưu cục bộ giả tạo: luôn dự đoán Grade 0 hoặc Grade 2 để đạt Cross-Entropy Loss thấp, hoàn toàn bỏ sót các ca bệnh tăng sinh nguy hiểm (Grade 3/4).
+#### Clinical Analysis of Label Shift:
+1. **Clinical Context Divergence (Screening vs. Tertiary Referral):**
+   * **EyePACS (Kaggle)** reflects a wide-scale community screening initiative in the United States, resulting in Grade 0 dominating at **73.5%**, while vision-threatening Grades 3 and 4 account for only **2.5%** and **2.0%**, yielding an extreme imbalance ratio of **36.45x**.
+   * In contrast, **IDRiD** was gathered at a specialized tertiary eye clinic (Nanded, India). Grades 3 and 4 reach **30.0%** (Grade 3: 18.0%, Grade 4: 12.0%), over 7 times higher than in EyePACS.
+2. **Failure of Standard Cross-Entropy Optimization:**
+   * When training standard classification networks (Softmax + Cross-Entropy) on the combined dataset (where Grade 0 is 64.33% and Grade 3 is only 3.35%), Grade 0 gradients dominate parameter updates. The model rapidly converges to a trivial local minimum: predicting majority classes (Grade 0 / Grade 2) to minimize loss, entirely failing on severe proliferative cases.
 
 ---
 
-### 2.2 Dịch chuyển Đặc trưng Hình ảnh (Covariate Shift / Feature Shift $P(X)$)
+### 2.2 Covariate Shift / Feature Shift $P(X)$
 
-Mỗi bộ dữ liệu được chụp từ các hệ thống quang học, kích thước cảm biến, góc chụp võng mạc (Field of View - FOV: $45^\circ$ vs $50^\circ$), và điều kiện đồng tử (Mydriatic - nhỏ giãn đồng tử vs. Non-mydriatic) hoàn toàn khác nhau.
+Each dataset was acquired with differing optical systems, sensor resolutions, fields of view ($45^\circ$ vs $50^\circ$), and pupil conditions (Mydriatic vs. Non-mydriatic).
 
-#### A. Thống kê Phân phối Kích thước Ảnh & Tỷ lệ Khung hình (Aspect Ratio):
+#### A. Spatial Resolution & Aspect Ratio Statistics:
 
 | Dataset Name | Sampled N | Width: Min - Max | Width: Mean $\pm$ Std | Height: Min - Max | Height: Mean $\pm$ Std | Aspect Ratio (W/H) | Sensor Geometry Type |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **APTOS 2019** | 100 | 640 - 4288 | $1885.85 \pm 891.27$ | 480 - 2848 | $1457.92 \pm 511.53$ | $1.25 \pm 0.20$ | Biến thiên cảm biến quang học |
-| **DDR Dataset**| 100 | 512 - 3264 | $816.35 \pm 682.29$ | 512 - 2448 | $733.67 \pm 493.25$ | $1.05 \pm 0.13$ | Đa phần đã crop viền gần vuông |
-| **DeepDRiD** | 100 | 1734 - 2232 | $1820.26 \pm 125.76$| 1725 - 1984 | $1871.58 \pm 76.97$ | $0.97 \pm 0.05$ | Gần vuông chuẩn hóa ($1:1$) |
-| **IDRiD** | 100 | 4288 - 4288 | **$4288.00 \pm 0.00$**| 2848 - 2848 | **$2848.00 \pm 0.00$**| **$1.51 \pm 0.00$** | Chuẩn máy ảnh DSLR Kowa ($3:2$) |
-| **Messidor-2** | 100 | 512 - 512 | **$512.00 \pm 0.00$** | 512 - 512 | **$512.00 \pm 0.00$** | **$1.00 \pm 0.00$** | Đã tiền xử lý cố định ($1:1$) |
-| **EyePACS** | 100 | 1792 - 4928 | $3651.20 \pm 872.23$| 1184 - 3264 | $2490.48 \pm 511.67$| $1.46 \pm 0.07$ | Cảm biến góc rộng thực địa |
+| **APTOS 2019** | 100 | 640 - 4288 | $1885.85 \pm 891.27$ | 480 - 2848 | $1457.92 \pm 511.53$ | $1.25 \pm 0.20$ | Optical sensor variance |
+| **DDR Dataset**| 100 | 512 - 3264 | $816.35 \pm 682.29$ | 512 - 2448 | $733.67 \pm 493.25$ | $1.05 \pm 0.13$ | Tight square crop |
+| **DeepDRiD** | 100 | 1734 - 2232 | $1820.26 \pm 125.76$| 1725 - 1984 | $1871.58 \pm 76.97$ | $0.97 \pm 0.05$ | Standardized square ($1:1$) |
+| **IDRiD** | 100 | 4288 - 4288 | **$4288.00 \pm 0.00$**| 2848 - 2848 | **$2848.00 \pm 0.00$**| **$1.51 \pm 0.00$** | High-res Kowa DSLR ($3:2$) |
+| **Messidor-2** | 100 | 512 - 512 | **$512.00 \pm 0.00$** | 512 - 512 | **$512.00 \pm 0.00$** | **$1.00 \pm 0.00$** | Fixed square ($1:1$) |
+| **EyePACS** | 100 | 1792 - 4928 | $3651.20 \pm 872.23$| 1184 - 3264 | $2490.48 \pm 511.67$| $1.46 \pm 0.07$ | Wide-field sensor |
 
-**Hệ quả đối với Kiến trúc Mạng Nơ-ron:**
-* Sự chênh lệch kích thước từ $512 \times 512$ đến $4288 \times 2848$ (gấp 46 lần về tổng số pixel) khiến việc trực tiếp co giãn ảnh (bilinear resizing) về kích thước chuẩn $224 \times 224$ hoặc $512 \times 512$ sẽ làm tiêu biến hoàn toàn các tổn thương kích thước hiển vi (vi phình mạch có đường kính chỉ từ $15 - 50\,\mu\text{m}$, tương đương vài pixel trên ảnh gốc).
+**Architectural Consequence:**
+Downsampling a $4288 \times 2848$ image down to $224 \times 224$ or $512 \times 512$ physically obliterates subtle micro-lesions (microaneurysms spanning $15 - 50\,\mu\text{m}$, sub-$15\text{px}$ on raw images).
 
 ---
 
-#### B. Thống kê Cường độ Sáng & Phân phối 3 Kênh Màu (RGB Distribution):
+#### B. Illumination & Color Channel Distributions:
 
-Trích xuất giá trị độ sáng trung bình Grayscale $\mu_{Gray}$, 3 kênh màu riêng biệt $\mu_R, \mu_G, \mu_B \in [0, 255]$, và độ sắc nét quang học $\sigma^2(\nabla^2 I)$ (Laplacian focus score):
+Extracted Grayscale brightness $\mu_{Gray}$, individual color channels $\mu_R, \mu_G, \mu_B \in [0, 255]$, and optical focus sharpness $\sigma^2(\nabla^2 I)$ (Laplacian focus score):
 
 | Dataset Name | Sampled N | Grayscale Brightness ($\mu_{Gray}$) | Red Channel ($\mu_R$) | Green Channel ($\mu_G$) | Blue Channel ($\mu_B$) | Focus Sharpness Score ($\sigma^2$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -140,84 +141,81 @@ Trích xuất giá trị độ sáng trung bình Grayscale $\mu_{Gray}$, 3 kênh
 | **EyePACS** | 100 | $59.97 \pm 27.47$ | $78.67 \pm 33.87$ | $54.75 \pm 26.38$ | **$37.78 \pm 23.77$** | **$14.70 \pm 14.81$** |
 
 ```
-                             PHÂN TÍCH PHỔ QUANG HỌC VÕNG MẠC
-    Cường độ (0-255)
+                              OPTICAL SPECTRAL ABSORPTION PROFILE
+    Intensity (0-255)
     140 +--------------------------------------------------------------------+
-        |   Kênh Đỏ (Red ~ 78-117): Phản xạ mạnh từ hắc mạc (Choroid)        |
+        |   Red Channel (Red ~ 78-117): Strong Choroidal Reflection          |
     110 |   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ |
         |                                                                    |
-     80 |   Kênh Xanh lá (Green ~ 54-64): ĐỈNH HẤP THỤ HEMOGLOBIN (Tối ưu)   |
+     80 |   Green Channel (Green ~ 54-64): OPTIMAL HEMOGLOBIN ABSORPTION PEAK|
         |   ---------------------------------------------------------------- |
      50 |                                                                    |
-        |   Kênh Xanh dương (Blue ~ 17-38): BỊ LỆCH MÀU NGHIÊM TRỌNG GIỮA MÁY|
+        |   Blue Channel (Blue ~ 17-38): SEVERE SENSOR/FLASH DOMAIN SHIFT    |
      20 |   ................................................................ |
         +--------------------------------------------------------------------+
             APTOS        IDRiD      Messidor-2      DDR        EyePACS
           (Blue=17.5) (Blue=18.3)  (Blue=20.3)  (Blue=32.7)  (Blue=37.8)
 ```
 
-#### Đánh giá Quang học Y sinh từ Dữ liệu Phân tích:
-1. **Sự phân hóa màu sắc Kênh Xanh dương (Blue Channel Shift):**
-   * Trong khi kênh Đỏ và Xanh lá tương đối đồng nhất giữa các bộ dữ liệu, kênh Xanh dương thể hiện độ lệch màu rất lớn: APTOS và IDRiD có $\mu_B \approx 17.5 - 18.3$, trong khi EyePACS và DeepDRiD đạt $\mu_B \approx 36.4 - 37.8$ (chênh lệch hơn 210%). Sự sai khác này bắt nguồn từ nhiệt độ màu đèn Flash Xenon/LED và bộ lọc cảm biến CCD/CMOS của các hãng sản xuất khác nhau.
-2. **Kênh Xanh lá (Green Channel) - Chìa khóa vàng giải phẫu bệnh học:**
-   * Hemoglobin trong hồng cầu có đỉnh hấp thụ ánh sáng cực đại tại bước sóng $540 - 577\,\text{nm}$ (nằm trọn trong dải phổ kênh Green). Do đó, các tổn thương xuất huyết và vi phình mạch biểu hiện với độ tương phản sắc nét nhất ở kênh Green, trong khi kênh Red thường bị bão hòa sáng bởi lớp biểu mô sắc tố võng mạc (RPE).
-3. **Độ sắc nét và Suy giảm Chất lượng Hình ảnh (Artifacts & Cataract):**
-   * Điểm số sắc nét của EyePACS rất thấp ($14.70 \pm 14.81$) so với DDR ($133.43 \pm 127.84$) phản ánh điều kiện thực tế trong cộng đồng: bệnh nhân cao tuổi bị đục thủy tinh thể, góc chụp lệch tâm hoàng điểm, hoặc phản xạ giác mạc làm mờ ảnh.
+#### Optical Analysis:
+1. **Blue Channel Shift:** The Blue channel displays dramatic shifts: APTOS and IDRiD have $\mu_B \approx 17.5 - 18.3$, while EyePACS and DeepDRiD reach $\mu_B \approx 36.4 - 37.8$ (>210% variance). This stems from differing flash color temperatures (Xenon vs. LED) and sensor response curves.
+2. **Green Channel (Pathological Signal Carrier):** Hemoglobin exhibits maximum optical absorption at $540 - 577\,\text{nm}$ (within the Green spectrum). Retinal hemorrhages and microaneurysms appear with highest contrast in the Green channel, whereas the Red channel is saturated by the retinal pigment epithelium (RPE).
+3. **Sharpness & Real-World Artifacts:** Focus sharpness in EyePACS is very low ($14.70 \pm 14.81$) compared to DDR ($133.43 \pm 127.84$), reflecting community screening challenges: cataracts, pupil constriction, and corneal reflex artifacts.
 
 ---
 
-## 3. BIỆN LUẬN PHƯƠNG PHÁP & GIẢI PHÁP THIẾT KẾ HỆ THỐNG (METHODOLOGICAL DEFENSE)
+## 3. Methodological Defense & System Architecture
 
-Dựa trên toàn bộ các bằng chứng định lượng thu thập từ 55,570 ảnh chụp quỹ mắt, chúng tôi thiết lập cơ sở lý thuyết chặt chẽ bảo vệ 4 quyết định thiết kế kiến trúc then chốt trong pipeline:
+Quantitative findings from the 55,570-image cohort establish the foundation for four core system design decisions:
 
 ```
 +----------------------------------------------------------------------------------------------------+
-|                         BỐN TRỤ CỘT THIẾT KẾ HỆ THỐNG DỰA TRÊN EDA                                 |
+|                                 FOUR EDA-BACKED DESIGN PILLARS                                     |
 +----------------------------------------------------------------------------------------------------+
-| 1. Chuẩn Hóa Tiền Xử Lý (Preprocessing): Ben Graham Constancy + Green-Channel CLAHE               |
-| 2. Kiến Trúc Hai Nhánh (Dual-Branch Multi-Scale MIL): Global Context + High-Res Local Patches       |
-| 3. Cơ Chế Đầu Phân Loại Thứ Bậc (Ordinal Regression Heads): CLM / CORAL / CORN + Continuous QWK    |
-| 4. Giao Thức Đánh Giá Độc Lập Thực Nghiệm: Leave-One-Dataset-Out (LODO) Hold-out Evaluation        |
+| 1. Preprocessing Standardization: Ben Graham Color Constancy + Green-Channel CLAHE                 |
+| 2. Dual-Branch Multi-Scale Architecture: Global Context Branch + High-Res Local MIL Patches        |
+| 3. Ordinal Regression Heads: Cumulative Link Model (CLM) / CORAL / CORN + Continuous QWK Loss      |
+| 4. Out-of-Distribution Benchmark: Leave-One-Dataset-Out (LODO) Hold-out Protocol                  |
 +----------------------------------------------------------------------------------------------------+
 ```
 
 ---
 
-### 3.1 Biện luận Tiền xử lý: Ben Graham Color Constancy & Green-Channel CLAHE
+### 3.1 Preprocessing: Ben Graham Color Constancy & Green-Channel CLAHE
 
-#### Vấn đề:
-Sự chênh lệch $\mu_B$ từ $17.5$ đến $37.8$ và gradient ánh sáng không đều (vùng trung tâm sáng, rìa võng mạc tối) làm mạng CNN bị phân tâm bởi đặc trưng màu sắc của máy chụp thay vì cấu trúc mạch máu.
+#### Problem:
+Variations in $\mu_B$ ($17.5$ to $37.8$) and non-uniform illumination gradients (bright center, dark periphery) cause CNNs to latch onto camera color profiles rather than clinical pathology.
 
-#### Giải pháp & Cơ chế Toán học:
-1. **Lọc triệt tiêu quang sai màu Ben Graham (Color Constancy):**
+#### Formulation:
+1. **Ben Graham Color Normalization:**
    $$\hat{I}(x, y) = \alpha \cdot I(x, y) - \beta \cdot \text{Gaussian}(I(x, y); \sigma) + \gamma$$
-   * Trong đó: $\alpha = 4$, $\beta = 4$, $\gamma = 128$, bán kính làm mờ $\sigma = \frac{\text{scale}}{30}$.
-   * **Cơ chế:** Phép trừ ảnh gốc với phiên bản lọc thông thấp Gaussian giúp triệt tiêu thành phần tần số thấp (gradient chiếu sáng không đều và màu nền quang học), đồng thời giữ lại nguyên vẹn các thành phần tần số cao (vi phình mạch, bờ xuất tiết, thành mạch máu).
-2. **Tăng cường tương phản cục bộ kênh Xanh lá (Green-Channel CLAHE):**
-   * Áp dụng CLAHE (Clip Limit $= 2.0$, Grid Size $= 8 \times 8$) trên kênh Green giúp làm nổi bật các tổn thương xuất huyết kích thước micro mà không làm khuếch đại nhiễu hạt tại các vùng nền tối.
+   Where $\alpha = 4$, $\beta = 4$, $\gamma = 128$, blur radius $\sigma = \text{scale}/30$.
+   *Subtracting the low-pass Gaussian estimate removes non-uniform illumination gradients while preserving high-frequency microaneurysms and vessel edges.*
+2. **Green-Channel Contrast Enhancement (CLAHE):**
+   Applying CLAHE (`clipLimit=2.0`, `tileGridSize=(8,8)`) directly to the Green channel maximizes vascular contrast without amplifying background camera noise.
 
 ---
 
-### 3.2 Biện luận Kiến trúc: Dual-Branch Multi-Scale Multiple Instance Learning (MIL)
+### 3.2 Architectural Defense: Dual-Branch Multi-Scale MIL
 
-#### Vấn đề:
-Co giãn toàn bộ ảnh $4288 \times 2848$ về kích thước chuẩn $224 \times 224$ làm mất hoàn toàn các vi phình mạch nhỏ (chiếm $\le 0.01\%$ diện tích ảnh). Ngược lại, nếu huấn luyện trực tiếp ở kích thước $4288 \times 2848$ sẽ gây tràn bộ nhớ GPU (OOM) và làm mất góc nhìn toàn cảnh (Global Context) về tỷ lệ phân bố tổn thương giữa các góc phần tư theo quy tắc 4-2-1.
+#### Problem:
+Downsampling whole fundus images to $224 \times 224$ obliterates focal microaneurysms ($\le 0.01\%$ image area). Conversely, training whole images at $4288 \times 2848$ causes GPU memory exhaustion (OOM) and loses macro-retinal 4-quadrant spatial context.
 
-#### Giải pháp Kiến trúc Hai Nhánh (Dual-Branch):
+#### Dual-Branch Solution:
 ```
                       +------------------------------------------+
-                      |         Ảnh Gốc Đáy Mắt (CFP)            |
+                      |         Raw Fundus Image (CFP)           |
                       +------------------------------------------+
                                     /              \
-    [Nhánh Toàn Cảnh (Global)]     /                \    [Nhánh Đa Phiên Bản (Local MIL)]
+     [Global Context Branch]       /                \    [Local MIL Branch]
                                   v                  v
                       +--------------------+   +------------------------------------+
-                      | Downsample 512x512 |   | Crop Top-K Patches (K=16, 224x224) |
+                      | Downsample 512x512 |   | Sliding-Window MIL Patches (p=128, s=48) |
                       +--------------------+   +------------------------------------+
                                   |                              |
                                   v                              v
                       +--------------------+   +------------------------------------+
-                      | ResNet50 + CBAM    |   | EfficientNet-B0 Patch Feature Ext. |
+                      | ResNet50 + CBAM    |   | EfficientNet-B0 Patch Extractor    |
                       +--------------------+   +------------------------------------+
                                   |                              |
                                   |                      +---------------+
@@ -239,91 +237,84 @@ Co giãn toàn bộ ảnh $4288 \times 2848$ về kích thước chuẩn $224 \t
                                  | Ordinal Head (CLM_QWK / CORAL) |
                                  +--------------------------------+
 ```
-* **Nhánh Toàn cảnh (Global Context Branch):** Sử dụng `ResNet50 + CBAM` trên ảnh thu nhỏ $512 \times 512$ để nắm bắt vị trí đĩa thị, hoàng điểm và tổng thể 4 góc phần tư võng mạc.
-* **Nhánh Cục bộ Đa phiên bản (Local MIL Branch):** Trích xuất $K=16$ mảnh cục bộ kích thước $224 \times 224$ ở độ phân giải gốc tại các vị trí có độ biến thiên entropy cao nhất. Mạng `EfficientNet-B0` trích xuất vector đặc trưng từng patch $h_k$, sau đó bộ tổng hợp **Gated Attention MIL** học trọng số chú ý $a_k$:
-  $$a_k = \frac{\exp\left\{ w^T \left( \tanh(V h_k^T) \odot \text{sigm}(U h_k^T) \right) \right\}}{\sum_{j=1}^K \exp\left\{ w^T \left( \tanh(V h_j^T) \odot \text{sigm}(U h_j^T) \right) \right\}}$$
-  $$f_{\text{local}} = \sum_{k=1}^K a_k h_k$$
-* Phép hợp nhất đặc trưng $f = [f_{\text{global}} \parallel f_{\text{local}}]$ dung hòa hoàn hảo giữa ngữ cảnh vĩ mô và tổn thương hiển vi vi thể.
+* **Global Context Branch:** `ResNet-50 + CBAM` operates on $512 \times 512$ inputs to capture macular context and 4-quadrant hemifield lesion distribution ($F_{\text{Global}} \in \mathbb{R}^{2048}$).
+* **Local MIL Branch (Sliding-Window v2):** Extracts overlapping $128 \times 128$ patches at native resolution (stride $s=48$, retinal FOV filter $\ge 0.5$). `EfficientNet-B0` extracts patch embeddings, aggregated via **Dual Pooling** (1D Max-Pooling + Masked Gated Attention Pooling) ($F_{\text{Local}} \in \mathbb{R}^{2560}$):
+  $$F_{\text{Max}} = \max_{k \in \{1 \dots N\}} f_{\text{patch}}^{(k)}, \quad F_{\text{Att}} = \sum_{k=1}^N a_k h_k, \quad F_{\text{Local}} = [F_{\text{Max}} \,\|\, F_{\text{Att}}]$$
+* Feature concatenation $F_{\text{Fused}} = [F_{\text{Global}} \,\|\, F_{\text{Local}}] \in \mathbb{R}^{4608}$ projected through a LayerNorm MLP to $512\text{-d}$ harmonizes macro-structural context and micro-lesion visibility.
 
 ---
 
-### 3.3 Biện luận Đầu Phân Loại Thứ Bậc (Ordinal Heads) & Continuous QWK Loss
+### 3.3 Ordinal Regression Heads & Continuous QWK Loss
 
-#### Vấn đề:
-Các cấp độ bệnh võng mạc đái tháo đường ICDRS mang bản chất **Thứ bậc tự nhiên (Natural Ordinality)**:
+#### Problem:
+Diabetic retinopathy grades possess a **Natural Clinical Hierarchy**:
 $$\text{Grade } 0 < \text{Grade } 1 < \text{Grade } 2 < \text{Grade } 3 < \text{Grade } 4$$
-Hàm mất mát phân loại đa lớp tiêu chuẩn (Multi-class Cross-Entropy Loss) xem các lớp là rời rạc và độc lập:
+Standard multi-class Cross-Entropy treats classes as unordered and independent:
 $$\mathcal{L}_{\text{CE}}(\hat{y}=1, y=0) = \mathcal{L}_{\text{CE}}(\hat{y}=4, y=0)$$
-Về mặt y khoa, dự đoán nhầm một bệnh nhân Không mắc bệnh (Grade 0) thành Nhẹ (Grade 1) là sai số chấp nhận được trong tầm soát, nhưng dự đoán nhầm Grade 0 thành Tăng sinh nặng (Grade 4) hoặc ngược lại là một **thảm họa lâm sàng**.
+Mispredicting Normal (Grade 0) as Mild (Grade 1) is a tolerable screening discrepancy, but mispredicting Grade 0 as Proliferative (Grade 4) is a critical clinical error.
 
-#### Giải pháp Toán học:
-1. **Mô hình Liên kết Tích lũy (Cumulative Link Models - CLM):**
-   Thay vì dự đoán trực tiếp xác suất từng lớp rời rạc, mạng học một biến tiềm ẩn đơn chiều $z(x) = w^T f(x)$ và $K-1 = 4$ ngưỡng có thứ tự tăng dần $\theta_1 < \theta_2 < \theta_3 < \theta_4$:
+#### Mathematical Solutions:
+1. **Cumulative Link Models (CLM):**
+   Projects features onto a scalar severity score $z(x) = w^T f(x)$ with $K-1 = 4$ strictly ordered monotonic cutpoints $\theta_1 < \theta_2 < \theta_3 < \theta_4$:
    $$P(Y \le k \mid x) = \sigma(\theta_k - z(x)) = \frac{1}{1 + e^{-(\theta_k - z(x))}}$$
    $$P(Y = k \mid x) = P(Y \le k \mid x) - P(Y \le k-1 \mid x)$$
-   * Đảm bảo tính đơn điệu của không gian dự đoán và duy trì trật tự lâm sàng nghiêm ngặt.
-2. **Hàm mất mát Quadratic Weighted Kappa vi phân liên tục (Continuous QWK Loss):**
-   * Chỉ số đánh giá lâm sàng chuẩn mực là QWK:
-     $$\kappa = 1 - \frac{\sum_{i,j} W_{ij} O_{ij}}{\sum_{i,j} W_{ij} E_{ij}}, \quad W_{ij} = \frac{(i - j)^2}{(C - 1)^2}$$
-   * Vì ma trận nhầm lẫn thực nghiệm $O_{ij}$ không thể lấy đạo hàm trực tiếp, hàm mất mát Continuous QWK xấp xỉ ma trận liên tục thông qua tích ngoài của vector xác suất dự đoán Softmax $\hat{y}$ và One-hot nhãn thực $y$:
-     $$\tilde{O}_{ij} = \sum_{n=1}^N y_{n, i} \cdot \hat{y}_{n, j}$$
-     $$\mathcal{L}_{\text{QWK}} = \frac{\sum_{i,j} W_{ij} \tilde{O}_{ij}}{\sum_{i,j} W_{ij} E_{ij}}$$
-   * Tối ưu hóa trực tiếp $\mathcal{L}_{\text{QWK}}$ giúp mô hình phạt nặng các sai lệch khoảng cách bậc hai $|y - \hat{y}|^2$, khắc phục hoàn toàn hiện tượng mất cân bằng lớp.
+2. **Continuous Differentiable QWK Loss:**
+   Approximates Cohen's Kappa via soft observed ($\tilde{O}_{ij}$) and expected ($E_{ij}$) confusion matrices:
+   $$\tilde{O}_{ij} = \sum_{n=1}^N y_{n, i} \cdot \hat{y}_{n, j}$$
+   $$\mathcal{L}_{\text{QWK}} = \frac{\sum_{i,j} W_{ij} \tilde{O}_{ij}}{\sum_{i,j} W_{ij} E_{ij}}, \quad W_{ij} = \frac{(i - j)^2}{(C - 1)^2}$$
+   Direct minimization of $\mathcal{L}_{\text{QWK}}$ penalizes off-diagonal predictions quadratically, counteracting class imbalance.
 
 ---
 
-### 3.4 Biện luận Giao thức Đánh giá Ngoại Miền (Leave-One-Dataset-Out - LODO)
+### 3.4 Out-of-Distribution Evaluation: Leave-One-Dataset-Out (LODO)
 
-#### Vấn đề:
-Kỹ thuật $k$-Fold Cross-Validation gộp chung cả 6 bộ dữ liệu lại rồi chia ngẫu nhiên sẽ dẫn đến tình trạng tập Test chứa ảnh từ cùng bệnh viện/loại máy ảnh với tập Train. Khi đó, độ chính xác cao chỉ chứng minh mô hình "học thuộc" đặc tính của máy chụp (In-domain Overfitting).
+#### Problem:
+Standard k-Fold cross-validation over pooled multi-source data mixes images from the same camera/clinic across splits, encouraging in-domain shortcut learning.
 
-#### Giao thức LODO (Leave-One-Dataset-Out):
-Để chứng minh khả năng tổng quát hóa thực sự khi chuyển giao sang bệnh viện mới (Out-of-Distribution Generalizability):
-* **Vòng 1:** Train trên {APTOS, DDR, DeepDRiD, Messidor-2, EyePACS} $\longrightarrow$ Test ngoại miền độc lập trên **IDRiD**.
-* **Vòng 2:** Train trên {APTOS, DDR, DeepDRiD, IDRiD, EyePACS} $\longrightarrow$ Test ngoại miền độc lập trên **Messidor-2**.
-* **Vòng 3:** Train trên {APTOS, DDR, DeepDRiD, IDRiD, Messidor-2} $\longrightarrow$ Test ngoại miền độc lập trên **APTOS**.
+#### LODO Protocol:
+To prove true cross-center generalization (Out-of-Distribution Generalizability):
+* **Fold 1:** Train on {APTOS, DDR, DeepDRiD, Messidor-2, EyePACS} $\to$ Evaluate zero-shot on **IDRiD**.
+* **Fold 2:** Train on {APTOS, DDR, DeepDRiD, IDRiD, EyePACS} $\to$ Evaluate zero-shot on **Messidor-2**.
+* **Fold 3:** Train on {APTOS, DDR, DeepDRiD, IDRiD, Messidor-2} $\to$ Evaluate zero-shot on **APTOS**.
 
-Chỉ khi mô hình đạt chỉ số QWK $\ge 0.85$ trên tập dữ liệu hoàn toàn chưa từng thấy trong quá trình huấn luyện, hệ thống mới đạt chuẩn tin cậy y tế để ứng dụng thực địa.
+A model achieving $\text{QWK} \ge 0.85$ on completely unseen external cohorts demonstrates genuine clinical deployment viability.
 
 ---
 
-## 4. BẢNG TỔNG HỢP ĐẶC TRƯNG TOÀN DIỆN CỦA 6 BỘ DỮ LIỆU (DATASET MASTER PROFILE)
+## 4. Master Dataset Profile & Specifications
 
-Bảng tổng hợp dưới đây là tài liệu quy chuẩn kỹ thuật phục vụ việc xây dựng Pipeline và viết công trình nghiên cứu:
-
-| Đặc tính / Chỉ số | **APTOS 2019** | **DDR Dataset** | **DeepDRiD** | **IDRiD** | **Messidor-2** | **EyePACS (Kaggle)** |
+| Metric / Specification | **APTOS 2019** | **DDR Dataset** | **DeepDRiD** | **IDRiD** | **Messidor-2** | **EyePACS (Kaggle)** |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Quốc gia / Xuất xứ** | Ấn Độ | Trung Quốc | Trung Quốc | Ấn Độ | Pháp | Hoa Kỳ |
-| **Cơ sở thu thập** | Aravind Eye Hospital | Đa trung tâm bệnh viện | Bệnh viện ĐH Thượng Hải | Eye Clinic (Nanded) | 3 Bệnh viện ĐH Pháp | Chương trình Tầm soát Viễn thông |
-| **Bối cảnh lâm sàng** | Sàng lọc & Phòng khám | Đa tuyến (Khám/Điều trị) | Phòng khám chuyên sâu | Bệnh viện chuyên khoa mắt | Đa trung tâm học thuật | Sàng lọc cộng đồng diện rộng |
-| **Tổng số ảnh hợp lệ** | **3,662** | **12,522** | **2,000** | **516** (Gộp Train+Test) | **1,744** | **35,126** |
-| **Số lượng bệnh nhân** | 3,662 cá thể | 12,522 cá thể | 500 cá thể (4 ảnh/BN) | 516 cá thể | 1,744 cá thể | 35,126 cá thể (Cặp mắt) |
-| **Độ phân giải chuẩn** | $1886 \times 1458$ (Biến thiên) | $816 \times 734$ (Crop gần vuông) | $1820 \times 1872$ (Gần vuông) | **$4288 \times 2848$ (SLR $3:2$)** | **$512 \times 512$ (Vuông $1:1$)** | $3651 \times 2490$ (Góc rộng $3:2$) |
-| **Tỷ lệ khung hình (W/H)**| $1.25 \pm 0.20$ | $1.05 \pm 0.13$ | $0.97 \pm 0.05$ | $1.51 \pm 0.00$ | $1.00 \pm 0.00$ | $1.46 \pm 0.07$ |
-| **Thiết bị chụp đáy mắt**| Đa dạng (Kowa, Topcon...) | Không công khai chi tiết | Topcon TRC-NW400 | Kowa VX-10 $\alpha$ | Topcon TRC-NW6 | Đa dạng máy sàng lọc lưu động |
-| **Góc mở võng mạc (FOV)**| $45^\circ$ | $45^\circ$ | $45^\circ$ (Central/Macular) | $50^\circ$ | $45^\circ$ | $45^\circ$ |
-| **Nhãn mắt Trái / Phải** | Không công khai | Không công khai | Có (999 Trái / 1,001 Phải) | Không công khai | Không công khai | Có (17,563 Trái / 17,563 Phải)|
-| **Độ sáng Grayscale ($\mu$)** | $68.75 \pm 17.82$ | $71.91 \pm 24.54$ | $67.88 \pm 25.14$ | $67.86 \pm 12.98$ | $70.18 \pm 18.61$ | $59.97 \pm 27.47$ |
-| **Kênh Xanh dương ($\mu_B$)**| **$17.55 \pm 14.03$ (Thấp)** | $32.66 \pm 21.35$ | **$36.40 \pm 21.51$ (Cao)** | **$18.29 \pm 13.76$ (Thấp)** | $20.27 \pm 8.59$ | **$37.78 \pm 23.77$ (Rất cao)** |
-| **Điểm sắc nét Laplacian** | $26.25 \pm 17.97$ | **$133.43 \pm 127.84$ (Rất cao)**| $43.00 \pm 28.29$ | $22.04 \pm 6.18$ | $74.80 \pm 34.77$ | **$14.70 \pm 14.81$ (Thấp/Nhiễu)**|
-| **Đặc trưng mất cân bằng**| Grade 0 (49.3%), Grade 2 (27.3%)| Grade 0 (50.0%), Grade 2 (35.8%)| Grade 0 (34.0%), Grade 1-3 (~19%)| **Grade 3+4 cao nhất (30.0%)** | Grade 0 áp đảo (58.3%) | **Grade 0 cực đoan (73.5%)** |
-| **Hệ số mất cân bằng** | **9.35x** | **26.55x** | **3.78x** | **6.72x** | **29.06x** | **36.45x** |
-| **Vai trò trong Pipeline** | Tập Huấn luyện & Cross-Val | Tập Huấn luyện quy mô lớn | Đánh giá ghép cặp 2 mắt | **External Hold-out Tuyệt đối** | **External Hold-out Tuyệt đối** | Tập Huấn luyện quy mô lớn |
+| **Origin / Country** | India | China | China | India | France | United States |
+| **Clinical Setting** | Aravind Eye Hospital | Multi-hospital network | Shanghai Univ. Hospital | Tertiary Eye Clinic | 3 French Univ. Hospitals | Telehealth Screening |
+| **Clinical Context** | Screening & Outpatient | Multi-tier clinic | Specialized Clinic | Tertiary Referral Center | Academic Multi-Center | Community Screening |
+| **Total Valid Images** | **3,662** | **12,522** | **2,000** | **516** (Combined) | **1,744** | **35,126** |
+| **Unique Patients** | 3,662 individuals | 12,522 individuals | 500 individuals (4 views)| 516 individuals | 1,744 individuals | 35,126 individuals (Paired) |
+| **Native Resolution** | $1886 \times 1458$ (Var) | $816 \times 734$ (Crop) | $1820 \times 1872$ (Square)| **$4288 \times 2848$ (SLR $3:2$)**| **$512 \times 512$ (Square $1:1$)**| $3651 \times 2490$ (Wide-field) |
+| **Aspect Ratio (W/H)**| $1.25 \pm 0.20$ | $1.05 \pm 0.13$ | $0.97 \pm 0.05$ | $1.51 \pm 0.00$ | $1.00 \pm 0.00$ | $1.46 \pm 0.07$ |
+| **Camera Models** | Diverse clinical | Diverse clinical | Topcon TRC-NW400 | Kowa VX-10 $\alpha$ | Topcon TRC-NW6 | Diverse field screening |
+| **Field of View (FOV)**| $45^\circ$ | $45^\circ$ | $45^\circ$ (Central/Macular) | $50^\circ$ | $45^\circ$ | $45^\circ$ |
+| **Laterality Labels** | Unspecified | Unspecified | Available (999 L / 1,001 R)| Unspecified | Available via Pairing | Available (17,563 L / R) |
+| **Grayscale Mean ($\mu$)**| $68.75 \pm 17.82$ | $71.91 \pm 24.54$ | $67.88 \pm 25.14$ | $67.86 \pm 12.98$ | $70.18 \pm 18.61$ | $59.97 \pm 27.47$ |
+| **Blue Mean ($\mu_B$)** | **$17.55 \pm 14.03$ (Low)**| $32.66 \pm 21.35$ | **$36.40 \pm 21.51$ (High)**| **$18.29 \pm 13.76$ (Low)** | $20.27 \pm 8.59$ | **$37.78 \pm 23.77$ (High)** |
+| **Focus Score ($\sigma^2$)**| $26.25 \pm 17.97$ | **$133.43 \pm 127.84$** | $43.00 \pm 28.29$ | $22.04 \pm 6.18$ | $74.80 \pm 34.77$ | **$14.70 \pm 14.81$ (Low/Noise)**|
+| **Imbalance Characteristics**| Grade 0 (49.3%), G2 (27.3%)| Grade 0 (50.0%), G2 (35.8%)| Grade 0 (34.0%), G1-3 (~19%)| **Grade 3+4 Highest (30.0%)** | Grade 0 Dominant (58.3%) | **Grade 0 Extreme (73.5%)** |
+| **Imbalance Ratio** | **9.35x** | **26.55x** | **3.78x** | **6.72x** | **29.06x** | **36.45x** |
+| **Pipeline Role** | Training & LODO Fold | Large-scale Training Pool | Paired View Evaluation | **External Hold-out & XAI** | **External Hold-out** | Large-scale Training Pool |
 
 ---
 
-## 5. KẾT LUẬN VÀ LỘ TRÌNH TRIỂN KHAI TIẾP THEO (NEXT STEPS)
+## 5. Conclusion & Implementation Roadmap
 
-Báo cáo phân tích EDA đã cung cấp đầy đủ các cơ sở định lượng và luận cứ y sinh vững chắc để chuẩn bị cho giai đoạn huấn luyện mô hình học sâu.
+The exploratory data audit establishes the empirical and biomedical foundations for pipeline implementation:
 
-### Các bước triển khai tiếp theo trong Pipeline:
-1. **Hoàn thiện Module Tiền xử lý ([preprocessing.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/preprocessing.py)):**
-   * Đóng gói quy trình cắt đường tròn võng mạc tự động (Auto-circular crop), lọc Ben Graham Color Constancy, và tách lớp Green-Channel CLAHE.
-2. **Xây dựng Data Loader & LODO Split ([data_loader.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/data_loader.py)):**
-   * Thiết lập lớp `RetinopathyDataset` hỗ trợ trích xuất đồng thời ảnh toàn cảnh và $K=16$ patch cục bộ. Khởi tạo generator `StratifiedGroupKFold` theo bệnh nhân.
-3. **Thực thi Kiến trúc Dual-Branch MIL ([models.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/models.py)):**
-   * Ghép nối backbone `ResNet50-CBAM` với nhánh `EfficientNet-B0 + Gated Attention MIL`.
-4. **Triển khai Thực nghiệm Đầu Ordinal ([losses_and_heads.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/losses_and_heads.py)):**
-   * So sánh thực nghiệm 5 biến thể đầu ra: `Softmax_CE`, `Softmax_QWK`, `CORAL`, `CORN`, và `CLM_QWK` trên giao thức LODO.
-5. **Kiểm chứng XAI & Khả năng Giải thích Y khoa:**
-   * Ánh xạ bản đồ kích hoạt Grad-CAM của nhánh MIL với mặt nạ phân vùng tổn thương thực tế (Pixel-level Ground Truth Masks) của bộ dữ liệu IDRiD.
+1. **Preprocessing Pipeline ([preprocessing.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/preprocessing.py)):**
+   * Encapsulates automated circular retinal ROI detection, Ben Graham illumination normalization, and Green-Channel CLAHE.
+2. **Data Loader & Sterile Splitting ([data_loader.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/data_loader.py)):**
+   * Implements multi-modal dual-stream dataset handling synchronized global context and local native patch sampling, with patient-level sterile grouping.
+3. **Dual-Branch Backbone Architecture ([models.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/models.py)):**
+   * Integrates `ResNet-50 + CBAM` global context extraction with `EfficientNet-B0 + Gated Attention MIL` micro-lesion analysis.
+4. **Ordinal Classification Heads ([losses_and_heads.py](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/losses_and_heads.py)):**
+   * Implements and evaluates `Softmax_CE`, `Softmax_QWK`, `CORAL`, `CORN`, and the champion `CLM_QWK` head under standardized optimization.
+5. **XAI Quantitative Validation:**
+   * Evaluates Grad-CAM visual attention maps against ground-truth expert lesion masks on IDRiD via Mean IoU and Pointing Game metrics.

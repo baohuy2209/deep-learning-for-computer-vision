@@ -9,16 +9,48 @@ Supported Heads & Loss Formulations:
   3. CORAL: Consistent Rank Logits (Shared weight, independent threshold biases) + Ordinal BCE.
   4. CORN: Conditional Ordinal Regression Neural Network + Conditional Cross-Entropy.
   5. CLM_QWK (Champion): Cumulative Link Model (Complementary log-log link with monotonic
-     thresholds) + Interval NLL Loss + Continuous QWK Loss.
-  6. End-to-End Pipeline Wrapper: DRFullModel integrating DualBranchMILModel with any Head.
+     cutpoints) + Interval NLL Loss + Continuous QWK Loss with linear warmup schedule.
+  6. Rank Monotonicity Violations Metric Function.
+  7. End-to-End Pipeline Wrapper: DRFullModel integrating DualBranchMILModel with any Head.
 ================================================================================
 """
 
 import math
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from typing import Dict, Any, Tuple, Optional, Union
+
+
+# ==============================================================================
+# 0. CLINICAL RANK MONOTONICITY VIOLATION METRIC
+# ==============================================================================
+
+def rank_monotonicity_violations(rank_probs: np.ndarray) -> float:
+    """
+    Computes the proportion of patient samples that violate the strict clinical
+    monotonicity constraint on cumulative rank probabilities P(y > k).
+    
+    Constraint: P(y > 0) >= P(y > 1) >= P(y > 2) >= P(y > 3)  (Strictly non-increasing)
+    
+    Args:
+        rank_probs: Array of shape (N, C-1) containing P(y > k) for k = 0..C-2.
+        
+    Returns:
+        float: Fraction of samples (in [0.0, 1.0]) with at least one threshold violation.
+    """
+    if rank_probs is None or len(rank_probs) == 0:
+        return 0.0
+    rank_probs = np.asarray(rank_probs, dtype=np.float64)
+    if rank_probs.ndim == 1:
+        rank_probs = rank_probs.reshape(1, -1)
+        
+    # diffs = P(y > k+1) - P(y > k). For non-increasing sequence, diffs must be <= 0.
+    # A violation occurs if diffs > +1e-4.
+    diffs = np.diff(rank_probs, axis=1)
+    violations = np.any(diffs > 1e-4, axis=1)
+    return float(np.mean(violations))
 
 
 # ==============================================================================
@@ -28,7 +60,7 @@ from typing import Dict, Any, Tuple, Optional, Union
 class ContinuousQWKLoss(nn.Module):
     """
     Differentiable approximation of Quadratic Weighted Kappa (QWK) Loss for PyTorch.
-    Computes soft confusion matrix and soft quadratic penalty weighting:
+    Computes soft confusion matrix and quadratic penalty weighting:
       Loss = sum(W * O) / sum(W * E)
     """
     def __init__(self, num_classes: int = 5, eps: float = 1e-7):
@@ -46,7 +78,7 @@ class ContinuousQWKLoss(nn.Module):
     def forward(self, pred_probs: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
         """
         Args:
-            pred_probs: Softmax or cumulative probability distribution (B, num_classes).
+            pred_probs: Softmax or interval probability distribution (B, num_classes).
             targets: Ground truth integer class labels (B,) or one-hot targets (B, num_classes).
         """
         device = pred_probs.device
@@ -99,7 +131,11 @@ class SoftmaxCEHead(nn.Module):
         logits = self.fc(x)  # (B, 5)
         probs = F.softmax(logits, dim=1)
         preds = torch.argmax(probs, dim=1)
-        return {"logits": logits, "probs": probs, "preds": preds}
+        # Compute empirical rank probabilities P(y > k) = sum_{j > k} p_j
+        rank_probs = torch.zeros(x.size(0), self.num_classes - 1, device=x.device)
+        for k in range(self.num_classes - 1):
+            rank_probs[:, k] = probs[:, k+1:].sum(dim=1)
+        return {"logits": logits, "probs": probs, "preds": preds, "rank_probs": rank_probs}
 
     def loss_fn(
         self,
@@ -132,13 +168,19 @@ class SoftmaxQWKHead(nn.Module):
         self.qwk_weight = qwk_weight
         self.qwk_loss = ContinuousQWKLoss(num_classes=num_classes)
 
+    def set_qwk_weight(self, weight: float):
+        self.qwk_weight = weight
+
     def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         logits = self.fc(x)
         probs = F.softmax(logits, dim=1)
         # Expected continuous value for ordinal predictions
         continuous_pred = torch.sum(probs * torch.arange(self.num_classes, device=x.device), dim=1)
         preds = torch.round(continuous_pred).clamp(0, self.num_classes - 1).long()
-        return {"logits": logits, "probs": probs, "preds": preds, "continuous_preds": continuous_pred}
+        rank_probs = torch.zeros(x.size(0), self.num_classes - 1, device=x.device)
+        for k in range(self.num_classes - 1):
+            rank_probs[:, k] = probs[:, k+1:].sum(dim=1)
+        return {"logits": logits, "probs": probs, "preds": preds, "continuous_preds": continuous_pred, "rank_probs": rank_probs}
 
     def loss_fn(
         self,
@@ -162,11 +204,12 @@ class SoftmaxQWKHead(nn.Module):
 
 class CORALHead(nn.Module):
     """
-    Consistent Rank Logits (CORAL) for Ordinal Regression.
+    Consistent Rank Logits (CORAL) for Ordinal Regression (Cheng et al., 2020).
     Features:
       - Shared weight vector W across all rank thresholds.
-      - Independent rank threshold biases b_1, b_2, ..., b_{K-1}.
+      - Independent rank threshold biases b_0, b_1, ..., b_{K-2}.
       - Probability of exceeding rank k: P(y > k) = sigmoid(W^T x + b_k).
+      - Note: Monotonicity violations can occur if biases learn disordered values.
     """
     def __init__(self, in_features: int = 512, num_classes: int = 5):
         super(CORALHead, self).__init__()
@@ -177,29 +220,34 @@ class CORALHead(nn.Module):
         self.linear = nn.Linear(in_features, 1, bias=False)
         # Independent threshold biases
         self.biases = nn.Parameter(torch.zeros(self.num_thresholds))
-        # Initialize biases to strictly increasing values
         with torch.no_grad():
-            self.biases.copy_(torch.linspace(-2.0, 2.0, self.num_thresholds))
+            self.biases.copy_(torch.linspace(1.5, -1.5, self.num_thresholds))
 
     def forward(self, x: torch.Tensor) -> Dict[str, torch.Tensor]:
         base_logit = self.linear(x)  # (B, 1)
         # Binary rank logits for each threshold: z_k = W^T x + b_k
         rank_logits = base_logit + self.biases  # (B, 4)
-        rank_probs = torch.sigmoid(rank_logits)  # P(y > k), shape (B, 4)
+        raw_rank_probs = torch.sigmoid(rank_logits)  # P(y > k), shape (B, 4)
         
-        # Predict class by counting number of satisfied thresholds (threshold > 0.5 -> logit > 0)
-        preds = torch.sum(rank_probs > 0.5, dim=1).long()  # [0..4]
+        # Predict class by counting number of satisfied thresholds (P(y > k) > 0.5)
+        preds = torch.sum(raw_rank_probs > 0.5, dim=1).long()  # [0..4]
         
         # Reconstruct class probabilities: P(y = k) = P(y > k-1) - P(y > k)
         B = x.size(0)
         probs = torch.zeros(B, self.num_classes, device=x.device)
-        probs[:, 0] = 1.0 - rank_probs[:, 0]
+        probs[:, 0] = 1.0 - raw_rank_probs[:, 0]
         for k in range(1, self.num_thresholds):
-            probs[:, k] = F.relu(rank_probs[:, k - 1] - rank_probs[:, k])
-        probs[:, -1] = rank_probs[:, -1]
+            probs[:, k] = F.relu(raw_rank_probs[:, k - 1] - raw_rank_probs[:, k])
+        probs[:, -1] = raw_rank_probs[:, -1]
         probs = probs / (probs.sum(dim=1, keepdim=True) + 1e-7)
         
-        return {"rank_logits": rank_logits, "rank_probs": rank_probs, "probs": probs, "preds": preds}
+        # Return raw_rank_probs (BEFORE ReLU) for genuine monotonicity violation auditing
+        return {
+            "rank_logits": rank_logits,
+            "rank_probs": raw_rank_probs,
+            "probs": probs,
+            "preds": preds
+        }
 
     def loss_fn(
         self,
@@ -216,7 +264,6 @@ class CORALHead(nn.Module):
         for k in range(self.num_thresholds):
             binary_targets[:, k] = (targets > k).float()
             
-        # Standard Ordinal Binary Cross-Entropy across all rank thresholds
         bce_loss = F.binary_cross_entropy_with_logits(rank_logits, binary_targets, reduction="mean")
         return bce_loss
 
@@ -227,9 +274,9 @@ class CORALHead(nn.Module):
 
 class CORNHead(nn.Module):
     """
-    Conditional Ordinal Regression Neural Network (CORN).
+    Conditional Ordinal Regression Neural Network (CORN - Shi et al., 2021).
     Models conditional probabilities: P(y > k | y >= k) = sigmoid(g(x)_k).
-    Guarantees consistent probability chains without threshold crossing violations.
+    Guarantees mathematically consistent cumulative probability chains via cumulative product.
     """
     def __init__(self, in_features: int = 512, num_classes: int = 5):
         super(CORNHead, self).__init__()
@@ -259,7 +306,7 @@ class CORNHead(nn.Module):
         return {
             "cond_logits": cond_logits,
             "cond_probs": cond_probs,
-            "cum_probs": cum_probs,
+            "rank_probs": cum_probs,
             "probs": probs,
             "preds": preds
         }
@@ -271,14 +318,10 @@ class CORNHead(nn.Module):
         class_weights: Optional[torch.Tensor] = None
     ) -> torch.Tensor:
         cond_logits = outputs["cond_logits"]  # (B, 4)
-        B = targets.size(0)
-        device = targets.device
-        
         loss = 0.0
         valid_tasks = 0
         
         for k in range(self.num_thresholds):
-            # Conditional subset: only samples where y >= k contribute to training the k-th head
             mask = (targets >= k)
             if mask.sum() > 0:
                 subset_logits = cond_logits[mask, k]
@@ -297,13 +340,15 @@ class CORNHead(nn.Module):
 class CumulativeLinkModelQWKHead(nn.Module):
     """
     Champion Output Architecture: Cumulative Link Model (CLM) with Complementary Log-Log (clog-log)
-    Link Function & Hybrid Continuous QWK Loss.
+    Link Function & Hybrid Continuous QWK Loss with Linear Warmup.
     
     Mathematical Formulation:
       - Latent Severity Score: s(x) = W^T x (scalar continuous representation)
-      - Strictly Monotonic Cutpoints: theta_1 < theta_2 < theta_3 < theta_4
+      - Strictly Monotonic Cutpoints: theta_1 < theta_2 < theta_3 < theta_4 parameterized
+        via softplus increments: theta_k = theta_{k-1} + softplus(alpha_k) + 1e-4
       - Complementary Log-Log (clog-log) link: F(z) = 1 - exp(-exp(z))
       - Cumulative Probability: P(Y <= k) = 1 - exp(-exp(theta_k - s(x)))
+      - Rank Probability: P(Y > k) = 1 - P(Y <= k) = exp(-exp(theta_k - s(x)))
       - Interval Probability: P(Y = k) = P(Y <= k) - P(Y <= k-1)
       - Loss: Negative Log-Likelihood (NLL) + lambda * Continuous_QWK_Loss
     """
@@ -316,17 +361,21 @@ class CumulativeLinkModelQWKHead(nn.Module):
         super(CumulativeLinkModelQWKHead, self).__init__()
         self.num_classes = num_classes
         self.num_cutpoints = num_classes - 1  # 4 cutpoints for 5 grades
-        self.qwk_weight = qwk_weight
+        self.target_qwk_weight = qwk_weight
+        self.current_qwk_weight = 0.0  # Warmup starts at 0.0
         
         # Linear projection to single latent severity score
         self.score_fc = nn.Linear(in_features, 1, bias=False)
         
-        # Parameterize monotonic cutpoints using exponential increments:
-        # theta_1 = c_1, theta_k = theta_{k-1} + exp(delta_k)
+        # Parameterize monotonic cutpoints using positive softplus increments
         self.first_cutpoint = nn.Parameter(torch.tensor(-1.5))
         self.cutpoint_increments = nn.Parameter(torch.ones(self.num_cutpoints - 1) * -0.5)
         
         self.qwk_loss = ContinuousQWKLoss(num_classes=num_classes)
+
+    def set_qwk_weight(self, weight: float):
+        """Sets active QWK weight (for linear warmup schedule)."""
+        self.current_qwk_weight = weight
 
     def _get_monotonic_cutpoints(self) -> torch.Tensor:
         """Computes strictly ordered cutpoints theta_1 < theta_2 < ... < theta_4."""
@@ -338,7 +387,6 @@ class CumulativeLinkModelQWKHead(nn.Module):
 
     def _cloglog_cdf(self, z: torch.Tensor) -> torch.Tensor:
         """Complementary log-log link function: F(z) = 1 - exp(-exp(z))."""
-        # Clamp to avoid numerical overflow in double exponential
         z_clamped = torch.clamp(z, min=-10.0, max=4.0)
         return 1.0 - torch.exp(-torch.exp(z_clamped))
 
@@ -353,14 +401,15 @@ class CumulativeLinkModelQWKHead(nn.Module):
         # Cumulative probabilities P(Y <= k) for k = 0, 1, 2, 3
         cum_probs = self._cloglog_cdf(z)  # (B, 4)
         
+        # Rank probabilities P(Y > k) = 1.0 - P(Y <= k)
+        rank_probs = 1.0 - cum_probs      # (B, 4)
+        
         # Compute discrete interval probabilities P(Y = k)
         probs = torch.zeros(B, self.num_classes, device=x.device)
         probs[:, 0] = cum_probs[:, 0]
         for k in range(1, self.num_cutpoints):
             probs[:, k] = F.relu(cum_probs[:, k] - cum_probs[:, k - 1])
         probs[:, -1] = F.relu(1.0 - cum_probs[:, -1])
-        
-        # Normalize to valid probability simplex
         probs = probs / (probs.sum(dim=1, keepdim=True) + 1e-7)
         
         # Expected continuous grade prediction
@@ -372,6 +421,7 @@ class CumulativeLinkModelQWKHead(nn.Module):
             "severity_score": severity_score,
             "cutpoints": cutpoints,
             "cum_probs": cum_probs,
+            "rank_probs": rank_probs,
             "probs": probs,
             "expected_grade": expected_grade,
             "preds": preds
@@ -400,7 +450,7 @@ class CumulativeLinkModelQWKHead(nn.Module):
         # 2. Continuous Quadratic Weighted Kappa Loss
         qwk = self.qwk_loss(probs, targets)
         
-        total_loss = nll_loss + self.qwk_weight * qwk
+        total_loss = nll_loss + self.current_qwk_weight * qwk
         return total_loss
 
 
@@ -455,28 +505,27 @@ class DRFullModel(nn.Module):
     ) -> torch.Tensor:
         return self.head.loss_fn(outputs, targets, class_weights=class_weights)
 
+    def set_qwk_warmup(self, epoch: int, total_warmup_epochs: int = 5):
+        """Linear warmup of QWK loss weight during early epochs."""
+        if hasattr(self.head, "set_qwk_weight") and hasattr(self.head, "target_qwk_weight"):
+            if epoch <= total_warmup_epochs:
+                current_w = self.head.target_qwk_weight * (epoch / float(total_warmup_epochs))
+            else:
+                current_w = self.head.target_qwk_weight
+            self.head.set_qwk_weight(current_w)
+
 
 def build_model(
     head_type: str = "CLM_QWK",
     pretrained: bool = True,
     use_cbam: bool = True,
+    use_dual_pooling: bool = True,
     fusion_dim: int = 512,
     num_classes: int = 5,
     qwk_weight: float = 1.2
 ) -> DRFullModel:
     """
     Factory function to construct complete DR Multi-Scale Pipeline model with designated output head.
-    
-    Args:
-        head_type: 'Softmax_CE', 'Softmax_QWK', 'CORAL', 'CORN', or 'CLM_QWK'.
-        pretrained: Whether backbones use ImageNet pretrained weights.
-        use_cbam: Whether to enable CBAM attention on ResNet-50.
-        fusion_dim: Dimension of latent multimodal embedding.
-        num_classes: 5 ordinal severity grades (0 to 4).
-        qwk_weight: Weight coefficient for continuous QWK loss term.
-        
-    Returns:
-        DRFullModel: Assembled PyTorch neural network.
     """
     try:
         from .models import DualBranchMILModel
@@ -486,6 +535,7 @@ def build_model(
     backbone = DualBranchMILModel(
         pretrained=pretrained,
         use_cbam=use_cbam,
+        use_dual_pooling=use_dual_pooling,
         fusion_dim=fusion_dim
     )
     
