@@ -47,7 +47,7 @@ graph TD
 ## 3. Factor 2: Multi-Scale Architectural Backbone Ablation ($H_1, H_2$)
 
 1. **Global Context Branch ($512 \times 512$):** ResNet-50 with `NonLocalBlock2D` + `CBAM` attention + `QuadrantTokenAggregator` $\to F_{\text{Global}} \in \mathbb{R}^{4096}$ ($2048\text{ GAP} + 2048\text{ Quadrant Tokens}$). Encodes multi-quadrant hemorrhage density and provides the explicit relational mechanism to verify the 4-2-1 clinical diagnostic rule for **Grade 3 ($H_2$)**.
-2. **Local MIL Branch (Sliding-Window v2):** EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches (stride $s=48$, retinal FOV filter $\ge 0.5$) with Dual Aggregation (1D Max-Pooling + Masked Gated Attention) $\to F_{\text{Local}} \in \mathbb{R}^{2560}$. Preserves native-resolution focal microaneurysms for **Grade 1 ($H_1$)**.
+2. **Local MIL Branch (Sliding-Window v2):** EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches (stride $s=96$, retinal FOV filter $\ge 0.5$) with Dual Aggregation (1D Max-Pooling + Masked Gated Attention) $\to F_{\text{Local}} \in \mathbb{R}^{2560}$. Preserves native-resolution focal microaneurysms for **Grade 1 ($H_1$)**.
 3. **Dual-Branch Fused Model:** Multimodal concatenation ($4096 + 2560 = 6656\text{-d}$) projected through a 2-layer LayerNorm MLP with `Mish` activation to a $512\text{-d}$ shared latent representation $\mathbf{z} \in \mathbb{R}^{512}$.
 
 ---
@@ -66,9 +66,15 @@ $$\begin{aligned}
 \text{Round 5:} &\quad \text{ResNet-50 (Freshly Initialized)} + \text{CLM\_QWK} \longrightarrow \text{End-to-End Optimization}
 \end{aligned}$$
 
-#### Controlled Confounding Elimination:
+#### Controlled Confounding Elimination & High-Performance Execution Engine:
 - **Zero Shared Latent Bias:** Pre-extracted cached latent representations from a Softmax-trained backbone introduce structural bias against ordinal link functions. Training each head from scratch ensures the backbone feature representations adapt dynamically to each head's specific decision geometry.
-- **Architectural Standardization:** All 5 rounds utilize identical ResNet-50 layers, identical $300 \times 300$ input dimensions, identical Green-channel Ben Graham preprocessing, identical AdamW optimizer hyperparameters ($\text{lr} = 10^{-4}, \text{weight decay} = 10^{-3}$), and identical Cosine Annealing schedules.
+- **Architectural Standardization:** All 5 rounds utilize identical ResNet-50 layers with a 512-d projection bottleneck (`LayerNorm + Mish + Dropout(0.2)`), identical $512 \times 512$ input dimensions, identical Green-channel Ben Graham preprocessing, identical AdamW optimizer hyperparameters ($\text{lr} = 10^{-4}, \text{weight decay} = 10^{-3}$), and identical Cosine Annealing schedules.
+- **Dual Checkpointing & Full Resume (`DRHeadTrainer`):** Automatically saves both peak validation checkpoints (`_best.pth`) and per-epoch recovery checkpoints (`_last.pth`) containing optimizer, scaler, scheduler, and epoch states to protect against Colab disconnects.
+- **Zero Multi-Round VRAM Leakage:** Models are actively offloaded to CPU memory (`model.cpu()`) and GPU memory caches are purged (`torch.cuda.empty_cache()` + `gc.collect()`) at the end of each round, preventing CUDA Out-of-Memory (OOM) failures across 5 consecutive rounds.
+- **Safe Checkpoint Restoration:** Unwraps `module.` prefixes automatically to ensure bidirectional compatibility across single-GPU, DataParallel, and DistributedDataParallel environments.
+- **Inverse-Frequency Class Weighting:** Automatic computation of normalized inverse-frequency class weights $w_c = \frac{N}{C \cdot N_c}$ normalized to mean 1.0 to eliminate bias against minority severe stages (Grade 1, 3, 4).
+- **Continuous Step-Level Dynamic QWK Warmup:** Continuous step-level scaling $\lambda(t) = \min\left(1.0, \frac{t}{T_{\text{warmup}}}\right) \cdot \lambda_{\text{target}}$ over epochs 1–5 for `Softmax_QWK` and `CLM_QWK`.
+- **Validation Early Stopping & Adaptive LR Control:** Monitored Validation QWK with patience of 6 epochs (`PATIENCE_EARLY_STOP = 6`) and automated manual ReduceLROnPlateau fallback (`patience = 4`, `factor = 0.5`).
 - **Controlled Independent Variable:** The loss formulation and output decision layer are the sole independent variables across rounds.
 
 ---
@@ -79,8 +85,8 @@ $$\begin{aligned}
 | :--- | :--- | :--- | :--- |
 | **1. Softmax_CE** | $P(y = k) = \frac{\exp(z_k)}{\sum_j \exp(z_j)}$ | Categorical Cross-Entropy | **None** ($P(y > k)$ frequently crosses) |
 | **2. Softmax_QWK** | $P(y = k) = \text{Softmax}(z_k)$, $\hat{y} = \sum k \cdot p_k$ | $\text{CE} + \lambda \mathcal{L}_{\text{QWK}}$ | **Soft penalty only** (no structural guarantee) |
-| **3. CORAL** | $P(y > k) = \sigma(\mathbf{w}^T \mathbf{z} + b_k)$ with unconstrained biases $b_k$ | $\sum_k \text{BCE}(\sigma(\mathbf{w}^T \mathbf{z} + b_k), \mathbb{I}(y > k))$ | **None** (biases can invert during training) |
-| **4. CORN** | $P(y > k \mid y \ge k) = \sigma(c_k)$, $P(y > k) = \prod_{j=0}^k \sigma(c_j)$ | $\sum_k \mathbb{I}(y \ge k) \text{BCE}(\sigma(c_k), \mathbb{I}(y > k))$ | **Guaranteed non-increasing** by cumulative product |
+| **3. CORAL** | $P(y > k) = \sigma(\mathbf{w}^T \mathbf{z} + b_k)$ with raw rank logits for audit + Isotonic cumulative probability projection | $\sum_k w_{y} \text{BCE}(\sigma(\mathbf{w}^T \mathbf{z} + b_k), \mathbb{I}(y > k))$ | **Audited on raw logits** (zero probability distortion via isotonic bounds) |
+| **4. CORN** | $P(y > k \mid y \ge k) = \sigma(c_k)$, $P(y > k) = \prod_{j=0}^k \sigma(c_j)$ | $\sum_k w_{y} \mathbb{I}(y \ge k) \text{BCE}(\sigma(c_k), \mathbb{I}(y > k))$ with graph-preserved zero safeguards | **Guaranteed non-increasing** by cumulative product |
 | **5. CLM_QWK (Champion)** | $P(Y \le k) = 1 - \exp(-\exp(\theta_k - \mathbf{w}^T \mathbf{z}))$ with $\theta_1 < \dots < \theta_4$ | Interval $\text{NLL} + \lambda(t) \mathcal{L}_{\text{QWK}}$ with warmup | **Strictly monotonic** by softplus cutpoint increments |
 
 ---
@@ -97,6 +103,17 @@ A clinical violation is registered if $\exists k \in \{0, 1, 2\}: \Delta_{i, k} 
 $$\text{Monotonicity Violation Rate} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{I}\left( \max_{k} \Delta_{i, k} > 10^{-4} \right) \times 100\%$$
 
 ---
+
+
+### 4.4. Publication-Quality Head Ablation Figure Suite
+
+The head ablation suite in [`main_model_head_ablation.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation.ipynb) generates 5 standardized high-contrast academic figures ($300\text{ DPI}$):
+
+* **Fig. 1 (Multi-Metric Clinical Comparison):** Bar chart comparing Test QWK, Within-1-Grade Accuracy, and Standard Classification Accuracy across all 5 output heads on the held-out test set.
+* **Fig. 3 (Per-Grade Sensitivity with Emphasis Technique):** Emphasizes clinical recovery of hard intermediate grades — Grade 1 (Focal Microaneurysms) in Orange and Grade 3 (4-Quadrant Severe NPDR) in Crimson, with non-critical grades (0, 2, 4) in neutral gray (1-color + gray emphasis design).
+* **Fig. 4 (Waterfall $\Delta \text{QWK}$ Decomposition):** Starting from the nominal `Softmax_CE` baseline, step-by-step decomposes the incremental contribution of quadratic penalty (`+QWK Loss`), weight sharing (`+CORAL`), conditional probability structure (`+CORN`), and complementary log-log cumulative link formulation (`+CLM_QWK Champion`).
+* **Fig. 6 (1D Continuous Latent Severity Spectrum & Monotonic Cutpoints):** Visualizes the continuous latent severity score continuum $s(\mathbf{x}) = \mathbf{w}^T \mathbf{z}$ across all 5 clinical stages along with 4 learned decision boundaries $\theta_1 < \theta_2 < \theta_3 < \theta_4$, with held-out test distributions overlaid using dashed lines to expose decision-axis shift directly.
+* **Fig. 7 (Referable DR ROC Screening Curves):** Multi-curve ROC comparison for Referable DR detection (Grade $\ge 2$) with an explicit operating gate at 95% specificity ($	ext{FPR} \le 5\%$).
 
 ## 5. Domain Shift Quantification Metric Framework
 

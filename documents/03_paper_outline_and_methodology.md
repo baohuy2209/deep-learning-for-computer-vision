@@ -31,7 +31,7 @@
 
 ### 1.3. Three Core Scientific Contributions
 1. **Zero-Leakage Multi-Center LODO Benchmark:** Harmonizes 6 international cohorts (55,570 images), strictly enforcing patient-level grouping (`GroupShuffleSplit`) and a 6-Fold Leave-One-Dataset-Out (LODO) zero-shot transfer protocol.
-2. **Dual-Branch Multi-Scale MIL Architecture with Sliding-Window v2:** Fuses a Global Context Branch (ResNet-50 + NonLocal + CBAM + Quadrant Tokens, $F_{\text{Global}} \in \mathbb{R}^{4096}$) with a Local Sliding-Window MIL Branch (EfficientNet-B0 scanning native overlapping $128 \times 128$ patches with stride $s=48$, adaptive 4-step FOV filtering, and dual Max-Pooling + Masked Gated Attention, $F_{\text{Local}} \in \mathbb{R}^{2560}$).
+2. **Dual-Branch Multi-Scale MIL Architecture with Sliding-Window v2:** Fuses a Global Context Branch (ResNet-50 + NonLocal + CBAM + Quadrant Tokens, $F_{\text{Global}} \in \mathbb{R}^{4096}$) with a Local Sliding-Window MIL Branch (EfficientNet-B0 scanning native overlapping $128 \times 128$ patches with stride $s=96$, adaptive 4-step FOV filtering, and dual Max-Pooling + Masked Gated Attention, $F_{\text{Local}} \in \mathbb{R}^{2560}$).
 3. **Champion CLM_QWK Ordinal Head:** Employs an asymmetric complementary log-log link function with softplus monotonic cutpoints and a continuous differentiable QWK loss objective with linear warmup.
 
 ---
@@ -50,8 +50,8 @@
                    ┌─────────────────────────┴─────────────────────────┐
                    ▼                                                   ▼
        [Global Context Stream (512x512)]           [Local Sliding-Window MIL Stream v2]
-                   │                               - Overlapping Patches: 128x128, Stride: s=48
-               ResNet-50                           - Retinal FOV Filter Ratio >= 0.5
+                   │                               - Overlapping Patches: 128x128, Stride: s=96
+               ResNet-50                           - Raw Retinal FOV Filter Ratio >= 0.5
                    │                               - Train: Stochastic M in [32, 64] / epoch
            NonLocalBlock2D (H*W Relational)        - Eval: Dense Full Grid (up to 256 patches)
                    │                                                   │
@@ -80,17 +80,19 @@
                          - Objective: L = Interval NLL Loss + lambda(t) * Continuous QWK Loss
 ```
 
-### 2.1. Patient-Level Sterile Partitioning & 2-Tier Data Structure
+### 2.1. Patient-Level Sterile Partitioning & 2-Tier Caching Architecture
 * Parsing and grouping by `patient_id` ensuring $\mathcal{P}_{\text{Train}} \cap \mathcal{P}_{\text{Val}} = \emptyset$ and $\mathcal{P}_{\text{Train}} \cap \mathcal{P}_{\text{Test}} = \emptyset$.
 * Partitioning the master dataset into 70% Train, 15% Validation, and 15% Test **before** balancing. Multi-source quota balancing is applied strictly to the training pool, ensuring natural clinical prevalence in test/validation sets.
+* **Offline 2-Tier Coordinate & Preprocessing Pre-Caching:** Stores preprocessed `uint8` arrays and $(N, 2)$ valid anchor coordinates in compressed `.npz` files ($\approx 50\text{--}100\text{ KB/sample}$), completely eliminating $158\text{ CPU hours}$ of redundant bilateral filtering, Gaussian subtraction, and morphological FOV grid searching across 100 epochs.
+* **Low-Overhead Shared Memory IPC (`uint8` Transmission):** DataLoader workers transmit raw `uint8` tensors (reducing IPC bandwidth from $755\text{ MB}$ to $189\text{ MB}$ per batch, a $4\times$ reduction). ImageNet normalization is executed on GPU Tensor Cores.
 
 ### 2.2. Robust 4-Step Retinal FOV Segmentation & Preprocessing
-* Replaces static `gray > 15` thresholding with Otsu's adaptive bimodal thresholding, morphological Close+Open with a $25 \times 25$ ellipse, largest connected component isolation, and $15\text{px}$ inward erosion.
+* Replaces static `gray > 15` thresholding with Otsu's adaptive bimodal thresholding (computed **strictly on raw RGB** before Ben Graham enhancement to prevent background gray 128 collapse), morphological Close+Open with a $25 \times 25$ ellipse, largest connected component isolation, and $15\text{px}$ inward erosion.
 * Green-channel CLAHE contrast enhancement without terminal Gaussian smoothing to protect sub-$15\text{px}$ microaneurysms.
 
 ### 2.3. Dual-Branch Backbone & Sliding-Window MIL Formulation (Testing $H_1$ & $H_2$)
 * **Global Branch ($4096\text{-d}$):** ResNet-50 with `NonLocalBlock2D` + `CBAM` attention + `QuadrantTokenAggregator` (1-layer Transformer over 4 quadrant tokens with positional embeddings). Encodes macro-vascular structural features and explicit 4-quadrant relational signals for the ICDR 4-2-1 rule ($H_2$).
-* **Local Branch ($2560\text{-d}$):** Native sliding-window patch extraction ($128 \times 128$, stride $s=48\text{ px}$, FOV ratio $\ge 0.5$) with dynamic stochastic sampling ($M \in [32, 64]$) in training and dense sweep in evaluation. Dual pooling with `patch_mask` support:
+* **Local Branch ($2560\text{-d}$):** Native sliding-window patch extraction ($128 \times 128$, stride $s=96\text{ px}$, FOV ratio $\ge 0.5$) with dynamic stochastic sampling ($M \in [32, 64]$) in training and dense sweep in evaluation. Dual pooling with `patch_mask` support:
   $$F_{\text{Local}} = [F_{\text{Max}} \,\|\, F_{\text{Att}}] \in \mathbb{R}^{2560}$$
 * **Multimodal Fusion ($6656 \to 512$):** Fused representation mapped to $\mathbf{z} \in \mathbb{R}^{512}$ via a 2-layer `LayerNorm` MLP with `Mish` activation.
 

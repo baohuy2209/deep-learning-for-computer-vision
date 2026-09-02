@@ -1,0 +1,79 @@
+Total cells: 72
+Cell 00 (markdown): # Multi-Scale All-CNN Hybrid Extractor for Diabetic Retinopathy Grading
+Cell 01 (markdown): ## 1. Import Essential Library
+Cell 02 (code    ): import torch
+Cell 03 (code    ): csv_train_path = "../../../../data/raw/samples/hybrid/native_cropped/sample_50_m
+Cell 04 (code    ): # ==============================================================================
+Cell 05 (code    ): # Academic Color Palette Definitions
+Cell 06 (markdown): ## 2. Preprocessing & Load Dataset
+Cell 07 (markdown): ### 2.1 Preprocessing Image Function
+Cell 08 (code    ): def apply_green_channel_ablation(
+Cell 09 (markdown): ### 2.2 Data augmentation for global branch
+Cell 10 (code    ): def get_global_augmentations(img_size: int = 300, is_train: bool = True):
+Cell 11 (markdown): ### 2.3 CLASS DATASET DUAL-BRANCH (Global Resize + Local Native)
+Cell 12 (code    ): class FundusDualBranchDataset(Dataset):
+   [KEY MATCH in Cell 12]
+Cell 13 (markdown): ### 2.4 Cut patch for local mil branch
+Cell 14 (code    ): def extract_mil_patches(img_np: np.ndarray, patch_size: int = 128, num_patches: 
+   [KEY MATCH in Cell 14]
+Cell 15 (markdown): ### 2.5 Load Dataset
+Cell 16 (code    ): # Khởi tạo Dataset cho tập train (áp dụng augmentation và resize cho Global, giữ
+   [KEY MATCH in Cell 16]
+Cell 17 (markdown): ### 2.6 Sample Image
+Cell 18 (code    ): # 1. Lấy 1 batch từ train_loader
+Cell 19 (markdown): ### 2.7 Visualize dataset
+Cell 20 (code    ): def visualize_dataset_statistics(csv_path: str, dataset_obj):
+Cell 21 (code    ): visualize_dataset_statistics(csv_train_path, train_dataset)
+Cell 22 (markdown): ## 3. Build Model
+Cell 23 (markdown): ### 3.1. Convolutional Block Attention Module (CBAM)
+Cell 24 (code    ): class ChannelAttention(nn.Module):
+Cell 25 (code    ): class SpatialAttention(nn.Module):
+Cell 26 (code    ): class CBAM(nn.Module):
+Cell 27 (markdown): ### 3.2. Global Context Branch (Zoom-out)
+Cell 28 (code    ): class GlobalBranch(nn.Module):
+Cell 29 (markdown): ### 3.3. LOCAL MIL BRANCH (EFFICIENTNET-B0 + 1D MAX-POOLING)
+Cell 30 (code    ): class GatedAttentionPool(nn.Module):
+Cell 31 (markdown): ### 3.4. MULTI-SCALE DUAL-BRANCH FUSED ARCHITECTURE
+Cell 32 (code    ): class DualBranchMILModel(nn.Module):
+Cell 33 (markdown): ### 3.5 Build Model with other Classifier
+Cell 34 (markdown): #### 3.5.1 CONTINUOUS DIFFERENTIABLE QUADRATIC WEIGHTED KAPPA (QWK) LOSS
+Cell 35 (code    ): class ContinuousQWKLoss(nn.Module):
+Cell 36 (markdown): #### 3.5.2 OUTPUT HEAD 1: SOFTMAX CLASSIFICATION (CE)
+Cell 37 (code    ): class SoftmaxCEHead(nn.Module):
+Cell 38 (markdown): #### 3.5.3  OUTPUT HEAD 2: SOFTMAX + CONTINUOUS QWK LOSS
+Cell 39 (code    ): class SoftmaxQWKHead(nn.Module):
+Cell 40 (markdown): #### 3.5.4 OUTPUT HEAD 3: CORAL (CONSISTENT RANK LOGITS)
+Cell 41 (code    ): class CORALHead(nn.Module):
+Cell 42 (markdown): #### 3.5.5 OUTPUT HEAD 4: CORN (CONDITIONAL ORDINAL REGRESSION NN)
+Cell 43 (code    ): class CORNHead(nn.Module):
+Cell 44 (markdown): #### 3.5.6 OUTPUT HEAD 5: CLM_QWK (CHAMPION - CUMULATIVE LINK MODEL + QWK)
+Cell 45 (code    ): class CumulativeLinkModelQWKHead(nn.Module):
+Cell 46 (code    ): class DRFullModel(nn.Module):
+   [KEY MATCH in Cell 46]
+Cell 47 (markdown): #### 3.5.7 Build model
+Cell 48 (code    ): def build_model(
+Cell 49 (markdown): ## 4. Training Model
+Cell 50 (markdown): ### 4.1 COMPREHENSIVE MEDICAL & ORDINAL METRICS CALCULATOR
+Cell 51 (code    ): def calculate_referable_sensitivity_at_specificity(
+Cell 52 (code    ): def calculate_dr_metrics(
+Cell 53 (code    ): def rank_monotonicity_violations(rank_probs: np.ndarray) -> float:
+Cell 54 (markdown): ### 4.2 PYTORCH TRAINING & EVALUATION ENGINE
+Cell 55 (code    ): class DRTrainer:
+   [KEY MATCH in Cell 55]
+Cell 56 (code    ): def print_per_grade_report(val_metrics):
+Cell 57 (code    ): class FundusGradCAM:
+Cell 58 (code    ): def compute_quantitative_xai(model, dataloader, device="cuda"):
+Cell 59 (code    ): head_types = ["Softmax_CE", "Softmax_QWK", "CORAL", "CORN", "CLM_QWK"]
+Cell 60 (markdown): ## 5. Visualize result in each Head Classifier
+Cell 61 (code    ): def visualize_comprehensive_results_for_all_heads(ablation_results):
+Cell 62 (code    ): visualize_comprehensive_results_for_all_heads(ablation_results)
+Cell 63 (code    ): # ==============================================================================
+Cell 64 (code    ): generate_figure_1(ablation_results)
+Cell 65 (code    ): # ==============================================================================
+Cell 66 (code    ): # ==============================================================================
+Cell 67 (code    ): # ==============================================================================
+Cell 68 (code    ): # ==============================================================================
+Cell 69 (markdown): [EMPTY]
+Cell 70 (markdown): # Định nghĩa 4 chế độ tiền xử lý (ablation_mode) tương ứng với dataset của bạn
+   [KEY MATCH in Cell 70]
+Cell 71 (markdown): # ==============================================================================

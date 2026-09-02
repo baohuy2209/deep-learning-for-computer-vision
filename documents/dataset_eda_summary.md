@@ -238,7 +238,7 @@ Downsampling whole fundus images to $224 \times 224$ obliterates focal microaneu
                                  +--------------------------------+
 ```
 * **Global Context Branch:** `ResNet-50 + CBAM` operates on $512 \times 512$ inputs to capture macular context and 4-quadrant hemifield lesion distribution ($F_{\text{Global}} \in \mathbb{R}^{2048}$).
-* **Local MIL Branch (Sliding-Window v2):** Extracts overlapping $128 \times 128$ patches at native resolution (stride $s=48$, retinal FOV filter $\ge 0.5$). `EfficientNet-B0` extracts patch embeddings, aggregated via **Dual Pooling** (1D Max-Pooling + Masked Gated Attention Pooling) ($F_{\text{Local}} \in \mathbb{R}^{2560}$):
+* **Local MIL Branch (Sliding-Window v2):** Extracts overlapping $128 \times 128$ patches at native resolution (stride $s=96$, retinal FOV filter $\ge 0.5$). `EfficientNet-B0` extracts patch embeddings, aggregated via **Dual Pooling** (1D Max-Pooling + Masked Gated Attention Pooling) ($F_{\text{Local}} \in \mathbb{R}^{2560}$):
   $$F_{\text{Max}} = \max_{k \in \{1 \dots N\}} f_{\text{patch}}^{(k)}, \quad F_{\text{Att}} = \sum_{k=1}^N a_k h_k, \quad F_{\text{Local}} = [F_{\text{Max}} \,\|\, F_{\text{Att}}]$$
 * Feature concatenation $F_{\text{Fused}} = [F_{\text{Global}} \,\|\, F_{\text{Local}}] \in \mathbb{R}^{4608}$ projected through a LayerNorm MLP to $512\text{-d}$ harmonizes macro-structural context and micro-lesion visibility.
 

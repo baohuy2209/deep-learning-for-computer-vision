@@ -26,7 +26,8 @@ documents/
 ├── 01_datasets_analysis.md                                   # Comprehensive 6-Dataset Analysis & Bilateral Leakage Elimination
 ├── 02_pipeline_architecture.md                               # End-to-End Pipeline Architecture & Component Formulations
 ├── 03_paper_outline_and_methodology.md                       # Complete Research Paper Outline, Hypotheses & Experimental Design
-└── 04_factorial_baseline_and_domain_shift_framework.md      # Factorial Baseline Matrix & Multi-Center LODO Evaluation Framework
+├── 04_factorial_baseline_and_domain_shift_framework.md      # Factorial Baseline Matrix & Multi-Center LODO Evaluation Framework
+└── 05_manuscript_draft_sections.md                           # Research Manuscript Text: Related Work (5 Ordinal Groups), Method, and Experimental Setup
 ```
 
 ---
@@ -65,11 +66,11 @@ notebooks/diabetic_retinopathy/pipeline/
 * **2-Tier Data Partitioning:** Splitting the raw pool into 70% Train, 15% Validation, and 15% Test before applying multi-source quota balancing to the training pool.
 
 ### 2. [02. End-to-End Pipeline Architecture & Mathematical Formulations](file:///d:/Github/deep-learning-for-computer-vision/documents/02_pipeline_architecture.md)
-* **Stage 1 (Data & Sterile Split):** Patient-level grouping and multi-source quota allocation algorithm.
+* **Stage 1 (Data, Sterile Split & Caching Engine):** Patient-level grouping, multi-source quota allocation, low-overhead `uint8` IPC transmission (reducing memory bandwidth from $755\text{ MB}$ to $189\text{ MB/batch}$), and **Offline 2-Tier NPZ Coordinate Pre-Caching** eliminating $158\text{ CPU hours}$ of redundant bilateral filtering, Gaussian subtraction, and morphological FOV grid searching across 100 epochs.
 * **Stage 2 (4-Step FOV & Preprocessing Ablation):** Otsu's adaptive thresholding, morphological Close+Open (ellipse 25x25), largest component filtering, and $15\text{px}$ boundary erosion; selective Green-channel CLAHE contrast enhancement without terminal Gaussian smoothing.
 * **Stage 3 (Dual-Branch Multi-Scale MIL Backbone):**
   * *Global Context Stream ($512 \times 512$):* ResNet-50 + `NonLocalBlock2D` + `CBAM` Attention + `QuadrantTokenAggregator` (4-quadrant Transformer relational encoding) capturing vascular geometry and verifying the clinical 4-2-1 rule for **Grade 3 ($H_2$)** $\to F_{\text{Global}} \in \mathbb{R}^{4096}$.
-  * *Local Sliding-Window MIL Stream (v2):* EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches ($s=48$, FOV filter $\ge 0.5$, dynamic $M \in [32, 64]$ / eval dense sweep) with Dual Pooling (Max-Pooling + Masked Gated Attention) $\to F_{\text{Local}} \in \mathbb{R}^{2560}$ for **Grade 1 ($H_1$)**.
+  * *Local Sliding-Window MIL Stream (v2):* EfficientNet-B0 scanning native-resolution overlapping $128 \times 128$ patches ($s=96$, FOV filter $\ge 0.5$, dynamic $M \in [32, 64]$ / eval dense sweep) with Dual Pooling (Max-Pooling + Masked Gated Attention) $\to F_{\text{Local}} \in \mathbb{R}^{2560}$ for **Grade 1 ($H_1$)**.
   * *Multimodal Fusion:* $6656\text{-d} \to \text{LayerNorm MLP} \to 512\text{-d}$ Latent Space $\mathbf{z}$.
 * **Stage 4 (Ordinal Classification & 5 Heads):** Champion CLM_QWK Head ($\text{clog-log}$ link, strictly monotonic cutpoints, Continuous Differentiable QWK Loss with linear warmup).
 * **Stage 5 (Explainable AI & Saliency):** FundusGradCAM with memory-safe hook cleanup and quantitative evaluation against IDRiD pixel lesion masks.
