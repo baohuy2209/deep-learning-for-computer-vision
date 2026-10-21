@@ -27,7 +27,7 @@
 * **Hypothesis 2 ($H_2$ — Severe DR 4-Quadrant Context & 4-2-1 Rule):** Out-of-domain sensitivity collapse for **Grade 3 (Severe NPDR)** is caused by the inability to aggregate lesion density across the 4 retinal quadrants. Standard local convolutions (like CBAM's $7 \times 7$ kernel) lack receptive fields to relate distant quadrants. A combination of `NonLocalBlock2D` (long-range spatial relational self-attention across the whole feature map) and `QuadrantTokenAggregator` (4-quadrant Transformer relational encoding) alongside Gated Attention Pooling provides the explicit physical mechanism to verify the clinical 4-2-1 rule and restore Grade 3 recall.
 * **Hypothesis 3 ($H_3$ — Cumulative Link Ordinal Modeling):** Replacing nominal Softmax with a Cumulative Link Model ($\text{clog-log}$ link, strictly monotonic cutpoints $\theta_1 < \theta_2 < \theta_3 < \theta_4$) optimized via continuous differentiable QWK loss eliminates rank inconsistencies and substantially shrinks the transfer gap $\Delta_{\text{QWK}}$.
 * **Hypothesis 4 ($H_4$ — Optical Signal Integrity):** Selective Green-channel CLAHE enhancement without final Gaussian smoothing maximizes microaneurysm contrast, whereas aggressive smoothing acts as a negative control that erases subtle lesions.
-* **Hypothesis 5 ($H_5$ — Quantitative XAI Fidelity):** The proposed architecture produces Grad-CAM saliency heatmaps that align qualitatively and quantitatively with ophthalmologist ground-truth lesion segmentations on IDRiD (evaluated via Mean IoU and Pointing Game accuracy) without artificial self-comparison inflation.
+* **Hypothesis 5 ($H_5$ — Quantitative XAI & Local Lesion Localization):** The proposed architecture achieves verified lesion localization against real ophthalmologist ground-truth masks on IDRiD without artificial self-comparison inflation. Evaluated via: (a) Pointing Game Accuracy evaluated strictly against the empirical random baseline ($p_{\text{rand}} \approx 1.5\%$, demonstrating $>7.4\times$ over chance), (b) Saliency Recall @ Area-Matched (thresholding top-$q\%$ heatmap pixels where $q$ matches lesion mask ratio), (c) Continuous Pixel-level AUROC, and (d) Comparative evaluation showing that Local Attention-MIL ($\approx 128\text{ px}$) provides fine-grained lesion localization that directly complements Global Layer 4 Grad-CAM ($\approx 268\text{ px}$), providing independent visual and quantitative evidence for $H_1$.
 
 ### 1.3. Three Core Scientific Contributions
 1. **Zero-Leakage Multi-Center LODO Benchmark:** Harmonizes 6 international cohorts (55,570 images), strictly enforcing patient-level grouping (`GroupShuffleSplit`) and a 6-Fold Leave-One-Dataset-Out (LODO) zero-shot transfer protocol.
@@ -99,7 +99,16 @@
 ### 2.4. Ordinal CLM_QWK Formulation (Testing $H_3$)
 * Mathematical derivation of Cumulative Link Model with complementary log-log link function.
 * Strictly ordered monotonic cutpoints via softplus parameterization ($\theta_1 < \theta_2 < \theta_3 < \theta_4$).
-* Linear warmup schedule for $\lambda_{\text{QWK}}$ preventing early-epoch optimization stagnation.
+* Interval probability formulation ensuring non-zero gradient propagation across cutpoints.
+
+### 2.5. Loss Convergence Schedule & Post-Hoc Screening Calibration (HD_4 Part 1, 3, 4)
+* **Optimization Stabilization Schedule:** To mitigate the high gradient variance of batch-level soft confusion matrices during early training, $\lambda_{\text{QWK}}$ is linearly warmed up over 15 epochs ($T_{\text{warmup}} = 15$) to a target of $\lambda = 0.4$. Both `EarlyStopping` and `ModelCheckpoint` strictly monitor `Validation QWK` (patience $15 - 20$ epochs).
+* **Decoupled Screening Calibration:** Post-hoc operating decision thresholds $\tau_s$ are calibrated strictly on Validation set continuous probabilities $P(Y \ge 2)$ for target specificities ($95\%$, $90\%$, $85\%$, $80\%$), and evaluated on the held-out Test set. Demonstrates that a Ref-AUC of $0.9063$ enables $\ge 80\%$ sensitivity without model retraining, while critically examining adherence to the UK National Screening Committee (UK NSC) standard.
+
+### 2.6. Quantitative XAI Verification & Attention-MIL Saliency Engine (HD_4 Part 2 & 5)
+* **Dual-Crop Bounding Box Alignment:** The retinal FoV bounding box is extracted from the raw fundus image via `compute_fov_mask(img_np, erode_px=0)` and applied identically to both the fundus image and its expert lesion mask prior to interpolation, eliminating spatial scale distortions on the 81 IDRiD segmentation images.
+* **Architecture-Native Attention-MIL Saliency Generator:** Instance attention weights $\alpha_k$ from `GatedAttentionPool` are projected onto the $512 \times 512$ canvas using patch anchors $[y_0, x_0]$ to generate high-resolution ($\approx 128\text{ px}$) saliency maps.
+* **Rigorous Metric Suite:** Replaces misleading raw Mean IoU (constrained by a theoretical ceiling of $\approx 0.050$ on $1.5\%$ micro-lesions) with Pointing Game accuracy against empirical random chance, Area-Matched Saliency Recall, and Pixel-level AUROC.
 
 ---
 
@@ -113,8 +122,8 @@ All figures are programmatically generated and exported to disk using [`visualiz
 * **Fig. 4:** Waterfall chart decomposing out-of-domain $\Delta \text{QWK}$ gain by component (+MIL for $H_1$, +Global Attention & Quadrant Tokens for $H_2$, +CLM Head for $H_3$).
 * **Fig. 5:** 6-Fold Leave-One-Dataset-Out (LODO) Generalization heatmap matrix across external cohorts.
 * **Fig. 6 (Novel Latent Spectrum):** 1D continuous latent severity score axis $s(\mathbf{x})$ with 4 learned cutpoints $\theta_1 < \theta_2 < \theta_3 < \theta_4$ and overlaid dashed Out-of-Domain distribution.
-* **Fig. 7:** Referable DR ROC curves (In-Domain vs. Out-of-Domain) with operating point at 95% specificity screening gate.
-* **Fig. 8:** Qualitative XAI visual grid (Original Fundus / Grad-CAM / Pathology Overlay).
+* **Fig. 7:** Post-Hoc Threshold Calibration & Screening ROC Curves: Validation ROC calibration curves and Test set operating points across target specificities ($95\%$, $90\%$, $85\%$, $80\%$) with UK NSC benchmark context (Ref-AUC $= 0.9063$).
+* **Fig. 8:** Multi-Scale XAI Saliency Benchmark on IDRiD Ground-Truth Masks: Side-by-side comparison of Global Grad-CAM (ResNet Layer 4, $\approx 268\text{ px}$) vs. Local Attention-MIL (EfficientNet Gated Attention, $\approx 128\text{ px}$) against expert lesion segmentations with Area-Matched contour overlays.
 
 ---
 

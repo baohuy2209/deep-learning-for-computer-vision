@@ -1,0 +1,324 @@
+{
+  "overall_status": "CONDITIONALLY VERIFIED",
+  "critical_failures": 0,
+  "high_failures": 2,
+  "medium_failures": 2,
+  "not_verified": 0,
+  "components": [
+    {
+      "name": "dataset_acquisition_and_preparation",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Acquisition scripts and cohort prep pipelines in src/drdg/data/preparation mirror legacy total_*.py and acquisition scripts."
+    },
+    {
+      "name": "metadata_harmonization",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Standard columns (image_id, diagnosis, dataset, patient_id, side) harmonized identically across 6 cohorts."
+    },
+    {
+      "name": "patient_parsing",
+      "status": "PARTIAL",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Exact match across 10/11 benchmark patterns. Discrepancy on APTOS when file extensions (.png) are passed in raw image_id (drdg strips extension, golden preserved it)."
+    },
+    {
+      "name": "patient_level_splitting",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "GroupShuffleSplit(train_size=0.85, random_state=42+k) on patient_id guarantees zero patient leakage between train and validation."
+    },
+    {
+      "name": "lodo_fold_construction",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Exact 6-cohort leave-one-dataset-out order: APTOS, DDR, DeepDRiD, IDRiD, Messidor-2, EyePACS."
+    },
+    {
+      "name": "image_preprocessing",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "crop_fundus_roi (tolerance=7) and apply_green_channel_ablation (ben_graham_green, clahe_green, raw_green) verified byte-for-byte identical via test_preprocessing_parity.py."
+    },
+    {
+      "name": "retinal_fov_segmentation",
+      "status": "PARTIAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "Otsu + morphological cleaning algorithm is preserved, but output dtype differs (golden returned uint8 in {0, 255}, drdg returns bool in {0, 1}), altering mean fov_ratio threshold scale."
+    },
+    {
+      "name": "sliding_window_mil_patch_extraction",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "compute_valid_anchors and extract_mil_patches_sliding verified identical on evaluation grids via test_patch_parity.py."
+    },
+    {
+      "name": "augmentations",
+      "status": "PASS-STRUCTURAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "Albumentations transforms sequence matches (HorizontalFlip, VerticalFlip, RandomRotate90, ShiftScaleRotate, ColorJitter, Normalize with ImageNet mean/std)."
+    },
+    {
+      "name": "datasets_and_collate_logic",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "FundusDualBranchDataset returns dict with global, patches, patch_mask, and label. Collate function pads patch tensors to max_patches with boolean mask."
+    },
+    {
+      "name": "global_context_branch",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "ResNet-50 / EfficientNet backbone with CBAM attention module and adaptive average pooling produces identical feature vectors."
+    },
+    {
+      "name": "local_mil_branch",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Gated attention pooling (Ilse et al.) over patch representations correctly computes attention weights and aggregated bag vector."
+    },
+    {
+      "name": "feature_fusion",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Concatenation of global (512-d) and local (512-d) features followed by Linear(1024, 512) projection, LayerNorm, and ReLU."
+    },
+    {
+      "name": "softmax_ce_head",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Linear projection to 5 logits with CrossEntropyLoss and optional inverse-frequency class weights."
+    },
+    {
+      "name": "softmax_qwk_head",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Hybrid Cross-Entropy + Continuous QWK loss with linear lambda warmup schedule."
+    },
+    {
+      "name": "coral",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Shared Linear(in_features, 1, bias=False) with independent learnable biases b_k initialized via linspace(2.0, -2.0, 4). Verified via test_ordinal_parity.py."
+    },
+    {
+      "name": "corn",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Conditional transition probability modeling with cumprod cumulative probabilities and conditional subset masking. Verified via test_ordinal_parity.py."
+    },
+    {
+      "name": "clm_qwk",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 1.2e-7,
+      "notes": "Champion head: scalar severity z = w^T x, strictly increasing softplus cutpoints b_k = b_{k-1} + softplus(delta_k) + 1e-4, clog-log link, interval differencing, and hybrid loss."
+    },
+    {
+      "name": "continuous_qwk_loss",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Continuous quadratic-weighted kappa loss with quadratic penalty matrix W_ij = (i-j)^2 / 16. Verified via test_weight_transfer_parity.py."
+    },
+    {
+      "name": "training_loop",
+      "status": "PASS-STRUCTURAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "Full epoch train/eval loops with gradient accumulation, AMP autocast, GradScaler, and metric tracking."
+    },
+    {
+      "name": "optimizer_construction",
+      "status": "PARTIAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "AdamW is used in both, but drdg defaults to separate_decay=True (exempting 1D biases/norms from decay) and weight_decay=1e-2, whereas golden applied uniform decay=1e-4."
+    },
+    {
+      "name": "learning_rate_scheduling",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "CosineAnnealingLR with T_max=epochs and eta_min=1e-6 stepping at epoch boundaries."
+    },
+    {
+      "name": "amp_behavior",
+      "status": "PASS-STRUCTURAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "torch.cuda.amp.autocast and GradScaler with torch.cuda.amp.GradScaler(enabled=use_amp)."
+    },
+    {
+      "name": "loss_weighting_and_warmup",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Linear epoch-based warmup of lambda_qwk from 0.0 to target (0.7) over warmup_epochs (5 epochs)."
+    },
+    {
+      "name": "early_stopping",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Monitors in-domain validation QWK with mode='max', min_delta=0.0, patience=7, saving best model state."
+    },
+    {
+      "name": "checkpoint_selection_resume",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Stores state_dict, optimizer_state_dict, epoch, best_val_qwk, and configuration."
+    },
+    {
+      "name": "v0_v1_v2_v3_model_variants",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "V0: Global CNN only. V1: Local MIL only. V2: Dual-branch vanilla fusion. V3: Dual-branch + CBAM + Gated MIL (Champion)."
+    },
+    {
+      "name": "six_fold_lodo_experiment",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Executes 6 folds with zero target cohort data leakage into source training or source validation."
+    },
+    {
+      "name": "five_head_ablation_experiment",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Supports Softmax_CE, Softmax_QWK, CORAL, CORN, and CLM_QWK heads under identical backbone and preprocessing."
+    },
+    {
+      "name": "evaluation_metrics",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Computes QWK (sklearn cohen_kappa_score with weights='quadratic'), Accuracy, per-grade Sensitivity/Specificity, and Within-1 Accuracy."
+    },
+    {
+      "name": "rdr_threshold_calibration",
+      "status": "PASS-EXACT",
+      "static_parity": true,
+      "numeric_parity": true,
+      "end_to_end_parity": true,
+      "max_abs_error": 0.0,
+      "notes": "Calibrates screening threshold tau* strictly on source validation ROC (targeting >=95% specificity) and freezes tau* for target evaluation. Verified via test_rdr_parity.py."
+    },
+    {
+      "name": "result_serialization",
+      "status": "PASS-STRUCTURAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "Exports fold metrics and evaluation summaries to JSON and CSV. Schema naming is standardized."
+    },
+    {
+      "name": "grad_cam",
+      "status": "PASS-STRUCTURAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "Target layer gradient-weighted activation mapping implemented with forward/backward hooks."
+    },
+    {
+      "name": "mil_saliency",
+      "status": "PASS-STRUCTURAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "Splats MIL attention weights to patch coordinates with overlapping area normalization."
+    },
+    {
+      "name": "idrid_xai_evaluation",
+      "status": "PASS-STRUCTURAL",
+      "static_parity": true,
+      "numeric_parity": false,
+      "end_to_end_parity": false,
+      "max_abs_error": 0.0,
+      "notes": "Pointing Game and Area-Matched Saliency Recall against IDRiD pixel lesion masks."
+    }
+  ]
+}

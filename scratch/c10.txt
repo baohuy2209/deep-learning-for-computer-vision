@@ -1,0 +1,394 @@
+=== CELL 10 ===
+======================================================================
+# ==============================================================================
+# 2.4 ROBUST RETINAL FOV & SLIDING-WINDOW MIL PATCH EXTRACTION
+# ==============================================================================
+
+def compute_fov_mask(img_np: np.ndarray, erode_px: int = 15) -> np.ndarray:
+    """
+    Computes the true retinal Field-of-View (FOV) binary mask for a SINGLE fundus image.
+    IMPORTANT: Must be computed on the RAW RGB fundus image BEFORE Ben Graham preprocessing.
+    (Ben Graham sets background to 128 gray, which collapses Otsu thresholding).
+
+    4-Step Pipeline:
+    1. Otsu's Adaptive Thresholding: Dynamically calculates the optimal bimodal threshold on raw image.
+    2. Morphological Close + Open (25x25 ellipse): Seals internal vessel holes and removes noise.
+    3. Largest Connected Component: Strictly retains the main retinal disk (removes artifacts/watermarks).
+    4. Inward Morphological Erosion (erode_px=15): Strips away peripheral edge vignetting/halos.
+    """
+    if img_np.ndim == 3:
+        # Green channel offers highest absorption contrast for retinal boundaries
+        gray = img_np[:, :, 1] if img_np.shape[2] == 3 else img_np[:, :, 0]
+    else:
+        gray = img_np
+
+    # 1. Otsu's Adaptive Thresholding
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    _, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # 2. Morphological Close & Open
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25, 25))
+    closed = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+    cleaned = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
+
+    # 3. Largest Connected Component
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(cleaned, connectivity=8)
+    if num_labels > 1:
+        largest_label = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
+        fov_mask = (labels == largest_label).astype(np.uint8) * 255
+    else:
+        fov_mask = cleaned
+
+    # 4. Inward Erosion
+    if erode_px > 0:
+        kernel_erode = cv2.getStructuringElement(
+            cv2.MORPH_ELLIPSE, (erode_px * 2 + 1, erode_px * 2 + 1)
+        )
+        fov_mask = cv2.erode(fov_mask, kernel_erode)
+
+    return (fov_mask > 0).astype(np.uint8)
+
+
+def compute_valid_anchors(
+    img_shape: Tuple[int, int],
+    fov_mask: np.ndarray,
+    patch_size: int = 128,
+    stride: int = 96,
+    fov_thresh: float = 0.5
+) -> np.ndarray:
+    """
+    Calculates 2D top-left coordinate anchors [y0, x0] passing the FOV threshold.
+    Returns (N, 2) numpy array of integer coordinates.
+    """
+    h, w = img_shape[:2]
+    p = patch_size
+
+    if np.any(fov_mask):
+        coords = np.argwhere(fov_mask)
+        y_min, x_min = coords.min(axis=0)
+        y_max, x_max = coords.max(axis=0)
+    else:
+        y_min, x_min, y_max, x_max = 0, 0, h, w
+
+    content_h = max(1, y_max - y_min)
+    content_w = max(1, x_max - x_min)
+
+    def get_coords(curr_stride: int):
+        s = max(1, curr_stride)
+        y_starts = list(range(y_min, y_min + content_h - p + 1, s)) if content_h > p else [y_min]
+        x_starts = list(range(x_min, x_min + content_w - p + 1, s)) if content_w > p else [x_min]
+
+        if content_h > p and (y_min + content_h - p) not in y_starts:
+            y_starts.append(y_min + content_h - p)
+        if content_w > p and (x_min + content_w - p) not in x_starts:
+            x_starts.append(x_min + content_w - p)
+
+        valid_list = []
+        for y0 in y_starts:
+            for x0 in x_starts:
+                y1, x1 = min(y0 + p, h), min(x0 + p, w)
+                mask_patch = fov_mask[y0:y1, x0:x1]
+                fov_ratio = mask_patch.mean() if mask_patch.size > 0 else 0.0
+                if fov_ratio >= fov_thresh:
+                    valid_list.append([y0, x0])
+        return valid_list
+
+    anchors = get_coords(stride)
+    if len(anchors) < 32 and stride > 48 and min(content_h, content_w) > p:
+        dense_anchors = get_coords(48)
+        if len(dense_anchors) > len(anchors):
+            anchors = dense_anchors
+
+    if len(anchors) == 0:
+        cy = max(0, y_min + content_h // 2 - p // 2)
+        cx = max(0, x_min + content_w // 2 - p // 2)
+        anchors = [[cy, cx]]
+
+    return np.array(anchors, dtype=np.int32)
+
+
+# ==============================================================================
+# SLIDING-WINDOW MIL PATCH EXTRACTION (Overlapping s=96 + Raw FOV Filter + uint8 IPC)
+# ==============================================================================
+def extract_mil_patches_sliding(
+    img_np: np.ndarray,
+    fov_mask: Optional[np.ndarray] = None,
+    patch_size: int = 128,
+    stride: int = 96,
+    fov_thresh: float = 0.5,
+    mode: str = "train",
+    num_sample: Union[int, Tuple[int, int]] = 48,
+    max_patches_eval: int = 256,
+    native_path: Optional[str] = None,
+    valid_anchors: Optional[np.ndarray] = None,
+    return_anchors: bool = False
+) -> Union[torch.Tensor, Tuple[torch.Tensor, np.ndarray]]:
+    h, w, _ = img_np.shape
+    p = patch_size
+
+    if mode == "train":
+        if isinstance(num_sample, (tuple, list)):
+            m_target = int(np.random.randint(num_sample[0], num_sample[1] + 1))
+        else:
+            m_target = int(num_sample)
+    else:
+        m_target = max_patches_eval
+
+    # Fast-path (cache) — GIỮ NGUYÊN, không đổi
+    if valid_anchors is not None and len(valid_anchors) > 0:
+        n_anchors = len(valid_anchors)
+        if mode == "train":
+            if n_anchors < m_target:
+                idx = np.random.choice(n_anchors, size=m_target, replace=True)
+            else:
+                idx = np.random.choice(n_anchors, size=m_target, replace=False)
+            selected_coords = valid_anchors[idx]
+        else:
+            max_eval = min(n_anchors, max_patches_eval)
+            idx = np.linspace(0, n_anchors - 1, max_eval).astype(int)
+            selected_coords = valid_anchors[idx]
+
+        patches = []
+        for y0, x0 in selected_coords:
+            y1, x1 = min(y0 + p, h), min(x0 + p, w)
+            patch = img_np[y0:y1, x0:x1]
+            if patch.shape[0] < p or patch.shape[1] < p:
+                pad_h = max(0, p - patch.shape[0])
+                pad_w = max(0, p - patch.shape[1])
+                patch = np.pad(patch, ((0, pad_h), (0, pad_w), (0, 0)), mode="reflect")
+            patches.append(patch)
+
+        patches_np = np.stack(patches, axis=0)
+        tensor_patches = torch.from_numpy(patches_np).permute(0, 3, 1, 2).contiguous()
+        if return_anchors:
+            return tensor_patches, np.asarray(selected_coords, dtype=np.int32)
+        return tensor_patches
+
+    # Nhánh tính on-the-fly
+    if fov_mask is None:
+        fov_mask = compute_fov_mask(img_np, erode_px=15)
+
+    if np.any(fov_mask):
+        coords = np.argwhere(fov_mask)
+        y_min, x_min = coords.min(axis=0)
+        y_max, x_max = coords.max(axis=0)
+    else:
+        y_min, x_min, y_max, x_max = 0, 0, h, w
+
+    content_h = max(1, y_max - y_min)
+    content_w = max(1, x_max - x_min)
+
+    # >>> SỬA: get_candidates giờ trả thêm danh sách anchor tương ứng
+    def get_candidates(current_stride):
+        s = max(1, current_stride)
+        y_starts = list(range(y_min, y_min + content_h - p + 1, s)) if content_h > p else [y_min]
+        x_starts = list(range(x_min, x_min + content_w - p + 1, s)) if content_w > p else [x_min]
+
+        if content_h > p and (y_min + content_h - p) not in y_starts:
+            y_starts.append(y_min + content_h - p)
+        if content_w > p and (x_min + content_w - p) not in x_starts:
+            x_starts.append(x_min + content_w - p)
+
+        cands, cand_anchors = [], []
+        for y0 in y_starts:
+            for x0 in x_starts:
+                y1, x1 = y0 + p, x0 + p
+                y1c, x1c = min(y1, h), min(x1, w)
+                patch = img_np[y0:y1c, x0:x1c]
+                mask_patch = fov_mask[y0:y1c, x0:x1c]
+                fov_ratio = mask_patch.mean() if mask_patch.size > 0 else 0.0
+                if fov_ratio < fov_thresh:
+                    continue
+
+                if patch.shape[0] < p or patch.shape[1] < p:
+                    pad_h = max(0, p - patch.shape[0])
+                    pad_w = max(0, p - patch.shape[1])
+                    patch = np.pad(patch, ((0, pad_h), (0, pad_w), (0, 0)), mode="reflect")
+                cands.append(patch)
+                cand_anchors.append([y0, x0])   # <-- track tọa độ
+        return cands, cand_anchors
+
+    candidates, cand_anchors = get_candidates(stride)
+
+    if mode == "train" and len(candidates) < m_target and stride > 48 and min(content_h, content_w) > p:
+        dense_candidates, dense_anchors = get_candidates(48)
+        if len(dense_candidates) > len(candidates):
+            candidates, cand_anchors = dense_candidates, dense_anchors
+
+    if len(candidates) == 0:
+        cy = max(0, y_min + content_h // 2 - p // 2)
+        cx = max(0, x_min + content_w // 2 - p // 2)
+        patch = img_np[cy:cy + p, cx:cx + p]
+        if patch.shape[0] < p or patch.shape[1] < p:
+            patch = np.pad(patch, ((0, max(0, p - patch.shape[0])), (0, max(0, p - patch.shape[1])), (0, 0)), mode="reflect")
+        candidates = [patch]
+        cand_anchors = [[cy, cx]]
+
+    if mode == "train":
+        if len(candidates) < m_target:
+            idx = np.random.choice(len(candidates), size=m_target, replace=True)
+        else:
+            idx = np.random.choice(len(candidates), size=m_target, replace=False)
+        selected = [candidates[i] for i in idx]
+        selected_anchors = [cand_anchors[i] for i in idx]
+    else:
+        if len(candidates) > max_patches_eval:
+            idx = np.linspace(0, len(candidates) - 1, max_patches_eval).astype(int)
+            selected = [candidates[i] for i in idx]
+            selected_anchors = [cand_anchors[i] for i in idx]
+        else:
+            selected = candidates
+            selected_anchors = cand_anchors
+
+    patches_np = np.stack(selected, axis=0)
+    patches_u8 = torch.from_numpy(patches_np).permute(0, 3, 1, 2).contiguous()
+
+    # >>> SỬA: check return_anchors ở cuối, giống hệt nhánh fast-path
+    if return_anchors:
+        return patches_u8, np.asarray(selected_anchors, dtype=np.int32)
+    return patches_u8
+
+
+# ==============================================================================
+# OFFLINE PRECOMPUTATION & NPZ CACHING ENGINE
+# ==============================================================================
+def precompute_dataset_cache(
+    df: pd.DataFrame,
+    img_root: Optional[str] = None,
+    cache_dir: str = "./cache",
+    patch_size: int = 128,
+    stride: int = 96,
+    fov_thresh: float = 0.5,
+    ablation_mode: str = "ben_graham_green"
+) -> Dict[str, int]:
+    """
+    Offline precomputes and saves compressed NPZ cache files containing:
+      - 'img': Preprocessed image array (processed_u8, uint8)
+      - 'anchors': Valid patch anchor top-left coordinates (N, 2)
+    Eliminates redundant CPU calculations across 100+ training epochs.
+    """
+    os.makedirs(cache_dir, exist_ok=True)
+    records = df.to_dict("records")
+
+    def process_single(row):
+        dataset_key = row.get("dataset_key", "default")
+        native_path_str = str(row.get("native_path", row.get("raw_full_path", "")))
+        img_id = PureWindowsPath(native_path_str).stem if native_path_str else str(row.get("image_id", "sample"))
+
+        target_dir = os.path.join(cache_dir, dataset_key)
+        os.makedirs(target_dir, exist_ok=True)
+        out_path = os.path.join(target_dir, f"{img_id}.npz")
+
+        if os.path.exists(out_path):
+            return True
+
+        if img_root and not os.path.isabs(native_path_str) and not os.path.exists(native_path_str):
+            img_path = os.path.join(img_root, dataset_key, PureWindowsPath(native_path_str).name)
+        else:
+            img_path = native_path_str
+
+        bgr = cv2.imread(img_path)
+        if bgr is None:
+            return False
+
+        img_rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        fov_mask = compute_fov_mask(img_rgb, erode_px=15)
+        processed_u8 = apply_green_channel_ablation(img_rgb, ablation_mode=ablation_mode)
+        valid_anchors = compute_valid_anchors(
+            img_rgb.shape[:2], fov_mask, patch_size=patch_size, stride=stride, fov_thresh=fov_thresh
+        )
+
+        np.savez_compressed(out_path, img=processed_u8, anchors=valid_anchors)
+        return True
+
+    success_count = 0
+    fail_count = 0
+
+    print(f"[INFO] Precomputing NPZ cache for {len(records)} samples -> '{cache_dir}'...")
+    for r in tqdm(records, desc="Precomputing NPZ Cache"):
+        res = process_single(r)
+        if res:
+            success_count += 1
+        else:
+            fail_count += 1
+
+    print(f"[INFO] Cache generation completed: {success_count} succeeded, {fail_count} failed.")
+    return {"success": success_count, "failed": fail_count}
+
+
+# ==============================================================================
+# CUSTOM BATCH COLLATE_FN (uint8 IPC Transmission & Synchronized Masks)
+# ==============================================================================
+def trainer_compatible_collate_fn(
+    batch,
+    mode: str = "train",
+    num_sample: Union[int, Tuple[int, int]] = (32, 64)
+):
+    """
+    Collate function transmitting raw uint8 tensors across shared memory IPC:
+    - Train mode: Returns [Batch, M, 3, 128, 128] uint8 tensor.
+    - Eval mode: Zero-pads variable patch count up to batch maximum N_max, returns boolean patch_mask.
+    """
+    if mode == "train":
+        if isinstance(num_sample, (tuple, list)):
+            batch_m = int(np.random.randint(num_sample[0], num_sample[1] + 1))
+        else:
+            batch_m = int(num_sample)
+    else:
+        batch_m = num_sample
+
+    global_imgs = torch.stack([item["global_image"] for item in batch], dim=0)
+    local_patches_list = [
+        extract_mil_patches_sliding(
+            item["local_native_image"],
+            fov_mask=item.get("fov_mask"),
+            patch_size=128,
+            stride=96,
+            fov_thresh=0.5,
+            mode=mode,
+            num_sample=batch_m,
+            native_path=item.get("native_path"),
+            valid_anchors=item.get("valid_anchors")
+        )
+        for item in batch
+    ]
+    labels = torch.stack([item["label"] for item in batch], dim=0)
+
+    if mode == "train":
+        local_patches = torch.stack(local_patches_list, dim=0)  # [Batch, M, 3, 128, 128] uint8
+        return {
+            "global_img": global_imgs,
+            "local_patches": local_patches,
+            "label": labels,
+        }
+
+    # --- Eval Mode: Zero-pad variable patch counts to batch maximum N_max ---
+    n_max = max(p.shape[0] for p in local_patches_list)
+    padded, masks = [], []
+    for p in local_patches_list:
+        n = p.shape[0]
+        if n < n_max:
+            pad = torch.zeros((n_max - n, *p.shape[1:]), dtype=p.dtype)
+            p = torch.cat([p, pad], dim=0)
+        mask = torch.zeros(n_max, dtype=torch.bool)
+        mask[:n] = True
+        padded.append(p)
+        masks.append(mask)
+
+    local_patches = torch.stack(padded, dim=0)     # [Batch, N_max, 3, 128, 128] uint8
+    patch_mask = torch.stack(masks, dim=0)         # [Batch, N_max], True = valid patch
+
+    return {
+        "global_img": global_imgs,
+        "local_patches": local_patches,
+        "patch_mask": patch_mask,
+        "label": labels,
+    }
+
+
+# Collate function aliases for pipeline convenience
+from functools import partial
+train_collate_fn = partial(trainer_compatible_collate_fn, mode="train", num_sample=(32, 64))
+eval_collate_fn = partial(trainer_compatible_collate_fn, mode="eval")
+
+======================================================================

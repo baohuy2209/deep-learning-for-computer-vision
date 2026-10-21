@@ -1,0 +1,121 @@
+{
+  "variant": "v3",
+  "seed": 42,
+  "n_folds": 1,
+  "ood_test_mean_qwk": 0.0,
+  "ood_test_std_qwk": 0.0,
+  "folds": [
+    {
+      "variant": "v3",
+      "held_out_dataset": "aptos",
+      "fold": 0,
+      "seed": 42,
+      "threshold_rdr_spec95": 0.23241618275642395,
+      "in_domain_val": {
+        "qwk": 0.0,
+        "accuracy": 0.25,
+        "within_1_accuracy": 0.75,
+        "per_grade_sensitivity": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0,
+          "3": 0.0,
+          "4": 0.0
+        },
+        "rdr_auc": 0.875,
+        "rdr_sensitivity_at_95_specificity": 0.5,
+        "total_samples": 8,
+        "confusion_matrix": [
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "ood_test": {
+        "qwk": 0.0,
+        "accuracy": 0.25,
+        "within_1_accuracy": 0.75,
+        "per_grade_sensitivity": {
+          "0": 0.0,
+          "1": 1.0,
+          "2": 0.0,
+          "3": 0.0,
+          "4": 0.0
+        },
+        "rdr_auc": 0.5,
+        "rdr_sensitivity_at_95_specificity": 0.0,
+        "total_samples": 8,
+        "confusion_matrix": [
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "delta_lodo": 0.0
+    }
+  ]
+}

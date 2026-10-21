@@ -1,0 +1,32 @@
+Cell 21 EarlyStopping: Tracks val_qwk (PASSED)
+Cell 23 QWK Warmup: Uses TARGET_QWK_WEIGHT & QWK_WARMUP_EPOCHS (PASSED)
+Cell 23 eval batch size lines:
+  skip_val_ds, batch_size=BATCH_SIZE, shuffle=False,
+  skip_test_ds, batch_size=BATCH_SIZE, shuffle=False,
+  eval_batch_size = max(1, BATCH_SIZE // 4)
+  train_ds, batch_size=BATCH_SIZE, shuffle=True, drop_last=True,
+  val_ds, batch_size=eval_batch_size, shuffle=False,
+  test_ds, batch_size=eval_batch_size, shuffle=False,
+Cell 28 Fig 7 ROC lines:
+  def plot_fig7_referable_dr_roc(
+  in_fpr: np.ndarray,
+  ood_fpr: np.ndarray,
+  ax.plot(in_fpr, in_tpr, color=C_NAVY, lw=2.5, label=f"In-Domain Internal Val (AUC = {in_auc:.3f})")
+  ax.plot(ood_fpr, ood_tpr, color=C_ORANGE, lw=2.5, linestyle="--", label=f"Out-of-Domain External LODO (AUC = {ood_auc:.3f})")
+  idx_in = np.argmin(np.abs(in_fpr - 0.05))
+  idx_ood = np.argmin(np.abs(ood_fpr - 0.05))
+Cell 27 Fig 4 Waterfall lines:
+  def extract_ablation_ood_qwk_summary(
+  for q_field in ["ood_test_qwk", "ood_qwk", "test_qwk", "QWK", "qwk"]:
+  "mean_ood_qwk": float(np.mean(fold_qwks)),
+  "std_ood_qwk": float(np.std(fold_qwks)),
+  def plot_fig4_waterfall_qwk_decomposition(
+  emp_summary = extract_ablation_ood_qwk_summary(lodo_results or {}, summary_json_path=summary_path)
+  q0 = v0_meta["mean_ood_qwk"]
+  q1 = v1_meta["mean_ood_qwk"]
+  q2 = v2_meta["mean_ood_qwk"]
+  q3 = v3_meta["mean_ood_qwk"]
+  print(f"    - V0 Baseline Global Only : {q0:.4f} (+/- {v0_meta['std_ood_qwk']:.4f})")
+  baseline_qwk = emp_summary[first_k]["mean_ood_qwk"]
+  cur_q = emp_summary[k]["mean_ood_qwk"]
+  champ_q = v3_meta["mean_ood_qwk"] if v3_meta else 0.770

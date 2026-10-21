@@ -3,7 +3,7 @@
 > **Research Goal:** Construct an integrated, multi-scale deep learning framework combining Multiple Instance Learning (MIL) and Ordinal Regression (Cumulative Link Models) to resolve imaging domain shift and downsampling pixel-loss in diabetic retinopathy grading.  
 > **Related Code Modules:** 
 > - *Python Modules:* [`data_loader.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/data_loader.py), [`preprocessing.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/preprocessing.py), [`models.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/models.py), [`losses_and_heads.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/losses_and_heads.py), [`trainer.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/trainer.py), [`visualization.py`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/full/visualization.py).
-> - *Experimental Notebooks:* [`main_model.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model.ipynb), [`main_model_head_ablation.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation.ipynb), [`main_model_lodo.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb), [`main_model_preprocessing_ablation.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_preprocessing_ablation.ipynb), [`merge-dataset.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb).
+> - *Experimental Notebooks:* [`main_model (6).ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model%20(6).ipynb), [`main_model_head_ablation (3).ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation%20(3).ipynb), [`main_model_lodo.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb), [`main_model.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model.ipynb), [`main_model_preprocessing_ablation.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_preprocessing_ablation.ipynb), [`merge-dataset.ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb).
 
 ---
 
@@ -217,14 +217,68 @@ Module [`models.py`](file:///d:/Github/deep-learning-for-computer-vision/noteboo
 * **Exact Interval Probabilities (Non-Zero Gradient Propagation):**
   $$P(Y = 0) = P(Y \le 0), \quad P(Y = k) = P(Y \le k) - P(Y \le k-1) \quad (k=1..3), \quad P(Y = 4) = 1 - P(Y \le 3)$$
   Because $\theta_k$ are strictly monotonic, interval differences are strictly positive mathematically. Computed directly without redundant $\text{ReLU}$ clipping, ensuring unhindered gradient propagation across the entire parameter space.
-* **Hybrid Objective with Continuous Step-Level Linear Warmup:**
+* **Hybrid Objective with Dynamic Linear Epoch-Level Warmup:**
   $$\mathcal{L}_{\text{CLM\_QWK}} = \mathcal{L}_{\text{NLL}}(\mathbf{p}, \mathbf{y}, \mathbf{w}_{\text{class}}) + \lambda(t) \cdot \mathcal{L}_{\text{Continuous\_QWK}}(\mathbf{p}, \mathbf{y})$$
-  where $\lambda(t) = \min\left(1.0, \frac{t}{T_{\text{warmup}}}\right) \cdot \lambda_{\text{target}}$ is dynamically scaled at every training batch.
+  where $\lambda(t) = \min\left(1.0, \frac{t}{T_{\text{warmup}}}\right) \cdot \lambda_{\text{target}}$ is dynamically scaled at each epoch, stabilizing soft confusion matrix variance across training mini-batches.
+
+### 5.3. Post-Hoc Screening Threshold Calibration (HD_4 Part 1 & Part 3)
+* **Decoupling Screening from Argmax:** In binary clinical triage (Referable DR: Grade $\ge 2$ vs. Non-Referable: Grade $0, 1$), taking the nominal multi-class $\text{argmax}$ implicitly operates at an arbitrary, sub-optimal threshold (frequently exhibiting high specificity $\approx 95\%$ but depressed sensitivity $\approx 64.8\%$).
+* **Validation-Only Calibration Protocol:**
+  1. The Receiver Operating Characteristic (ROC) curve is constructed strictly on **Validation set continuous probabilities** $P(Y \ge 2) = \sum_{k=2}^4 p_k$.
+  2. Operating decision thresholds $\tau_s$ are identified to satisfy fixed clinical specificity targets: $95\%$, $90\%$, $85\%$, and $80\%$.
+  3. Fixed thresholds $\tau_s$ are then frozen and evaluated on the **held-out Test set** without test-distribution leakage.
+* **Clinical Contextualization (UK NSC Standard):** Enables evaluating whether the system satisfies the United Kingdom National Screening Committee criteria ($\text{Sensitivity} \ge 80\%$ at $\text{Specificity} \ge 95\%$) and establishes the true discriminative power (Ref-AUC $= 0.9063$).
+* **Suite-Wide Integration:** This post-hoc threshold calibration protocol is strictly wired across both the proposed multi-scale dual-branch model (`main_model (6).ipynb`) and the 5-round output head ablation benchmark suite ([`main_model_head_ablation (3).ipynb`](file:///d:/Github/deep-learning-for-computer-vision/notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation%20(3).ipynb)), exporting structured calibration benchmarks (`screening_calibration_summary.csv`) comparing all 5 heads.
+
+### 5.4. Continuous QWK Loss Stabilization & Convergence Schedule (HD_4 Part 4)
+* **Root Cause of Optimization Stagnation:** Soft confusion matrices computed on small mini-batches ($B=48$) produce high gradient variance. When the quadratic penalty weight $\lambda$ ramps up too rapidly, QWK gradients dominate cross-entropy early in training, causing catastrophic validation drops (e.g., Val QWK collapsing from $0.6138$ to $0.4725$ at epoch 15).
+* **Stabilization Directives:**
+  1. **Extended Linear Warmup:** Warmup duration extended from $5$ to $15$ epochs ($T_{\text{warmup}} = 15$) at the epoch level to allow the cross-entropy / NLL objective to construct stable feature manifolds before QWK enforcement.
+  2. **Calibrated Penalty Weight:** Scaled target weight down from $\lambda = 1.2$ to $\lambda = 0.4$ (matching the optimal range $0.3 - 0.5$ recommended by Vargas et al. and advisor review).
+  3. **Decoupled Dual Monitoring:** Synchronized both `EarlyStopping` and `ModelCheckpoint` (`_best.pth`) to monitor `Validation QWK` (with extended patience $15$ epochs), replacing premature termination triggered by validation loss plateaus. Concurrently, learning rate reduction (`ReduceLROnPlateau`) is decoupled to monitor the smoother `Validation Loss` signal with an independent counter (`patience_reduce_lr = 4`, `reduce_lr_factor = 0.5`, `min_lr = 1e-6`), preventing plateau stalling.
 
 ---
 
-## 6. Stage 5: Explainable AI Verification (FundusGradCAM)
+## 6. Stage 5: Explainable AI (XAI) Verification & Local MIL Saliency Overhaul (HD_4 Part 2, 5, 6)
 
-* **Target Layer:** Layer 4 ($2048$ channels) of the ResNet-50 Global Context Branch.
-* **Hook Lifecycle Safety:** Forward/backward activation hooks are explicitly removed post-computation using registered handles to prevent GPU VRAM leaks during long evaluation runs.
-* **Clinical Saliency Verification:** Evaluated qualitatively on multi-quadrant hemorrhages and compared with ground-truth lesion masks on the IDRiD dataset via Mean IoU and Pointing Game accuracy.
+```
+                            [XAI Evaluation Pipeline Architecture]
+                                              │
+               IDRiDXAIEvalDataset with Dual-Crop FoV Alignment (HD_4 Part 2)
+               Crop BOTH raw fundus and expert lesion mask with the exact same
+               bounding box [y0:y1, x0:x1] from compute_fov_mask(img_np, erode_px=0)
+                                              │
+                    ┌─────────────────────────┴─────────────────────────┐
+                    ▼                                                   ▼
+        [Global Grad-CAM Stream]                           [Local Attention-MIL Stream]
+        - ResNet-50 Layer 4 (2048-ch)                      - EfficientNet-B0 Instance Features
+        - 16x16 Feature Grid (~268 px)                     - Gated Attention Weights alpha_k
+        - Forward/Backward Hook Removal                    - Splatted via [y0, x0] on Canvas (~128 px)
+                    │                                                   │
+                    └─────────────────────────┬─────────────────────────┘
+                                              ▼
+                           [Overhauled XAI Evaluation Metric Suite]
+                           1. Pointing Game Accuracy vs. Empirical Random Baseline (~1.5%)
+                           2. Saliency Recall @ Area-Matched (Top-q% Heatmap Quantile)
+                           3. Continuous Pixel-level AUROC (Threshold-Free Discrimination)
+                           4. Informational Mean IoU (Theoretical Ceiling ~0.050 Documented)
+```
+
+### 6.1. Dual-Crop FoV Alignment on External Benchmarks (`IDRiDXAIEvalDataset`)
+* **Elimination of Scale/Margin Shift:** Raw IDRiD images ($4288 \times 2848$) possess large black lateral borders, whereas models are trained on cropped retinal ROIs (`native_cropped`). Resizing uncropped images to $512 \times 512$ compresses the retinal disc by $\approx 33\%$, displacing Grad-CAM activations away from ground-truth lesion coordinates.
+* **Synchronized Bounding Box Crop:** `compute_fov_mask(img_np, erode_px=0)` identifies the retinal bounding box $[y_0:y_1, x_0:x_1]$ on the raw fundus image. The **exact same bounding box** is applied to both the fundus photograph and its pixel-level binary lesion mask prior to interpolation, guaranteeing $100\%$ spatial registration with training distributions.
+
+### 6.2. Architecture-Native Attention-MIL Saliency Generator (`generate_attention_mil_saliency_map`)
+* **Spatial Resolution Bottleneck in Grad-CAM:** ResNet-50 Layer 4 produces a $16 \times 16$ feature map on $512 \times 512$ inputs ($32\text{ px}$ stride, projecting to $\approx 268\text{ px}$ on high-resolution fundus photographs). A single feature pixel spans up to $\approx 35$ discrete microaneurysms, preventing precise focal lesion verification.
+* **Native High-Resolution Saliency Map:** The Local MIL Branch directly outputs instance attention weights $\alpha_k \in [0, 1]$ from `GatedAttentionPool`. By splatting $\alpha_k$ onto a $512 \times 512$ spatial canvas using patch anchor coordinates $[y_0, x_0]$ and normalizing by overlapping coverage counts, the engine produces fine-grained, architecture-native saliency maps with **$\approx 128\text{ px}$ effective resolution**.
+* **Comparative Empirical Benchmark:** Evaluates Global Grad-CAM vs. Local Attention-MIL side-by-side on the IDRiD mask cohort, providing direct empirical evidence for Hypothesis $H_1$ (local branch captures focal micro-lesions).
+
+### 6.3. Overhauled Quantitative Saliency Metric Suite
+* **Pointing Game with Empirical Random Baseline:** Measures whether the peak saliency point $\arg\max(\text{CAM})$ falls within the ground-truth lesion mask. Crucially reported alongside the empirical random chance baseline:
+  $$p_{\text{random}} = \frac{\sum \text{Mask}_{\text{GT}}}{H \cdot W} \approx 1.5\%$$
+  Demonstrates that a Pointing Game accuracy of $11.11\%$ represents a **$>7.4\times$ improvement over random chance**, rather than an absolute low performance.
+* **Saliency Recall @ Area-Matched:** Thresholds the continuous heatmap at the top-$q\%$ quantile, where $q = \text{Area}(\text{Mask}_{\text{GT}}) / (H \cdot W)$. Measures the fraction of true lesion pixels captured within an area equal to the ground-truth lesion footprint, eliminating the penalty of arbitrary fixed thresholds.
+* **Pixel-level AUROC:** Measures the Area Under the ROC Curve treating the continuous saliency map as a pixel-wise detector against binary ground-truth lesion masks, completely independent of threshold selection.
+* **Deprecation of Raw Mean IoU Failure Narrative:** Documents the mathematical ceiling of IoU on micro-lesions:
+  $$\text{IoU}_{\max} = \frac{\text{Area}(\text{Mask})}{\text{Area}(\text{CAM})} \approx \frac{1.5\%}{30\%} \approx 0.050$$
+  Clarifies that an observed IoU of $\approx 0.02 - 0.03$ represents $40\% - 60\%$ of the theoretical maximum, establishing valid academic framing for review.

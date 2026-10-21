@@ -1,0 +1,3 @@
+head,test_qwk,test_accuracy,within_1_accuracy,rdr_auc,sens_g0,sens_g1,sens_g2,sens_g3,sens_g4
+softmax_ce,0.0,0.25,0.5,0.625,1.0,0.0,0.0,0.0,0.0
+clm_qwk,0.0,0.25,0.5,0.5,1.0,0.0,0.0,0.0,0.0

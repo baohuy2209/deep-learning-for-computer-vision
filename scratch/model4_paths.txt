@@ -1,0 +1,110 @@
+*** Cell 7 (markdown) ***
+## 1.2 Dataset Path Definitions
+
+*** Cell 8 (code) ***
+# ==============================================================================
+# 1.2 ROOT DIRECTORIES & PATH SYSTEM CONFIGURATION
+# ==============================================================================
+DATA_ROOT   = '/content/dataset_local'
+RESULT_ROOT = '/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/model/'
+
+# Derived Experiment Folders (Preserving exact existing project structures)
+CHECKPOINT_DIR = os.path.join(RESULT_ROOT, "checkpoints_main")
+CACHE_DIR      = os.path.join(RESULT_ROOT, "cache_fundus_dual_branch")
+FIGURES_DIR    = os.path.join(RESULT_ROOT, "figures_publication")
+
+# Quantitative XAI Ground Truth Segmentation Paths (IDRiD Benchmark Sub-task)
+idrid_seg_root = "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/data/raw/idrid_segmentation"
+idrid_seg_image_dirs = [
+    f"{idrid_seg_root}/DR_Testing_Set/Fundus Images",
+    f"{idrid_seg_root}/DR_Training_Set/Fundus Images"
+]
+idrid_seg_mask_dirs = [
+    f"{idrid_seg_root}/DR_Testing_Set/Combined Masks",
+    f"{idrid_seg_root}/DR_Training_Set/Combined Masks"
+]
+
+# Ensure result and figure directories exist
+os.makedirs(CHECKPOINT_DIR, exist_ok=True)
+os.makedirs(CACHE_DIR, exist_ok=True)
+os.makedirs(FIGURES_DIR, exist_ok=True)
+
+
+*** Cell 9 (markdown) ***
+
+
+*** Cell 10 (code) ***
+# ==============================================================================
+# 1.3 GLOBAL EXPERIMENTAL CONFIGURATION & HYPERPARAMETERS (TWEAK HERE)
+# ==============================================================================
+# Set SMOKE_TEST to True for rapid sanity check (3 epochs), False for full official run
+SMOKE_TEST = False
+
+# --- Hardware & Reproducibility Settings ---
+SEED = 42
+num_workers = min(8, os.cpu_count() or 4)
+use_pin_memory = torch.cuda.is_available()
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cudnn.allow_tf32 = True
+torch.backends.cudnn.benchmark = True
+
+# --- Image Dimension & Batch Processing ---
+IMG_SIZE = 512
+NUM_CLASSES = 5
+
+# --- Model Architecture & Fusion Parameters ---
+HEAD_TYPE = "CLM_QWK"      # Options: 'Softmax_CE', 'Softmax_QWK', 'CORAL', 'CORN', 'CLM_QWK'
+FUSION_DIM = 512
+PRETRAINED = True
+USE_CBAM = True
+USE_NONLOCAL = True
+USE_QUADRANT_TOKENS = True
+
+# --- ADVISOR HD_4 INTEGRATION: LOSS STABILIZATION (Part 4) ---
+# Scaled down from 1.2 to 0.4 to prevent gradient instability on batch soft confusion matrices
+TARGET_QWK_WEIGHT = 0.4
+
+# --- Optimization, Schedulers, & Early Stopping ---
+LEARNING_RATE = 1e-4
+WEIGHT_DECAY = 1e-4
+MIN_LR = 1e-6
+
+# Extended patience to allow full convergence without premature termination
+PATIENCE_EARLY_STOPPING = 15
+PATIENCE_REDUCE_LR = 4
+REDUCE_LR_FACTOR = 0.5
+GRAD_CLIP = 1.0
+
+# --- Dataset Paths & Execution Mode Setup ---
+image_root_dir = f"{DATA_ROOT}/native_cropped"
+
+if SMOKE_TEST:
+    print("[SMOKE TEST MODE]: Running rapid sanity check on pipeline flow (3 epochs, mini sample dataset).")
+    csv_train_path = f"{DATA_ROOT}/raw/samples/hybrid/sample_50_metadata.csv"
+    csv_val_path   = "../../../../data/raw/samples/hybrid/val_sample_50_metadata.csv"
+    csv_test_path  = "../../../../data/raw/samples/hybrid/test_sample_50_metadata.csv"
+    EPOCHS = 3
+    BATCH_SIZE = 8
+    QWK_WARMUP_EPOCHS = 1
+    T_MAX = 3
+else:
+    print("[FULL RUN MODE]: Executing official full-dataset training (CosineAnnealing T_max=30).")
+    csv_train_path = f"{DATA_ROOT}/train_balanced_metadata.csv"
+    csv_val_path   = f"{DATA_ROOT}/val_metadata.csv"
+    csv_test_path  = f"{DATA_ROOT}/test_metadata.csv"
+    EPOCHS = 100
+    BATCH_SIZE = 48  # Adjust to 16, 24, 32, or 48 based on available GPU VRAM
+    # Extended linear warmup from 5 to 15 epochs to stabilize early batch QWK variance (HD_4 Part 4)
+    QWK_WARMUP_EPOCHS = 15
+    T_MAX = 30
+
+print(f"  - Train Path:     {csv_train_path}")
+print(f"  - Val Path:       {csv_val_path}")
+print(f"  - Test Path:      {csv_test_path}")
+print(f"  - Active Head:    {HEAD_TYPE} (QWK Warmup Weight: {TARGET_QWK_WEIGHT}, Warmup Epochs: {QWK_WARMUP_EPOCHS})")
+print(f"  - Epochs:         {EPOCHS} | Batch Size: {BATCH_SIZE} | EarlyStopping Patience: {PATIENCE_EARLY_STOPPING}")
+print(f"  - Checkpoint Dir: {CHECKPOINT_DIR}")
+print(f"  - Cache Dir:      {CACHE_DIR}")
+plt.rcParams["savefig.dpi"] = 300
+
+

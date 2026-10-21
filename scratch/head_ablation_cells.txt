@@ -1,0 +1,28 @@
+Total cells: 27
+Cell  0 [MD]  : # Output Head Architecture & Ordinal Regression Ablation Benchmark (Hypothesis H3)
+Cell  1 [CODE]: from google.colab import drive
+Cell  2 [MD]  : ## 1. Environment Setup & Global Configuration
+Cell  3 [CODE]: import os
+Cell  4 [CODE]: # # ==============================================================================
+Cell  5 [CODE]: # # 1. Giải nén dataset gốc như bình thường
+Cell  6 [CODE]: # ==============================================================================
+Cell  7 [CODE]: # ==============================================================================
+Cell  8 [CODE]: NUM_WORKERS
+Cell  9 [CODE]: # ==============================================================================
+Cell 10 [MD]  : ## 2. Multi-Center Dataset Ingestion, Preprocessing, & Class Weights
+Cell 11 [CODE]: # ==============================================================================
+Cell 12 [CODE]: # ==============================================================================
+Cell 13 [MD]  : ## 3. ResNet-50 Feature Extractor & 5 Output Heads
+Cell 14 [CODE]: # ==============================================================================
+Cell 15 [CODE]: # ==============================================================================
+Cell 16 [MD]  : ## 4. Clinical Metrics & PyTorch DRHeadTrainer
+Cell 17 [CODE]: # ==============================================================================
+Cell 18 [CODE]: # ==============================================================================
+Cell 19 [MD]  : ## 5. Systematic 5-Round End-to-End Head Ablation Benchmark
+Cell 20 [CODE]: # ==============================================================================
+Cell 21 [CODE]: # # Nén toàn bộ cache .npy đã tạo lưu thẳng vào Google Drive (~3-5 phút)
+Cell 22 [MD]  : ## 6. Publication-Quality Head Ablation Visualization Suite
+Cell 23 [CODE]: # ==============================================================================
+Cell 24 [CODE]: # ==============================================================================
+Cell 25 [CODE]: from google.colab import runtime
+Cell 26 [CODE]: 

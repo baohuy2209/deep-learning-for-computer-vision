@@ -1,0 +1,2 @@
+variant,fold,held_out,val_qwk,val_acc,val_rdr_auc,src_test_qwk,src_test_acc,src_test_rdr_sens95,tgt_test_qwk,tgt_test_acc,tgt_test_rdr_auc,tgt_test_rdr_sens95,threshold_spec95
+v0,0,aptos,0.0,0.125,1.0,0.0,0.125,0.5,0.0,0.125,0.375,0.25,0.6655658483505249

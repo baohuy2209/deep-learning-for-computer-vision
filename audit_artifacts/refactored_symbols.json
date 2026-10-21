@@ -1,0 +1,2325 @@
+{
+  "src/drdg/__init__.py": [
+    {
+      "name": "__version__",
+      "type": "constant_or_var",
+      "source": "src/drdg/__init__.py",
+      "lineno": 6,
+      "value_preview": "'0.1.0'"
+    },
+    {
+      "name": "__author__",
+      "type": "constant_or_var",
+      "source": "src/drdg/__init__.py",
+      "lineno": 7,
+      "value_preview": "'ICCPR Research Team'"
+    },
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/__init__.py",
+      "lineno": 28,
+      "value_preview": "['__version__', 'DataConfig', 'LocalMILConfig', 'ModelConfig', 'TrainingConfig', 'LODOConfig', 'X..."
+    }
+  ],
+  "src/drdg/config.py": [
+    {
+      "name": "DataConfig",
+      "type": "class",
+      "source": "src/drdg/config.py",
+      "lineno": 23,
+      "bases": [],
+      "methods": [
+        "to_dict"
+      ]
+    },
+    {
+      "name": "LocalMILConfig",
+      "type": "class",
+      "source": "src/drdg/config.py",
+      "lineno": 62,
+      "bases": [],
+      "methods": [
+        "to_dict"
+      ]
+    },
+    {
+      "name": "ModelConfig",
+      "type": "class",
+      "source": "src/drdg/config.py",
+      "lineno": 78,
+      "bases": [],
+      "methods": [
+        "to_dict"
+      ]
+    },
+    {
+      "name": "TrainingConfig",
+      "type": "class",
+      "source": "src/drdg/config.py",
+      "lineno": 107,
+      "bases": [],
+      "methods": [
+        "to_dict"
+      ]
+    },
+    {
+      "name": "LODOConfig",
+      "type": "class",
+      "source": "src/drdg/config.py",
+      "lineno": 146,
+      "bases": [],
+      "methods": [
+        "to_dict"
+      ]
+    },
+    {
+      "name": "XAIConfig",
+      "type": "class",
+      "source": "src/drdg/config.py",
+      "lineno": 172,
+      "bases": [],
+      "methods": [
+        "to_dict"
+      ]
+    }
+  ],
+  "src/drdg/data/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/__init__.py",
+      "lineno": 43,
+      "value_preview": "['COHORT_REGISTRY', 'CohortSpec', 'get_cohort_spec', 'MasterFundusRecord', 'validate_records', 'r..."
+    }
+  ],
+  "src/drdg/data/balancing.py": [
+    {
+      "name": "balance_training_records",
+      "type": "function",
+      "source": "src/drdg/data/balancing.py",
+      "lineno": 12,
+      "args": [
+        "data",
+        "target_per_class",
+        "num_classes",
+        "seed"
+      ]
+    },
+    {
+      "name": "compute_class_weights",
+      "type": "function",
+      "source": "src/drdg/data/balancing.py",
+      "lineno": 62,
+      "args": [
+        "data",
+        "num_classes"
+      ]
+    }
+  ],
+  "src/drdg/data/collate.py": [
+    {
+      "name": "trainer_compatible_collate_fn",
+      "type": "function",
+      "source": "src/drdg/data/collate.py",
+      "lineno": 8,
+      "args": [
+        "batch"
+      ]
+    }
+  ],
+  "src/drdg/data/datasets.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/datasets.py",
+      "lineno": 20,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "FundusDualBranchDataset",
+      "type": "class",
+      "source": "src/drdg/data/datasets.py",
+      "lineno": 23,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    }
+  ],
+  "src/drdg/data/downloaders/__init__.py": [
+    {
+      "name": "DOWNLOADER_MAP",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/downloaders/__init__.py",
+      "lineno": 21,
+      "value_preview": "{'ddr': download_ddr, 'deepdrid': download_deepdrid, 'idrid': download_idrid, 'idrid_segmentation..."
+    },
+    {
+      "name": "download_dataset",
+      "type": "function",
+      "source": "src/drdg/data/downloaders/__init__.py",
+      "lineno": 30,
+      "args": [
+        "dataset_key",
+        "target_dir"
+      ]
+    },
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/downloaders/__init__.py",
+      "lineno": 43,
+      "value_preview": "['download_ddr', 'download_deepdrid', 'download_idrid', 'download_idrid_segmentation', 'download_..."
+    }
+  ],
+  "src/drdg/data/downloaders/base.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/downloaders/base.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "download_kaggle_dataset",
+      "type": "function",
+      "source": "src/drdg/data/downloaders/base.py",
+      "lineno": 16,
+      "args": [
+        "dataset_handle",
+        "target_dir",
+        "dataset_name"
+      ]
+    }
+  ],
+  "src/drdg/data/downloaders/ddr.py": [
+    {
+      "name": "download_ddr",
+      "type": "function",
+      "source": "src/drdg/data/downloaders/ddr.py",
+      "lineno": 9,
+      "args": [
+        "target_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/downloaders/deepdrid.py": [
+    {
+      "name": "download_deepdrid",
+      "type": "function",
+      "source": "src/drdg/data/downloaders/deepdrid.py",
+      "lineno": 9,
+      "args": [
+        "target_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/downloaders/idrid.py": [
+    {
+      "name": "download_idrid",
+      "type": "function",
+      "source": "src/drdg/data/downloaders/idrid.py",
+      "lineno": 9,
+      "args": [
+        "target_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/downloaders/idrid_segmentation.py": [
+    {
+      "name": "download_idrid_segmentation",
+      "type": "function",
+      "source": "src/drdg/data/downloaders/idrid_segmentation.py",
+      "lineno": 9,
+      "args": [
+        "target_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/downloaders/messidor2.py": [
+    {
+      "name": "download_messidor2",
+      "type": "function",
+      "source": "src/drdg/data/downloaders/messidor2.py",
+      "lineno": 9,
+      "args": [
+        "target_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/fov.py": [
+    {
+      "name": "compute_fov_mask",
+      "type": "function",
+      "source": "src/drdg/data/fov.py",
+      "lineno": 8,
+      "args": [
+        "img_np",
+        "erode_px",
+        "threshold",
+        "kernel_size"
+      ]
+    },
+    {
+      "name": "compute_morphological_fov_mask",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/fov.py",
+      "lineno": 73,
+      "value_preview": "compute_fov_mask"
+    },
+    {
+      "name": "apply_fov_mask",
+      "type": "function",
+      "source": "src/drdg/data/fov.py",
+      "lineno": 76,
+      "args": [
+        "img",
+        "mask",
+        "fill_value"
+      ]
+    },
+    {
+      "name": "compute_soft_fov_mask",
+      "type": "function",
+      "source": "src/drdg/data/fov.py",
+      "lineno": 87,
+      "args": [
+        "img_np",
+        "blur_sigma"
+      ]
+    },
+    {
+      "name": "extract_circular_fov_region",
+      "type": "function",
+      "source": "src/drdg/data/fov.py",
+      "lineno": 101,
+      "args": [
+        "img_np",
+        "mask"
+      ]
+    },
+    {
+      "name": "filter_features_by_fov",
+      "type": "function",
+      "source": "src/drdg/data/fov.py",
+      "lineno": 116,
+      "args": [
+        "features",
+        "fov_mask",
+        "threshold"
+      ]
+    }
+  ],
+  "src/drdg/data/lodo.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/lodo.py",
+      "lineno": 27,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "LODOFold",
+      "type": "class",
+      "source": "src/drdg/data/lodo.py",
+      "lineno": 31,
+      "bases": [],
+      "methods": [
+        "verify_zero_leakage",
+        "save_csvs"
+      ]
+    },
+    {
+      "name": "generate_lodo_folds",
+      "type": "function",
+      "source": "src/drdg/data/lodo.py",
+      "lineno": 109,
+      "args": [
+        "data",
+        "target_cohorts",
+        "fold_slugs",
+        "seed",
+        "train_size",
+        "patient_col",
+        "cohort_col"
+      ]
+    },
+    {
+      "name": "generate_and_save_lodo_splits",
+      "type": "function",
+      "source": "src/drdg/data/lodo.py",
+      "lineno": 224,
+      "args": [
+        "data",
+        "output_dir",
+        "seed",
+        "patient_col",
+        "cohort_col"
+      ]
+    }
+  ],
+  "src/drdg/data/metadata.py": [
+    {
+      "name": "MasterFundusRecord",
+      "type": "class",
+      "source": "src/drdg/data/metadata.py",
+      "lineno": 13,
+      "bases": [],
+      "methods": [
+        "__post_init__",
+        "to_dict",
+        "from_dict"
+      ]
+    },
+    {
+      "name": "records_to_dataframe",
+      "type": "function",
+      "source": "src/drdg/data/metadata.py",
+      "lineno": 67,
+      "args": [
+        "records"
+      ]
+    },
+    {
+      "name": "dataframe_to_records",
+      "type": "function",
+      "source": "src/drdg/data/metadata.py",
+      "lineno": 72,
+      "args": [
+        "df"
+      ]
+    },
+    {
+      "name": "validate_records",
+      "type": "function",
+      "source": "src/drdg/data/metadata.py",
+      "lineno": 80,
+      "args": [
+        "records"
+      ]
+    }
+  ],
+  "src/drdg/data/patches.py": [
+    {
+      "name": "compute_valid_anchors",
+      "type": "function",
+      "source": "src/drdg/data/patches.py",
+      "lineno": 12,
+      "args": [
+        "img_shape",
+        "fov_mask",
+        "patch_size",
+        "stride",
+        "fov_thresh"
+      ]
+    },
+    {
+      "name": "extract_mil_patches_sliding",
+      "type": "function",
+      "source": "src/drdg/data/patches.py",
+      "lineno": 78,
+      "args": [
+        "img_np",
+        "fov_mask",
+        "patch_size",
+        "stride",
+        "fov_thresh",
+        "mode",
+        "num_sample",
+        "max_patches_eval",
+        "valid_anchors",
+        "return_anchors"
+      ]
+    },
+    {
+      "name": "compute_foreground_ratio",
+      "type": "function",
+      "source": "src/drdg/data/patches.py",
+      "lineno": 175,
+      "args": [
+        "patch_mask"
+      ]
+    },
+    {
+      "name": "filter_foreground_patches",
+      "type": "function",
+      "source": "src/drdg/data/patches.py",
+      "lineno": 182,
+      "args": [
+        "patches",
+        "fov_mask",
+        "anchors",
+        "patch_size",
+        "min_ratio"
+      ]
+    },
+    {
+      "name": "ForegroundPatchCache",
+      "type": "class",
+      "source": "src/drdg/data/patches.py",
+      "lineno": 201,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "get",
+        "set"
+      ]
+    }
+  ],
+  "src/drdg/data/patient_ids.py": [
+    {
+      "name": "parse_patient_and_side",
+      "type": "function",
+      "source": "src/drdg/data/patient_ids.py",
+      "lineno": 7,
+      "args": [
+        "image_id",
+        "dataset_key"
+      ]
+    },
+    {
+      "name": "parse_patient_id",
+      "type": "function",
+      "source": "src/drdg/data/patient_ids.py",
+      "lineno": 55,
+      "args": [
+        "image_id",
+        "dataset_key"
+      ]
+    },
+    {
+      "name": "generate_namespaced_patient_id",
+      "type": "function",
+      "source": "src/drdg/data/patient_ids.py",
+      "lineno": 61,
+      "args": [
+        "cohort",
+        "local_patient_id"
+      ]
+    },
+    {
+      "name": "normalize_cohort_patient_id",
+      "type": "function",
+      "source": "src/drdg/data/patient_ids.py",
+      "lineno": 66,
+      "args": [
+        "patient_id",
+        "cohort"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/__init__.py": [
+    {
+      "name": "PREPARATION_MAP",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/__init__.py",
+      "lineno": 28,
+      "value_preview": "{'aptos': prepare_aptos, 'ddr': prepare_ddr, 'deepdrid': prepare_deepdrid, 'idrid': prepare_idrid..."
+    },
+    {
+      "name": "prepare_dataset",
+      "type": "function",
+      "source": "src/drdg/data/preparation/__init__.py",
+      "lineno": 39,
+      "args": [
+        "dataset_key",
+        "raw_dir",
+        "output_dir"
+      ]
+    },
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/__init__.py",
+      "lineno": 66,
+      "value_preview": "['prepare_aptos', 'prepare_ddr', 'prepare_deepdrid', 'prepare_idrid', 'prepare_idrid_segmentation..."
+    }
+  ],
+  "src/drdg/data/preparation/aptos.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/aptos.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "prepare_aptos",
+      "type": "function",
+      "source": "src/drdg/data/preparation/aptos.py",
+      "lineno": 16,
+      "args": [
+        "raw_dir",
+        "output_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/ddr.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/ddr.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "prepare_ddr",
+      "type": "function",
+      "source": "src/drdg/data/preparation/ddr.py",
+      "lineno": 16,
+      "args": [
+        "raw_dir",
+        "output_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/deepdrid.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/deepdrid.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "prepare_deepdrid",
+      "type": "function",
+      "source": "src/drdg/data/preparation/deepdrid.py",
+      "lineno": 16,
+      "args": [
+        "raw_dir",
+        "output_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/eyepacs.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/eyepacs.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "prepare_eyepacs",
+      "type": "function",
+      "source": "src/drdg/data/preparation/eyepacs.py",
+      "lineno": 16,
+      "args": [
+        "raw_dir",
+        "output_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/idrid.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/idrid.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "prepare_idrid",
+      "type": "function",
+      "source": "src/drdg/data/preparation/idrid.py",
+      "lineno": 16,
+      "args": [
+        "raw_dir",
+        "output_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/idrid_segmentation.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/idrid_segmentation.py",
+      "lineno": 9,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "LESION_TYPES",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/idrid_segmentation.py",
+      "lineno": 11,
+      "value_preview": "['MA', 'HE', 'EX', 'SE']"
+    },
+    {
+      "name": "prepare_idrid_segmentation",
+      "type": "function",
+      "source": "src/drdg/data/preparation/idrid_segmentation.py",
+      "lineno": 14,
+      "args": [
+        "raw_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/messidor2.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/preparation/messidor2.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "prepare_messidor2",
+      "type": "function",
+      "source": "src/drdg/data/preparation/messidor2.py",
+      "lineno": 16,
+      "args": [
+        "raw_dir",
+        "output_dir"
+      ]
+    }
+  ],
+  "src/drdg/data/preparation/resize.py": [
+    {
+      "name": "resize_image",
+      "type": "function",
+      "source": "src/drdg/data/preparation/resize.py",
+      "lineno": 9,
+      "args": [
+        "image_path",
+        "target_size",
+        "output_path",
+        "resample"
+      ]
+    }
+  ],
+  "src/drdg/data/preprocessing.py": [
+    {
+      "name": "crop_fundus_roi",
+      "type": "function",
+      "source": "src/drdg/data/preprocessing.py",
+      "lineno": 10,
+      "args": [
+        "img",
+        "tolerance"
+      ]
+    },
+    {
+      "name": "extract_green_channel",
+      "type": "function",
+      "source": "src/drdg/data/preprocessing.py",
+      "lineno": 44,
+      "args": [
+        "img",
+        "as_three_channel"
+      ]
+    },
+    {
+      "name": "apply_green_channel_ablation",
+      "type": "function",
+      "source": "src/drdg/data/preprocessing.py",
+      "lineno": 66,
+      "args": [
+        "img_rgb",
+        "ablation_mode"
+      ]
+    },
+    {
+      "name": "apply_ben_graham_enhancement",
+      "type": "function",
+      "source": "src/drdg/data/preprocessing.py",
+      "lineno": 102,
+      "args": [
+        "img_rgb",
+        "sigma"
+      ]
+    },
+    {
+      "name": "apply_clahe",
+      "type": "function",
+      "source": "src/drdg/data/preprocessing.py",
+      "lineno": 107,
+      "args": [
+        "img",
+        "clip_limit",
+        "tile_grid_size"
+      ]
+    }
+  ],
+  "src/drdg/data/registry.py": [
+    {
+      "name": "CohortSpec",
+      "type": "class",
+      "source": "src/drdg/data/registry.py",
+      "lineno": 8,
+      "bases": [],
+      "methods": []
+    },
+    {
+      "name": "get_cohort_spec",
+      "type": "function",
+      "source": "src/drdg/data/registry.py",
+      "lineno": 106,
+      "args": [
+        "dataset_key"
+      ]
+    },
+    {
+      "name": "list_registered_cohorts",
+      "type": "function",
+      "source": "src/drdg/data/registry.py",
+      "lineno": 116,
+      "args": []
+    }
+  ],
+  "src/drdg/data/splits.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/data/splits.py",
+      "lineno": 13,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "PatientSplit",
+      "type": "class",
+      "source": "src/drdg/data/splits.py",
+      "lineno": 17,
+      "bases": [],
+      "methods": [
+        "verify_zero_leakage"
+      ]
+    },
+    {
+      "name": "audit_patient_leakage",
+      "type": "function",
+      "source": "src/drdg/data/splits.py",
+      "lineno": 41,
+      "args": [
+        "train_df",
+        "val_df",
+        "test_df",
+        "patient_col"
+      ]
+    },
+    {
+      "name": "split_patient_stratified",
+      "type": "function",
+      "source": "src/drdg/data/splits.py",
+      "lineno": 73,
+      "args": [
+        "data",
+        "train_ratio",
+        "val_ratio",
+        "test_ratio",
+        "seed",
+        "patient_col"
+      ]
+    }
+  ],
+  "src/drdg/data/transforms.py": [
+    {
+      "name": "get_global_augmentations",
+      "type": "function",
+      "source": "src/drdg/data/transforms.py",
+      "lineno": 10,
+      "args": [
+        "img_size",
+        "is_train"
+      ]
+    },
+    {
+      "name": "get_patch_augmentations",
+      "type": "function",
+      "source": "src/drdg/data/transforms.py",
+      "lineno": 50,
+      "args": [
+        "patch_size",
+        "is_train"
+      ]
+    },
+    {
+      "name": "get_eval_transforms",
+      "type": "function",
+      "source": "src/drdg/data/transforms.py",
+      "lineno": 64,
+      "args": [
+        "img_size"
+      ]
+    },
+    {
+      "name": "Denormalize",
+      "type": "class",
+      "source": "src/drdg/data/transforms.py",
+      "lineno": 69,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "__call__"
+      ]
+    },
+    {
+      "name": "DualBranchTransform",
+      "type": "class",
+      "source": "src/drdg/data/transforms.py",
+      "lineno": 87,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "transform_global",
+        "transform_patch"
+      ]
+    }
+  ],
+  "src/drdg/evaluation/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/evaluation/__init__.py",
+      "lineno": 15,
+      "value_preview": "['calculate_dr_metrics', 'calculate_referable_sensitivity_at_specificity', 'extract_rank_probs', ..."
+    }
+  ],
+  "src/drdg/evaluation/grade_metrics.py": [
+    {
+      "name": "calculate_per_grade_metrics",
+      "type": "function",
+      "source": "src/drdg/evaluation/grade_metrics.py",
+      "lineno": 9,
+      "args": [
+        "y_true",
+        "y_pred",
+        "num_classes"
+      ]
+    }
+  ],
+  "src/drdg/evaluation/lodo.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/evaluation/lodo.py",
+      "lineno": 28,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "run_inference_on_loader",
+      "type": "function",
+      "source": "src/drdg/evaluation/lodo.py",
+      "lineno": 31,
+      "args": [
+        "model",
+        "loader",
+        "device"
+      ]
+    },
+    {
+      "name": "evaluate_partition",
+      "type": "function",
+      "source": "src/drdg/evaluation/lodo.py",
+      "lineno": 102,
+      "args": [
+        "y_true",
+        "y_pred",
+        "y_probs",
+        "frozen_threshold_spec95"
+      ]
+    },
+    {
+      "name": "evaluate_lodo_fold",
+      "type": "function",
+      "source": "src/drdg/evaluation/lodo.py",
+      "lineno": 172,
+      "args": [
+        "model",
+        "source_val_loader",
+        "ood_test_loader",
+        "device",
+        "variant",
+        "held_out_dataset",
+        "fold",
+        "seed"
+      ]
+    }
+  ],
+  "src/drdg/evaluation/metrics.py": [
+    {
+      "name": "calculate_referable_sensitivity_at_specificity",
+      "type": "function",
+      "source": "src/drdg/evaluation/metrics.py",
+      "lineno": 9,
+      "args": [
+        "y_true",
+        "referable_probs",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "calculate_dr_metrics",
+      "type": "function",
+      "source": "src/drdg/evaluation/metrics.py",
+      "lineno": 53,
+      "args": [
+        "y_true",
+        "y_pred",
+        "num_classes",
+        "y_probs",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "extract_rank_probs",
+      "type": "function",
+      "source": "src/drdg/evaluation/metrics.py",
+      "lineno": 124,
+      "args": [
+        "outputs"
+      ]
+    },
+    {
+      "name": "rank_monotonicity_violations",
+      "type": "function",
+      "source": "src/drdg/evaluation/metrics.py",
+      "lineno": 135,
+      "args": [
+        "rank_probs"
+      ]
+    }
+  ],
+  "src/drdg/evaluation/ordinal_metrics.py": [
+    {
+      "name": "calculate_ordinal_metrics",
+      "type": "function",
+      "source": "src/drdg/evaluation/ordinal_metrics.py",
+      "lineno": 8,
+      "args": [
+        "y_true",
+        "y_pred",
+        "cumulative_probs"
+      ]
+    }
+  ],
+  "src/drdg/evaluation/rdr.py": [
+    {
+      "name": "RDRCalibrationResult",
+      "type": "class",
+      "source": "src/drdg/evaluation/rdr.py",
+      "lineno": 11,
+      "bases": [],
+      "methods": []
+    },
+    {
+      "name": "RDREvaluationResult",
+      "type": "class",
+      "source": "src/drdg/evaluation/rdr.py",
+      "lineno": 23,
+      "bases": [],
+      "methods": []
+    },
+    {
+      "name": "calibrate_rdr_threshold",
+      "type": "function",
+      "source": "src/drdg/evaluation/rdr.py",
+      "lineno": 37,
+      "args": [
+        "y_true_val",
+        "y_probs_val",
+        "target_specificity"
+      ]
+    },
+    {
+      "name": "evaluate_rdr_with_frozen_threshold",
+      "type": "function",
+      "source": "src/drdg/evaluation/rdr.py",
+      "lineno": 114,
+      "args": [
+        "y_true_test",
+        "y_probs_test",
+        "frozen_threshold"
+      ]
+    }
+  ],
+  "src/drdg/evaluation/result_schema.py": [
+    {
+      "name": "MetricBundle",
+      "type": "class",
+      "source": "src/drdg/evaluation/result_schema.py",
+      "lineno": 21,
+      "bases": [],
+      "methods": [
+        "__post_init__",
+        "to_dict",
+        "from_dict"
+      ]
+    },
+    {
+      "name": "LODOFoldResult",
+      "type": "class",
+      "source": "src/drdg/evaluation/result_schema.py",
+      "lineno": 72,
+      "bases": [],
+      "methods": [
+        "__post_init__",
+        "delta_lodo",
+        "to_dict",
+        "save_json",
+        "load_json"
+      ]
+    },
+    {
+      "name": "validate_lodo_result_dict",
+      "type": "function",
+      "source": "src/drdg/evaluation/result_schema.py",
+      "lineno": 157,
+      "args": [
+        "data"
+      ]
+    }
+  ],
+  "src/drdg/evaluation/statistics.py": [
+    {
+      "name": "paired_wilcoxon_test",
+      "type": "function",
+      "source": "src/drdg/evaluation/statistics.py",
+      "lineno": 9,
+      "args": [
+        "scores_a",
+        "scores_b",
+        "alternative"
+      ]
+    },
+    {
+      "name": "compute_metric_summary",
+      "type": "function",
+      "source": "src/drdg/evaluation/statistics.py",
+      "lineno": 77,
+      "args": [
+        "scores"
+      ]
+    }
+  ],
+  "src/drdg/experiments/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/experiments/__init__.py",
+      "lineno": 6,
+      "value_preview": "['LODOExperimentRunner', 'HeadAblationRunner']"
+    }
+  ],
+  "src/drdg/experiments/head_ablation.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/experiments/head_ablation.py",
+      "lineno": 29,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "CANDIDATE_HEADS",
+      "type": "constant_or_var",
+      "source": "src/drdg/experiments/head_ablation.py",
+      "lineno": 31,
+      "value_preview": "['softmax_ce', 'softmax_qwk', 'coral', 'corn', 'clm_qwk']"
+    },
+    {
+      "name": "SyntheticSingleBranchDataset",
+      "type": "class",
+      "source": "src/drdg/experiments/head_ablation.py",
+      "lineno": 34,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    },
+    {
+      "name": "HeadAblationRunner",
+      "type": "class",
+      "source": "src/drdg/experiments/head_ablation.py",
+      "lineno": 54,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "get_heads_to_run",
+        "train_and_eval_head",
+        "run"
+      ]
+    }
+  ],
+  "src/drdg/experiments/lodo.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/experiments/lodo.py",
+      "lineno": 39,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "CANONICAL_COHORTS",
+      "type": "constant_or_var",
+      "source": "src/drdg/experiments/lodo.py",
+      "lineno": 45,
+      "value_preview": "['aptos', 'idrid', 'messidor2', 'ddr', 'eyepacs', 'deepdrid']"
+    },
+    {
+      "name": "SyntheticDualBranchDataset",
+      "type": "class",
+      "source": "src/drdg/experiments/lodo.py",
+      "lineno": 55,
+      "bases": [
+        "torch.utils.data.Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    },
+    {
+      "name": "LODOExperimentRunner",
+      "type": "class",
+      "source": "src/drdg/experiments/lodo.py",
+      "lineno": 85,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "get_target_folds",
+        "_get_fold_csv_path",
+        "execute_fold",
+        "run"
+      ]
+    }
+  ],
+  "src/drdg/experiments/xai.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/experiments/xai.py",
+      "lineno": 21,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "QuantitativeXAIRunner",
+      "type": "class",
+      "source": "src/drdg/experiments/xai.py",
+      "lineno": 24,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "load_model",
+        "run"
+      ]
+    }
+  ],
+  "src/drdg/explainability/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/explainability/__init__.py",
+      "lineno": 13,
+      "value_preview": "['GradCAM', 'MILAttentionSaliency', 'IDRiDLesionDataset', 'pointing_game', 'area_matched_saliency..."
+    }
+  ],
+  "src/drdg/explainability/gradcam.py": [
+    {
+      "name": "GradCAM",
+      "type": "class",
+      "source": "src/drdg/explainability/gradcam.py",
+      "lineno": 12,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "_register_hooks",
+        "remove_hooks",
+        "generate_saliency_map"
+      ]
+    }
+  ],
+  "src/drdg/explainability/idrid_dataset.py": [
+    {
+      "name": "IDRiDLesionDataset",
+      "type": "class",
+      "source": "src/drdg/explainability/idrid_dataset.py",
+      "lineno": 14,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "_discover_samples",
+        "__len__",
+        "__getitem__"
+      ]
+    }
+  ],
+  "src/drdg/explainability/metrics.py": [
+    {
+      "name": "pointing_game",
+      "type": "function",
+      "source": "src/drdg/explainability/metrics.py",
+      "lineno": 11,
+      "args": [
+        "saliency_map",
+        "lesion_mask",
+        "tolerance_pixels"
+      ]
+    },
+    {
+      "name": "area_matched_saliency_recall",
+      "type": "function",
+      "source": "src/drdg/explainability/metrics.py",
+      "lineno": 43,
+      "args": [
+        "saliency_map",
+        "lesion_mask"
+      ]
+    },
+    {
+      "name": "pixel_auroc",
+      "type": "function",
+      "source": "src/drdg/explainability/metrics.py",
+      "lineno": 77,
+      "args": [
+        "saliency_map",
+        "lesion_mask"
+      ]
+    },
+    {
+      "name": "evaluate_xai_sample",
+      "type": "function",
+      "source": "src/drdg/explainability/metrics.py",
+      "lineno": 107,
+      "args": [
+        "saliency_map",
+        "lesion_mask",
+        "tolerance_pixels"
+      ]
+    }
+  ],
+  "src/drdg/explainability/mil_saliency.py": [
+    {
+      "name": "MILAttentionSaliency",
+      "type": "class",
+      "source": "src/drdg/explainability/mil_saliency.py",
+      "lineno": 10,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "generate_saliency_map"
+      ]
+    }
+  ],
+  "src/drdg/losses/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/losses/__init__.py",
+      "lineno": 20,
+      "value_preview": "['ContinuousQWKLoss', 'coral_loss', 'corn_loss', 'ordinal_nll_loss', 'CORALLoss', 'CORNLoss', 'Or..."
+    }
+  ],
+  "src/drdg/losses/ordinal.py": [
+    {
+      "name": "coral_loss",
+      "type": "function",
+      "source": "src/drdg/losses/ordinal.py",
+      "lineno": 16,
+      "args": [
+        "rank_logits",
+        "targets",
+        "num_thresholds"
+      ]
+    },
+    {
+      "name": "corn_loss",
+      "type": "function",
+      "source": "src/drdg/losses/ordinal.py",
+      "lineno": 41,
+      "args": [
+        "cond_logits",
+        "targets",
+        "num_thresholds"
+      ]
+    },
+    {
+      "name": "ordinal_nll_loss",
+      "type": "function",
+      "source": "src/drdg/losses/ordinal.py",
+      "lineno": 73,
+      "args": [
+        "probs",
+        "targets",
+        "class_weights",
+        "eps"
+      ]
+    },
+    {
+      "name": "CORALLoss",
+      "type": "class",
+      "source": "src/drdg/losses/ordinal.py",
+      "lineno": 100,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "CORNLoss",
+      "type": "class",
+      "source": "src/drdg/losses/ordinal.py",
+      "lineno": 111,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "OrdinalNLLLoss",
+      "type": "class",
+      "source": "src/drdg/losses/ordinal.py",
+      "lineno": 122,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    }
+  ],
+  "src/drdg/losses/qwk.py": [
+    {
+      "name": "ContinuousQWKLoss",
+      "type": "class",
+      "source": "src/drdg/losses/qwk.py",
+      "lineno": 14,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    }
+  ],
+  "src/drdg/models/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/models/__init__.py",
+      "lineno": 13,
+      "value_preview": "['DRFullModel', 'DualBranchMILModel', 'ResNet50AblationModel', 'DualBranchFusion', 'build_model',..."
+    }
+  ],
+  "src/drdg/models/attention/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/models/attention/__init__.py",
+      "lineno": 7,
+      "value_preview": "['ChannelAttention', 'SpatialAttention', 'CBAM', 'NonLocalBlock2D', 'QuadrantTokenAggregator']"
+    }
+  ],
+  "src/drdg/models/attention/cbam.py": [
+    {
+      "name": "ChannelAttention",
+      "type": "class",
+      "source": "src/drdg/models/attention/cbam.py",
+      "lineno": 7,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "SpatialAttention",
+      "type": "class",
+      "source": "src/drdg/models/attention/cbam.py",
+      "lineno": 34,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "CBAM",
+      "type": "class",
+      "source": "src/drdg/models/attention/cbam.py",
+      "lineno": 55,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    }
+  ],
+  "src/drdg/models/attention/non_local.py": [
+    {
+      "name": "NonLocalBlock2D",
+      "type": "class",
+      "source": "src/drdg/models/attention/non_local.py",
+      "lineno": 7,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    }
+  ],
+  "src/drdg/models/attention/quadrant_tokens.py": [
+    {
+      "name": "QuadrantTokenAggregator",
+      "type": "class",
+      "source": "src/drdg/models/attention/quadrant_tokens.py",
+      "lineno": 7,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    }
+  ],
+  "src/drdg/models/factory.py": [
+    {
+      "name": "build_model",
+      "type": "function",
+      "source": "src/drdg/models/factory.py",
+      "lineno": 16,
+      "args": [
+        "head_type",
+        "pretrained",
+        "use_cbam",
+        "use_dual_pooling",
+        "use_local_branch",
+        "use_nonlocal",
+        "use_quadrant_tokens",
+        "fusion_dim",
+        "num_classes",
+        "qwk_weight",
+        "dropout_rate"
+      ]
+    },
+    {
+      "name": "build_variant",
+      "type": "function",
+      "source": "src/drdg/models/factory.py",
+      "lineno": 48,
+      "args": [
+        "variant",
+        "pretrained",
+        "fusion_dim",
+        "num_classes",
+        "qwk_weight",
+        "dropout_rate"
+      ]
+    },
+    {
+      "name": "build_ablation_model",
+      "type": "function",
+      "source": "src/drdg/models/factory.py",
+      "lineno": 90,
+      "args": [
+        "head_type",
+        "pretrained",
+        "num_classes",
+        "qwk_weight"
+      ]
+    }
+  ],
+  "src/drdg/models/full_model.py": [
+    {
+      "name": "DualBranchMILModel",
+      "type": "class",
+      "source": "src/drdg/models/full_model.py",
+      "lineno": 24,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "DRFullModel",
+      "type": "class",
+      "source": "src/drdg/models/full_model.py",
+      "lineno": 94,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "compute_loss"
+      ]
+    },
+    {
+      "name": "ResNet50AblationModel",
+      "type": "class",
+      "source": "src/drdg/models/full_model.py",
+      "lineno": 162,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "extract_features",
+        "forward",
+        "compute_loss"
+      ]
+    }
+  ],
+  "src/drdg/models/fusion.py": [
+    {
+      "name": "DualBranchFusion",
+      "type": "class",
+      "source": "src/drdg/models/fusion.py",
+      "lineno": 14,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    }
+  ],
+  "src/drdg/models/heads/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/models/heads/__init__.py",
+      "lineno": 16,
+      "value_preview": "['CumulativeLinkModelQWKHead', 'CORALHead', 'CORNHead', 'SoftmaxCEHead', 'SoftmaxQWKHead']"
+    }
+  ],
+  "src/drdg/models/heads/clm.py": [
+    {
+      "name": "CumulativeLinkModelQWKHead",
+      "type": "class",
+      "source": "src/drdg/models/heads/clm.py",
+      "lineno": 23,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "set_qwk_weight",
+        "_get_monotonic_cutpoints",
+        "_cloglog_cdf",
+        "forward",
+        "loss_fn"
+      ]
+    }
+  ],
+  "src/drdg/models/heads/coral.py": [
+    {
+      "name": "CORALHead",
+      "type": "class",
+      "source": "src/drdg/models/heads/coral.py",
+      "lineno": 17,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    }
+  ],
+  "src/drdg/models/heads/corn.py": [
+    {
+      "name": "CORNHead",
+      "type": "class",
+      "source": "src/drdg/models/heads/corn.py",
+      "lineno": 17,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    }
+  ],
+  "src/drdg/models/heads/softmax.py": [
+    {
+      "name": "SoftmaxCEHead",
+      "type": "class",
+      "source": "src/drdg/models/heads/softmax.py",
+      "lineno": 17,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "SoftmaxQWKHead",
+      "type": "class",
+      "source": "src/drdg/models/heads/softmax.py",
+      "lineno": 60,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    }
+  ],
+  "src/drdg/models/streams/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/models/streams/__init__.py",
+      "lineno": 10,
+      "value_preview": "['GlobalBranch', 'GlobalContextStream', 'GatedAttentionPool', 'LocalMILBranch']"
+    }
+  ],
+  "src/drdg/models/streams/global_context.py": [
+    {
+      "name": "GlobalBranch",
+      "type": "class",
+      "source": "src/drdg/models/streams/global_context.py",
+      "lineno": 13,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "extract_feature_map",
+        "forward"
+      ]
+    },
+    {
+      "name": "GlobalContextStream",
+      "type": "constant_or_var",
+      "source": "src/drdg/models/streams/global_context.py",
+      "lineno": 97,
+      "value_preview": "GlobalBranch"
+    }
+  ],
+  "src/drdg/models/streams/local_mil.py": [
+    {
+      "name": "GatedAttentionPool",
+      "type": "class",
+      "source": "src/drdg/models/streams/local_mil.py",
+      "lineno": 9,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "LocalMILBranch",
+      "type": "class",
+      "source": "src/drdg/models/streams/local_mil.py",
+      "lineno": 47,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    }
+  ],
+  "src/drdg/models/variants/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/models/variants/__init__.py",
+      "lineno": 15,
+      "value_preview": "['V0BaselineModel', 'build_v0_model', 'V1LocalMILModel', 'build_v1_model', 'V2GlobalContextModel'..."
+    }
+  ],
+  "src/drdg/models/variants/v0.py": [
+    {
+      "name": "build_v0_model",
+      "type": "function",
+      "source": "src/drdg/models/variants/v0.py",
+      "lineno": 14,
+      "args": [
+        "pretrained",
+        "fusion_dim",
+        "num_classes",
+        "dropout_rate"
+      ]
+    },
+    {
+      "name": "V0BaselineModel",
+      "type": "class",
+      "source": "src/drdg/models/variants/v0.py",
+      "lineno": 38,
+      "bases": [
+        "DRFullModel"
+      ],
+      "methods": [
+        "__init__"
+      ]
+    }
+  ],
+  "src/drdg/models/variants/v1.py": [
+    {
+      "name": "build_v1_model",
+      "type": "function",
+      "source": "src/drdg/models/variants/v1.py",
+      "lineno": 12,
+      "args": [
+        "pretrained",
+        "fusion_dim",
+        "num_classes",
+        "dropout_rate"
+      ]
+    },
+    {
+      "name": "V1LocalMILModel",
+      "type": "class",
+      "source": "src/drdg/models/variants/v1.py",
+      "lineno": 36,
+      "bases": [
+        "DRFullModel"
+      ],
+      "methods": [
+        "__init__"
+      ]
+    }
+  ],
+  "src/drdg/models/variants/v2.py": [
+    {
+      "name": "build_v2_model",
+      "type": "function",
+      "source": "src/drdg/models/variants/v2.py",
+      "lineno": 12,
+      "args": [
+        "pretrained",
+        "fusion_dim",
+        "num_classes",
+        "dropout_rate"
+      ]
+    },
+    {
+      "name": "V2GlobalContextModel",
+      "type": "class",
+      "source": "src/drdg/models/variants/v2.py",
+      "lineno": 36,
+      "bases": [
+        "DRFullModel"
+      ],
+      "methods": [
+        "__init__"
+      ]
+    }
+  ],
+  "src/drdg/models/variants/v3.py": [
+    {
+      "name": "build_v3_model",
+      "type": "function",
+      "source": "src/drdg/models/variants/v3.py",
+      "lineno": 12,
+      "args": [
+        "pretrained",
+        "fusion_dim",
+        "num_classes",
+        "qwk_weight",
+        "dropout_rate"
+      ]
+    },
+    {
+      "name": "V3OrdinalCLMModel",
+      "type": "class",
+      "source": "src/drdg/models/variants/v3.py",
+      "lineno": 38,
+      "bases": [
+        "DRFullModel"
+      ],
+      "methods": [
+        "__init__"
+      ]
+    }
+  ],
+  "src/drdg/paths.py": [
+    {
+      "name": "get_repo_root",
+      "type": "function",
+      "source": "src/drdg/paths.py",
+      "lineno": 8,
+      "args": []
+    },
+    {
+      "name": "REPO_ROOT",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 16,
+      "value_preview": "get_repo_root()"
+    },
+    {
+      "name": "DATA_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 19,
+      "value_preview": "REPO_ROOT / 'data'"
+    },
+    {
+      "name": "RAW_DATA_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 20,
+      "value_preview": "Path(os.environ.get('DATA_RAW_DIR', DATA_DIR / 'raw'))"
+    },
+    {
+      "name": "PROCESSED_DATA_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 21,
+      "value_preview": "Path(os.environ.get('DATA_PROCESSED_DIR', DATA_DIR / 'processed'))"
+    },
+    {
+      "name": "RAW_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 22,
+      "value_preview": "RAW_DATA_DIR"
+    },
+    {
+      "name": "PROCESSED_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 23,
+      "value_preview": "PROCESSED_DATA_DIR"
+    },
+    {
+      "name": "MASTER_METADATA_CSV",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 26,
+      "value_preview": "PROCESSED_DATA_DIR / 'master_fundus_metadata.csv'"
+    },
+    {
+      "name": "LODO_FOLDS_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 27,
+      "value_preview": "PROCESSED_DATA_DIR / 'lodo_folds'"
+    },
+    {
+      "name": "LODO_SUMMARY_CSV",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 28,
+      "value_preview": "LODO_FOLDS_DIR / 'lodo_splits_summary.csv'"
+    },
+    {
+      "name": "CHECKPOINTS_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 31,
+      "value_preview": "Path(os.environ.get('CHECKPOINTS_DIR', REPO_ROOT / 'checkpoints'))"
+    },
+    {
+      "name": "RESULTS_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 32,
+      "value_preview": "Path(os.environ.get('RESULTS_DIR', REPO_ROOT / 'results'))"
+    },
+    {
+      "name": "LODO_RESULTS_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 33,
+      "value_preview": "RESULTS_DIR / 'lodo'"
+    },
+    {
+      "name": "HEAD_ABLATION_RESULTS_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 34,
+      "value_preview": "RESULTS_DIR / 'head_ablation'"
+    },
+    {
+      "name": "XAI_RESULTS_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 35,
+      "value_preview": "RESULTS_DIR / 'xai'"
+    },
+    {
+      "name": "FIGURES_DIR",
+      "type": "constant_or_var",
+      "source": "src/drdg/paths.py",
+      "lineno": 36,
+      "value_preview": "RESULTS_DIR / 'figures'"
+    },
+    {
+      "name": "ensure_directories_exist",
+      "type": "function",
+      "source": "src/drdg/paths.py",
+      "lineno": 39,
+      "args": []
+    }
+  ],
+  "src/drdg/training/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/training/__init__.py",
+      "lineno": 19,
+      "value_preview": "['DRTrainer', 'DRHeadTrainer', 'build_optimizer', 'build_scheduler', 'update_qwk_warmup', 'save_c..."
+    }
+  ],
+  "src/drdg/training/checkpoint.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/training/checkpoint.py",
+      "lineno": 11,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "save_checkpoint",
+      "type": "function",
+      "source": "src/drdg/training/checkpoint.py",
+      "lineno": 14,
+      "args": [
+        "state",
+        "checkpoint_path",
+        "is_best",
+        "best_path"
+      ]
+    },
+    {
+      "name": "load_checkpoint",
+      "type": "function",
+      "source": "src/drdg/training/checkpoint.py",
+      "lineno": 41,
+      "args": [
+        "checkpoint_path",
+        "model",
+        "optimizer",
+        "scaler",
+        "scheduler",
+        "device"
+      ]
+    }
+  ],
+  "src/drdg/training/head_trainer.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/training/head_trainer.py",
+      "lineno": 21,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "normalize_fundus_tensor",
+      "type": "function",
+      "source": "src/drdg/training/head_trainer.py",
+      "lineno": 24,
+      "args": [
+        "tensor",
+        "device"
+      ]
+    },
+    {
+      "name": "DRHeadTrainer",
+      "type": "class",
+      "source": "src/drdg/training/head_trainer.py",
+      "lineno": 37,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "train_epoch",
+        "evaluate",
+        "fit"
+      ]
+    }
+  ],
+  "src/drdg/training/optimization.py": [
+    {
+      "name": "build_optimizer",
+      "type": "function",
+      "source": "src/drdg/training/optimization.py",
+      "lineno": 11,
+      "args": [
+        "model",
+        "optimizer_name",
+        "lr",
+        "weight_decay",
+        "separate_decay"
+      ]
+    },
+    {
+      "name": "build_scheduler",
+      "type": "function",
+      "source": "src/drdg/training/optimization.py",
+      "lineno": 57,
+      "args": [
+        "optimizer",
+        "scheduler_name",
+        "epochs",
+        "min_lr",
+        "patience",
+        "factor"
+      ]
+    },
+    {
+      "name": "update_qwk_warmup",
+      "type": "function",
+      "source": "src/drdg/training/optimization.py",
+      "lineno": 89,
+      "args": [
+        "model",
+        "epoch",
+        "warmup_epochs"
+      ]
+    }
+  ],
+  "src/drdg/training/trainer.py": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "src/drdg/training/trainer.py",
+      "lineno": 22,
+      "value_preview": "get_logger(__name__)"
+    },
+    {
+      "name": "DRTrainer",
+      "type": "class",
+      "source": "src/drdg/training/trainer.py",
+      "lineno": 25,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "_normalize_batch",
+        "train_epoch",
+        "evaluate",
+        "fit"
+      ]
+    }
+  ],
+  "src/drdg/utils/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/utils/__init__.py",
+      "lineno": 8,
+      "value_preview": "['set_seed', 'seed_worker', 'get_logger', 'resolve_device', 'resolve_precision', 'save_json', 'lo..."
+    }
+  ],
+  "src/drdg/utils/device.py": [
+    {
+      "name": "resolve_device",
+      "type": "function",
+      "source": "src/drdg/utils/device.py",
+      "lineno": 7,
+      "args": [
+        "requested_device"
+      ]
+    },
+    {
+      "name": "resolve_precision",
+      "type": "function",
+      "source": "src/drdg/utils/device.py",
+      "lineno": 18,
+      "args": [
+        "device",
+        "requested_amp"
+      ]
+    },
+    {
+      "name": "get_device_and_amp",
+      "type": "function",
+      "source": "src/drdg/utils/device.py",
+      "lineno": 46,
+      "args": [
+        "requested_device",
+        "requested_amp"
+      ]
+    }
+  ],
+  "src/drdg/utils/io.py": [
+    {
+      "name": "_to_serializable",
+      "type": "function",
+      "source": "src/drdg/utils/io.py",
+      "lineno": 11,
+      "args": [
+        "obj"
+      ]
+    },
+    {
+      "name": "save_json",
+      "type": "function",
+      "source": "src/drdg/utils/io.py",
+      "lineno": 28,
+      "args": [
+        "data",
+        "path",
+        "indent"
+      ]
+    },
+    {
+      "name": "load_json",
+      "type": "function",
+      "source": "src/drdg/utils/io.py",
+      "lineno": 41,
+      "args": [
+        "path"
+      ]
+    },
+    {
+      "name": "save_csv",
+      "type": "function",
+      "source": "src/drdg/utils/io.py",
+      "lineno": 47,
+      "args": [
+        "df",
+        "path"
+      ]
+    }
+  ],
+  "src/drdg/utils/logging.py": [
+    {
+      "name": "get_logger",
+      "type": "function",
+      "source": "src/drdg/utils/logging.py",
+      "lineno": 9,
+      "args": [
+        "name",
+        "log_file",
+        "level"
+      ]
+    }
+  ],
+  "src/drdg/utils/seed.py": [
+    {
+      "name": "set_seed",
+      "type": "function",
+      "source": "src/drdg/utils/seed.py",
+      "lineno": 9,
+      "args": [
+        "seed",
+        "deterministic"
+      ]
+    },
+    {
+      "name": "seed_worker",
+      "type": "function",
+      "source": "src/drdg/utils/seed.py",
+      "lineno": 33,
+      "args": [
+        "worker_id"
+      ]
+    }
+  ],
+  "src/drdg/visualization/__init__.py": [
+    {
+      "name": "__all__",
+      "type": "constant_or_var",
+      "source": "src/drdg/visualization/__init__.py",
+      "lineno": 11,
+      "value_preview": "['plot_lodo_benchmark', 'plot_head_ablation', 'plot_rdr_screening_roc', 'plot_xai_panel', 'save_f..."
+    }
+  ],
+  "src/drdg/visualization/paper_figures.py": [
+    {
+      "name": "PALETTE",
+      "type": "constant_or_var",
+      "source": "src/drdg/visualization/paper_figures.py",
+      "lineno": 36,
+      "value_preview": "{'primary': '#1f77b4', 'secondary': '#ff7f0e', 'tertiary': '#2ca02c', 'accent': '#d62728', 'slate..."
+    },
+    {
+      "name": "save_figure",
+      "type": "function",
+      "source": "src/drdg/visualization/paper_figures.py",
+      "lineno": 54,
+      "args": [
+        "fig",
+        "out_path",
+        "dpi"
+      ]
+    },
+    {
+      "name": "plot_lodo_benchmark",
+      "type": "function",
+      "source": "src/drdg/visualization/paper_figures.py",
+      "lineno": 68,
+      "args": [
+        "results_data",
+        "out_path",
+        "dpi"
+      ]
+    },
+    {
+      "name": "plot_head_ablation",
+      "type": "function",
+      "source": "src/drdg/visualization/paper_figures.py",
+      "lineno": 120,
+      "args": [
+        "summary_data",
+        "out_path",
+        "dpi"
+      ]
+    },
+    {
+      "name": "plot_rdr_screening_roc",
+      "type": "function",
+      "source": "src/drdg/visualization/paper_figures.py",
+      "lineno": 173,
+      "args": [
+        "cohort_evaluations",
+        "out_path",
+        "dpi"
+      ]
+    },
+    {
+      "name": "plot_xai_panel",
+      "type": "function",
+      "source": "src/drdg/visualization/paper_figures.py",
+      "lineno": 216,
+      "args": [
+        "fundus_img",
+        "lesion_mask",
+        "gradcam_map",
+        "mil_map",
+        "metrics",
+        "out_path",
+        "dpi"
+      ]
+    }
+  ]
+}

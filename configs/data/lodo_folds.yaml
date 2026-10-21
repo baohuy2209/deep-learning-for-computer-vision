@@ -1,0 +1,29 @@
+# 6-Fold Leave-One-Dataset-Out (LODO) Benchmark Folds Configuration
+
+lodo:
+  folds_dir: "data/processed/lodo_folds"
+  summary_csv: "data/processed/lodo_folds/lodo_splits_summary.csv"
+  zip_archive: "data/processed/lodo_folds.zip"
+  target_quota:
+    min_samples: 1500
+    max_samples: 2500
+  seed: 42
+  folds:
+    0:
+      held_out_dataset: "APTOS"
+      fold_slug: "aptos"
+    1:
+      held_out_dataset: "IDRiD"
+      fold_slug: "idrid"
+    2:
+      held_out_dataset: "Messidor-2"
+      fold_slug: "messidor2"
+    3:
+      held_out_dataset: "DDR"
+      fold_slug: "ddr"
+    4:
+      held_out_dataset: "EyePACS"
+      fold_slug: "eyepacs"
+    5:
+      held_out_dataset: "DeepDRiD"
+      fold_slug: "deepdrid"

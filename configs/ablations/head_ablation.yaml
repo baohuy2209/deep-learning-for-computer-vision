@@ -1,0 +1,35 @@
+# Head Ablation Study Configurations
+# Compares 4 prediction heads:
+# 1. softmax: Nominal Cross-Entropy
+# 2. coral: Standard Consistent Rank Logits (Cao et al., 2020)
+# 3. consistent_ordinal: Cumulative Link Model with Monotonic Cutpoints (Champion)
+# 4. regression: Linear continuous regression with MSE / Smooth L1 loss
+
+experiment:
+  name: "head_ablation_study"
+  seed: 42
+  device: "cuda:0"
+  checkpoint_dir: "checkpoints/checkpoints_head_ablation"
+  output_dir: "results/head_ablation"
+
+heads:
+  - name: "Softmax_CE"
+    type: "softmax"
+    loss: "ce"
+    qwk_weight: 0.0
+
+  - name: "CORAL"
+    type: "coral"
+    loss: "coral"
+    qwk_weight: 0.5
+
+  - name: "Consistent_Ordinal_Champion"
+    type: "consistent_ordinal"
+    loss: "consistent_ordinal"
+    qwk_weight: 0.5
+
+training:
+  epochs: 25
+  batch_size: 16
+  lr: 1.0e-4
+  patience: 5

@@ -1,0 +1,332 @@
+
+======================================================================
+=== CELL 2 ===
+======================================================================
+import os
+import sys
+import time
+import logging
+from pathlib import Path, PureWindowsPath
+from typing import List, Tuple, Union, Dict, Optional, Any
+
+# --- Deep Learning & PyTorch Core ---
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision.models as models
+from torch.utils.data import DataLoader, Dataset
+
+# --- Image Processing & Data Manipulation ---
+import cv2
+cv2.setNumThreads(0)  # Mandatory: prevent OpenCV multi-threading contention in DataLoader workers
+import numpy as np
+import pandas as pd
+from PIL import Image
+import albumentations as A
+
+# --- Dynamic Path Resolution ---
+# Dynamically add the shared modular pipeline root ('pipeline/full') to sys.path
+current_dir = Path().cwd()
+full_pipeline_path = current_dir.parent.parent.parent / "pipeline" / "full"
+
+if str(full_pipeline_path) not in sys.path:
+    sys.path.append(str(full_pipeline_path))
+
+# --- Clinical & Statistical Evaluation Metrics ---
+from sklearn.metrics import (
+    cohen_kappa_score,
+    confusion_matrix,
+    accuracy_score,
+    recall_score,
+    roc_curve,
+    roc_auc_score,
+    auc,
+)
+
+# --- Logging Configuration ---
+# Setup logger with a singleton stream handler to prevent duplicate logs in Jupyter/interactive runs
+logger = logging.getLogger("DRTrainer")
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("[%(levelname)s | %(asctime)s | DRTrainer] %(message)s")
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+logger.setLevel(logging.INFO)
+
+# --- Visualization & Academic Plotting ---
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.patches import Patch
+import collections
+from functools import partial
+from tqdm.auto import tqdm
+import gc
+gc.collect()
+if torch.cuda.is_available():
+    torch.cuda.empty_cache()
+from google.colab import drive
+import zipfile
+import matplotlib.ticker as ticker
+import json
+======================================================================
+=== CELL 3 ===
+======================================================================
+# ==================================================================================================
+# 0. GLOBAL PUBLICATION PLOTTING CONFIGURATION (IEEE / Springer / Nature Standards)
+# ==================================================================================================
+def configure_publication_style():
+    """
+    Sets up cohesive typography, axis weights, subtle grids, and high-resolution
+    export parameters suitable for IEEE/Springer journal publication figures.
+    """
+    plt.rcParams.update({
+        # --- Typography & Font Hierarchy ---
+        # Cross-platform sans-serif fallbacks with proportional font sizes
+        'font.sans-serif': ['DejaVu Sans', 'Arial', 'Helvetica'],
+        'font.family': 'sans-serif',
+        'font.size': 10.5,
+        'axes.labelsize': 11.5,
+        'axes.titlesize': 12.5,
+        'xtick.labelsize': 10.0,
+        'ytick.labelsize': 10.0,
+        'legend.fontsize': 10.0,
+        'figure.titlesize': 14.0,
+
+        # --- Axis Spines & Grid Styling ---
+        # Dark-slate borders with non-distracting dashed gridlines
+        'axes.linewidth': 1.1,
+        'axes.edgecolor': '#2d3748',
+        'grid.linewidth': 0.7,
+        'grid.alpha': 0.45,
+        'grid.linestyle': '--',
+        'grid.color': '#a0aec0',
+
+        # --- Export & Rendering Quality ---
+        # 300 DPI high-resolution output with automatic padding clipping
+        'mathtext.fontset': 'dejavusans',
+        'figure.dpi': 300,
+        'savefig.dpi': 300,
+        'savefig.bbox': 'tight',
+        'savefig.pad_inches': 0.08
+    })
+
+    # Base clean background theme
+    sns.set_theme(style="whitegrid")
+
+# Apply publication style globally
+configure_publication_style()
+
+# Academic Color Palette Definitions (IEEE / Springer Guidelines)
+C_NAVY     = "#1f4e79"  # In-Domain Validation / Baseline Primary
+C_ORANGE   = "#e65100"  # Grade 1 (H1 Microaneurysm) / Accent
+C_CHAMP    = "#008080"  # Proposed Champion Model (Teal)
+C_TEAL     = "#0d9488"  # Alternative Teal Accent
+C_GREEN    = "#2e7d32"  # Success / Accuracy / High Recall
+C_RED      = "#c53030"  # Error / Violation / Severe Drop
+C_CRIMSON  = "#c53030"  # Grade 3 (H2 Severe NPDR)
+C_AMBER    = "#d97706"  # Warning / Intermediate Stage
+C_PURPLE   = "#6b21a8"  # Monotonic cutpoints theta of CLM (H3)
+C_SLATE    = "#4a5568"  # Neutral / Secondary
+C_GRAY     = "#94a3b8"  # Muted baseline / Classes G0, G2, G4
+C_DARKGRAY = "#475569"
+C_EMERALD  = "#16a34a"
+
+======================================================================
+=== CELL 4 ===
+======================================================================
+# ==============================================================================
+# 1.1 AUTOMATIC GOOGLE DRIVE MOUNTING (COLAB OR LOCAL)
+# ==============================================================================
+import os
+import time
+
+try:
+    from google.colab import drive
+    if not os.path.exists('/content/drive/MyDrive'):
+        print('Connecting to Google Drive...')
+        drive.mount('/content/drive')
+    else:
+        print('Google Drive already mounted at /content/drive.')
+except ImportError:
+    print('Running in local environment (google.colab not available). Drive mount skipped.')
+
+# ==============================================================================
+# 1.2 AUTOMATED DATASET UNPACKING TO COLAB LOCAL FAST SSD (/content/dataset_local)
+# ==============================================================================
+zip_source = '/content/drive/MyDrive/native_cropped.zip'
+extract_dest = '/content/dataset_local'
+
+if os.path.exists(zip_source):
+    if not os.path.exists(extract_dest) or len(os.listdir(extract_dest)) == 0:
+        os.makedirs(extract_dest, exist_ok=True)
+        print(f"Extracting image archive '{zip_source}' to '{extract_dest}'...")
+        t0 = time.time()
+        get_ipython().system('unzip -q "$zip_source" -d "$extract_dest"')
+        print(f"-> Extraction completed in {time.time() - t0:.1f} seconds!")
+        get_ipython().system('ls -lh "$extract_dest"')
+    else:
+        print(f"-> Dataset directory '{extract_dest}' already populated ({len(os.listdir(extract_dest))} items).")
+else:
+    print(f"[INFO] zip_source '{zip_source}' not found or running in local environment.")
+
+DATA_ROOT = '/content/dataset_local' if os.path.exists('/content/dataset_local') else os.path.abspath('data/raw/hybrid')
+image_root_dir = f"{DATA_ROOT}/native_cropped" if os.path.exists(f"{DATA_ROOT}/native_cropped") else DATA_ROOT
+print(f"[PATHS] Image Root Directory: '{image_root_dir}' (Exists: {os.path.exists(image_root_dir)})")
+
+# ==============================================================================
+# 1.3 LODO FOLD SPLITS DIRECTORY SETUP (/content/lodo_folds)
+# ==============================================================================
+lodo_zip_source = '/content/drive/MyDrive/lodo_folds.zip'
+lodo_extract_dest = '/content/lodo_folds'
+
+if os.path.exists(lodo_zip_source):
+    if not os.path.exists(lodo_extract_dest) or len(os.listdir(lodo_extract_dest)) == 0:
+        os.makedirs(lodo_extract_dest, exist_ok=True)
+        print(f"Extracting LODO splits archive '{lodo_zip_source}' to '{lodo_extract_dest}'...")
+        t0 = time.time()
+        get_ipython().system('unzip -q "$lodo_zip_source" -d "$lodo_extract_dest"')
+        print(f"-> Extraction completed in {time.time() - t0:.1f} seconds!")
+
+LODO_FOLDS_DIR = '/content/lodo_folds'
+
+print(f"[PATHS] LODO Folds Directory : '{LODO_FOLDS_DIR}' (Exists: {os.path.exists(LODO_FOLDS_DIR)})")
+
+# ==============================================================================
+# 1.4 RESULT ROOT & DIRECTORIES CONFIGURATION
+# ==============================================================================
+DRIVE_BASE = '/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/'
+RESULT_ROOT = os.path.join(DRIVE_BASE, 'results')
+RESULTS_DIR_LODO    = os.path.join(RESULT_ROOT, "lodo_benchmark")
+CHECKPOINT_DIR_LODO = os.path.join(RESULTS_DIR_LODO, "checkpoints")
+CACHE_DIR_LODO      = "/content/cache_fundus_dual_branch"
+FIGURES_DIR         = os.path.join(RESULTS_DIR_LODO, "figures")
+
+os.makedirs(CHECKPOINT_DIR_LODO, exist_ok=True)
+os.makedirs(CACHE_DIR_LODO, exist_ok=True)
+os.makedirs(FIGURES_DIR, exist_ok=True)
+
+======================================================================
+=== CELL 5 ===
+======================================================================
+# ==============================================================================
+# 1.5 GLOBAL EXPERIMENTAL CONFIGURATION & HYPERPARAMETERS
+# ==============================================================================
+SMOKE_TEST = True
+
+SEED = 42
+num_workers = min(8, os.cpu_count() or 4)
+NUM_WORKERS = num_workers
+use_pin_memory = torch.cuda.is_available()
+torch.backends.cuda.matmul.allow_tf32 = True
+torch.backends.cudnn.allow_tf32 = True
+torch.backends.cudnn.benchmark = True
+
+IMG_SIZE = 512
+NUM_CLASSES = 5
+HEAD_TYPE = "CLM_QWK"
+FUSION_DIM = 512
+PRETRAINED = True
+USE_CBAM = True
+USE_NONLOCAL = True
+USE_QUADRANT_TOKENS = True
+
+TARGET_QWK_WEIGHT = 0.4
+LEARNING_RATE = 1e-4
+WEIGHT_DECAY = 1e-4
+MIN_LR = 1e-6
+
+PATIENCE_EARLY_STOPPING = 15
+PATIENCE_REDUCE_LR = 4
+REDUCE_LR_FACTOR = 0.5
+GRAD_CLIP = 1.0
+
+if SMOKE_TEST:
+    print("[SMOKE TEST MODE]: Running rapid sanity check on pipeline flow (3 epochs).")
+    EPOCHS = 3
+    LODO_EPOCHS = 3
+    BATCH_SIZE = 8
+    QWK_WARMUP_EPOCHS = 1
+    T_MAX = 3
+else:
+    print("[FULL RUN MODE]: Executing official 100-epoch LODO benchmark (CosineAnnealing T_max=30).")
+    EPOCHS = 100
+    LODO_EPOCHS = 100
+    BATCH_SIZE = 16
+    QWK_WARMUP_EPOCHS = 15
+    T_MAX = 30
+
+SUMMARY_JSON_PATH = os.path.join(RESULTS_DIR_LODO, "lodo_summary.json")
+SUMMARY_CSV_PATH  = os.path.join(RESULTS_DIR_LODO, "lodo_summary.csv")
+
+# 6 Clinical Cohorts in Leave-One-Dataset-Out (LODO) Benchmark
+DATASET_CONFIG = {
+    "aptos": {"name": "APTOS 2019", "folder": "APTOS", "num_classes": 5},
+    "idrid": {"name": "IDRiD", "folder": "IDRiD", "num_classes": 5},
+    "messidor2": {"name": "Messidor-2", "folder": "Messidor-2", "num_classes": 5},
+    "ddr": {"name": "DDR", "folder": "DDR", "num_classes": 5},
+    "eyepacs": {"name": "EyePACS", "folder": "EyePACS", "num_classes": 5},
+    "deepdrid": {"name": "DeepDRiD", "folder": "DeepDRiD", "num_classes": 5},
+}
+DATASET_KEYS = list(DATASET_CONFIG.keys())
+
+# Architecture Ablation Waterfall (V0 -> V1 -> V2 -> V3) testing Advisor Hypotheses H1, H2, H3
+ARCHITECTURE_VARIANTS = [
+    {
+        "name": "V0_Baseline_Softmax_GlobalOnly",
+        "head_type": "Softmax_CE",
+        "use_local_branch": False,
+        "use_nonlocal": False,
+        "use_quadrant_tokens": False,
+        "use_cbam": False,
+        "run": True,
+        "hypothesis": "Baseline: ResNet-50 + CBAM Global Only + Softmax CE",
+    },
+    {
+        "name": "V1_PlusLocalMIL_H1",
+        "head_type": "Softmax_CE",
+        "use_local_branch": True,
+        "use_nonlocal": False,
+        "use_quadrant_tokens": False,
+        "use_cbam": False,
+        "run": True,
+        "hypothesis": "H1: Adds Patch-based Local MIL Branch",
+    },
+    {
+        "name": "V2_PlusGlobalContext_H2",
+        "head_type": "Softmax_CE",
+        "use_local_branch": True,
+        "use_nonlocal": True,
+        "use_quadrant_tokens": True,
+        "use_cbam": True,
+        "run": True,
+        "hypothesis": "H2: Adds Non-local Attention & Quadrant Tokens to Global View",
+    },
+    {
+        "name": "V3_PlusOrdinalHead_H3_Champion",
+        "head_type": "CLM_QWK",
+        "use_local_branch": True,
+        "use_nonlocal": True,
+        "use_quadrant_tokens": True,
+        "use_cbam": True,
+        "run": True,  # Champion model metrics automatically merged from lodo_summary.json
+        "hypothesis": "H3: Champion Dual-Branch MIL with Ordinal CLM Head",
+    },
+]
+# ==============================================================================
+# 1.6 CONFIG: IDRiD PIXEL-LEVEL SEGMENTATION GROUND TRUTH (FOR QUANTITATIVE XAI)
+# ==============================================================================
+idrid_seg_root_drive = "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/data/raw/idrid_segmentation"
+idrid_seg_root_local = "data/raw/idrid_segmentation"
+idrid_seg_root = idrid_seg_root_drive if os.path.exists(idrid_seg_root_drive) else idrid_seg_root_local
+
+idrid_seg_image_dirs = [
+    f"{idrid_seg_root}/DR_Testing_Set/Fundus Images",
+    f"{idrid_seg_root}/DR_Training_Set/Fundus Images"
+]
+idrid_seg_mask_dirs = [
+    f"{idrid_seg_root}/DR_Testing_Set/Combined Masks",
+    f"{idrid_seg_root}/DR_Training_Set/Combined Masks"
+]
+print(f"[XAI CONFIG] IDRiD Benchmark Segmentation Root: '{idrid_seg_root}'")
+print(f"  - Image directories ({len(idrid_seg_image_dirs)}): {idrid_seg_image_dirs}")
+print(f"  - Mask directories  ({len(idrid_seg_mask_dirs)}):  {idrid_seg_mask_dirs}")

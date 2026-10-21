@@ -1,0 +1,510 @@
+=== main_model (6) Cell 68 ===
+class DRTrainer:
+    """
+    High-Performance PyTorch Training & Evaluation Engine optimized for NVIDIA A100:
+      - Native bfloat16 / float16 Mixed Precision via torch.amp (TF32 + Tensor Cores).
+      - Robust Checkpointing: Saves both '_best.pth' (Val QWK) and '_last.pth' (per-epoch recovery).
+      - Full Resume Capability: Seamlessly restores optimizer, scheduler, scaler, epoch and metrics history.
+      - Dynamic Learning Rate Control & EarlyStopping.
+      - In-Distribution Held-out Test Evaluation with Monotonicity Violation checks.
+    """
+    def __init__(
+        self,
+        model: nn.Module,
+        optimizer: torch.optim.Optimizer,
+        lr_scheduler: Optional[Any] = None,
+        device: str = "cuda" if torch.cuda.is_available() else "cpu",
+        use_amp: bool = True,
+        class_weights: Optional[torch.Tensor] = None,
+        grad_clip: float = 1.0,
+        checkpoint_dir: str = "./checkpoints",
+        qwk_warmup_epochs: int = 5
+    ):
+        self.model = model.to(device)
+        self.optimizer = optimizer
+        self.lr_scheduler = lr_scheduler
+        self.device = device
+        self.device_type = "cuda" if "cuda" in str(device) else "cpu"
+        self.use_amp = use_amp and (self.device_type == "cuda")
+        self.class_weights = class_weights.to(device) if class_weights is not None else None
+        self.grad_clip = grad_clip
+        self.checkpoint_dir = checkpoint_dir
+        self.qwk_warmup_epochs = qwk_warmup_epochs
+        os.makedirs(checkpoint_dir, exist_ok=True)
+
+        # GPU-side ImageNet Normalization Constants for high-throughput uint8 tensors
+        self.mean_global = torch.tensor([0.485, 0.456, 0.406], device=device, dtype=torch.float32).view(1, 3, 1, 1)
+        self.std_global = torch.tensor([0.229, 0.224, 0.225], device=device, dtype=torch.float32).view(1, 3, 1, 1)
+        self.mean_local = torch.tensor([0.485, 0.456, 0.406], device=device, dtype=torch.float32).view(1, 1, 3, 1, 1)
+        self.std_local = torch.tensor([0.229, 0.224, 0.225], device=device, dtype=torch.float32).view(1, 1, 3, 1, 1)
+
+        # Precision configuration: A100 natively supports bfloat16 without overflow risks
+        if self.device_type == "cuda" and torch.cuda.is_bf16_supported():
+            self.amp_dtype = torch.bfloat16
+            self.use_scaler = False  # bfloat16 does not require GradScaler
+        else:
+            self.amp_dtype = torch.float16
+            self.use_scaler = self.use_amp
+
+        self.scaler = torch.amp.GradScaler(self.device_type, enabled=self.use_scaler)
+
+    def train_epoch(self, dataloader: DataLoader) -> Dict[str, float]:
+        """Runs one full training epoch with mixed precision forward pass and gradient clipping."""
+        self.model.train()
+        total_loss = 0.0
+        all_preds, all_targets, all_probs = [], [], []
+
+        pbar = tqdm(dataloader, desc="Training (A100)", leave=False, unit="batch")
+        for batch in pbar:
+            global_img = batch["global_img"].to(self.device, non_blocking=True)
+            local_patches = batch["local_patches"].to(self.device, non_blocking=True)
+            targets = batch["label"].to(self.device, non_blocking=True)
+
+            # High-Speed GPU Tensor Normalization: converts uint8 (0-255) -> standardized float32 on GPU
+            if global_img.dtype == torch.uint8:
+                global_img = global_img.float().div_(255.0).sub_(self.mean_global).div_(self.std_global)
+            if local_patches.dtype == torch.uint8:
+                if local_patches.ndim == 5:
+                    local_patches = local_patches.float().div_(255.0).sub_(self.mean_local).div_(self.std_local)
+                else:
+                    local_patches = local_patches.float().div_(255.0).sub_(self.mean_global).div_(self.std_global)
+            patch_mask = batch.get("patch_mask", None)
+            if patch_mask is not None:
+                patch_mask = patch_mask.to(self.device, non_blocking=True)
+
+            self.optimizer.zero_grad(set_to_none=True)
+
+            # Forward pass with mixed precision
+            with torch.amp.autocast(self.device_type, dtype=self.amp_dtype, enabled=self.use_amp):
+                if patch_mask is not None:
+                    try:
+                        outputs = self.model(global_img, local_patches, patch_mask=patch_mask)
+                    except TypeError:
+                        outputs = self.model(global_img, local_patches)
+                else:
+                    outputs = self.model(global_img, local_patches)
+
+                if hasattr(self.model, "compute_loss"):
+                    loss = self.model.compute_loss(outputs, targets, class_weights=self.class_weights)
+                elif hasattr(self.model, "head") and hasattr(self.model.head, "loss_fn"):
+                    loss = self.model.head.loss_fn(outputs, targets, class_weights=self.class_weights)
+                else:
+                    loss = outputs["loss"]
+
+            # Backward pass & Optimizer Step
+            if self.use_scaler:
+                self.scaler.scale(loss).backward()
+                if self.grad_clip > 0:
+                    self.scaler.unscale_(self.optimizer)
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
+                self.scaler.step(self.optimizer)
+                self.scaler.update()
+            else:
+                loss.backward()
+                if self.grad_clip > 0:
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
+                self.optimizer.step()
+
+            total_loss += loss.item() * len(targets)
+            all_preds.extend(outputs["preds"].detach().cpu().numpy())
+            all_targets.extend(targets.detach().cpu().numpy())
+            if "probs" in outputs:
+                all_probs.extend(outputs["probs"].detach().cpu().numpy())
+
+        n_samples = len(all_targets)
+        metrics = calculate_dr_metrics(all_targets, all_preds, y_probs=np.array(all_probs) if all_probs else None)
+        metrics["Loss"] = total_loss / max(1, n_samples)
+        return metrics
+
+    @torch.no_grad()
+    def evaluate(self, dataloader: DataLoader) -> Tuple[Dict[str, Any], np.ndarray, np.ndarray]:
+        """Evaluates model performance on validation or test sets without gradient tracking."""
+        self.model.eval()
+        total_loss = 0.0
+        all_preds, all_targets, all_probs, all_rank_probs = [], [], [], []
+
+        pbar = tqdm(dataloader, desc="Eval", leave=False, unit="batch")
+        for batch in pbar:
+            global_img = batch["global_img"].to(self.device, non_blocking=True)
+            local_patches = batch["local_patches"].to(self.device, non_blocking=True)
+            targets = batch["label"].to(self.device, non_blocking=True)
+
+            # High-Speed GPU Tensor Normalization: converts uint8 (0-255) -> standardized float32 on GPU
+            if global_img.dtype == torch.uint8:
+                global_img = global_img.float().div_(255.0).sub_(self.mean_global).div_(self.std_global)
+            if local_patches.dtype == torch.uint8:
+                if local_patches.ndim == 5:
+                    local_patches = local_patches.float().div_(255.0).sub_(self.mean_local).div_(self.std_local)
+                else:
+                    local_patches = local_patches.float().div_(255.0).sub_(self.mean_global).div_(self.std_global)
+            patch_mask = batch.get("patch_mask", None)
+            if patch_mask is not None:
+                patch_mask = patch_mask.to(self.device, non_blocking=True)
+
+            with torch.amp.autocast(self.device_type, dtype=self.amp_dtype, enabled=self.use_amp):
+                if patch_mask is not None:
+                    try:
+                        outputs = self.model(global_img, local_patches, patch_mask=patch_mask)
+                    except TypeError:
+                        outputs = self.model(global_img, local_patches)
+                else:
+                    outputs = self.model(global_img, local_patches)
+
+                if hasattr(self.model, "compute_loss"):
+                    loss = self.model.compute_loss(outputs, targets, class_weights=self.class_weights)
+                elif hasattr(self.model, "head") and hasattr(self.model.head, "loss_fn"):
+                    loss = self.model.head.loss_fn(outputs, targets, class_weights=self.class_weights)
+                else:
+                    loss = outputs["loss"]
+
+            total_loss += loss.item() * len(targets)
+            all_preds.extend(outputs["preds"].cpu().numpy())
+            all_targets.extend(targets.cpu().numpy())
+
+            if "probs" in outputs:
+                all_probs.extend(outputs["probs"].cpu().numpy())
+
+            rank_probs = extract_rank_probs(outputs)
+            if rank_probs is not None:
+                all_rank_probs.extend(rank_probs.cpu().numpy())
+
+        n_samples = len(all_targets)
+        eval_loss = total_loss / max(1, n_samples)
+        probs_np = np.array(all_probs) if all_probs else None
+        metrics = calculate_dr_metrics(all_targets, all_preds, y_probs=probs_np)
+        metrics["Loss"] = eval_loss
+        metrics["probs"] = probs_np
+
+        if all_rank_probs:
+            metrics["Monotonicity_Violations"] = rank_monotonicity_violations(np.array(all_rank_probs))
+        else:
+            metrics["Monotonicity_Violations"] = None
+
+        return metrics, np.array(all_targets), np.array(all_preds)
+
+    def fit(
+        self,
+        train_loader: DataLoader,
+        val_loader: DataLoader,
+        test_loader: Optional[DataLoader] = None,
+        epochs: int = 100,
+        model_name: str = "dr_model",
+        patience_early_stopping: int = 12,
+        patience_reduce_lr: int = 4,
+        reduce_lr_factor: float = 0.5,
+        min_lr: float = 1e-6,
+        resume_checkpoint_path: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Executes training with ModelCheckpoint, LR scheduler, EarlyStopping and full Resume capability.
+        """
+        best_val_qwk = -1.0
+        best_val_loss = float("inf")
+        start_epoch = 1
+
+        epochs_no_improve_es = 0
+        epochs_no_improve_lr = 0
+        history: Dict[str, List[float]] = {
+            "train_loss": [], "val_loss": [],
+            "train_qwk": [], "val_qwk": [],
+            "val_within_1": [], "val_ref_sens": [],
+            "val_ref_sens_at_spec95": [],
+            "val_ref_sens_at_spec90": [],
+            "val_ref_sens_at_spec85": [],
+            "val_ref_sens_at_spec80": [],
+            "val_ref_auc": []
+        }
+
+        using_external_scheduler = self.lr_scheduler is not None
+        is_plateau_scheduler = using_external_scheduler and isinstance(
+            self.lr_scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau
+        )
+
+        best_checkpoint_path = os.path.join(self.checkpoint_dir, f"{model_name}_best.pth")
+        last_checkpoint_path = os.path.join(self.checkpoint_dir, f"{model_name}_last.pth")
+
+        # --- RESUME TRAINING WORKFLOW ---
+        if resume_checkpoint_path and os.path.exists(resume_checkpoint_path):
+            logger.info(f"Restoring checkpoint from: {resume_checkpoint_path}")
+            ckpt = torch.load(resume_checkpoint_path, map_location=self.device, weights_only=False)
+            self.model.load_state_dict(ckpt["model_state_dict"])
+            if "optimizer_state_dict" in ckpt and ckpt["optimizer_state_dict"] is not None:
+                self.optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+            if self.use_scaler and "scaler_state_dict" in ckpt and ckpt["scaler_state_dict"] is not None:
+                self.scaler.load_state_dict(ckpt["scaler_state_dict"])
+            if using_external_scheduler and "scheduler_state_dict" in ckpt and ckpt["scheduler_state_dict"] is not None:
+                self.lr_scheduler.load_state_dict(ckpt["scheduler_state_dict"])
+
+            start_epoch = ckpt.get("epoch", 0) + 1
+            best_val_qwk = ckpt.get("best_val_qwk", ckpt.get("val_qwk", -1.0))
+            best_val_loss = ckpt.get("best_val_loss", float("inf"))
+            history = ckpt.get("history", history)
+            epochs_no_improve_es = ckpt.get("epochs_no_improve_es", 0)
+            epochs_no_improve_lr = ckpt.get("epochs_no_improve_lr", 0)
+            logger.info(f"-> Resuming training from Epoch {start_epoch}/{epochs} (Previous Best Val QWK: {best_val_qwk:.4f})")
+
+        logger.info(f"Starting Training from Epoch {start_epoch} to {epochs} on device: {self.device} ({self.amp_dtype})")
+
+        for epoch in range(start_epoch, epochs + 1):
+            t0 = time.time()
+            head = getattr(self.model, "head", self.model)
+            if hasattr(head, "set_qwk_weight") and hasattr(head, "target_qwk_weight"):
+                progress = min(1.0, epoch / max(1, self.qwk_warmup_epochs))
+                head.set_qwk_weight(progress * head.target_qwk_weight)
+
+            train_metrics = self.train_epoch(train_loader)
+            val_metrics, _, _ = self.evaluate(val_loader)
+            elapsed = time.time() - t0
+
+            val_loss = val_metrics["Loss"]
+            val_qwk = val_metrics["QWK"]
+
+            # 1. Update Learning Rate
+            if using_external_scheduler:
+                if is_plateau_scheduler:
+                    self.lr_scheduler.step(val_loss)
+                else:
+                    self.lr_scheduler.step()
+
+            current_lr = self.optimizer.param_groups[0]['lr']
+
+            history["train_loss"].append(train_metrics["Loss"])
+            history["val_loss"].append(val_loss)
+            history["train_qwk"].append(train_metrics["QWK"])
+            history["val_qwk"].append(val_qwk)
+            history["val_within_1"].append(val_metrics["Within_1_Grade_Acc"])
+            history["val_ref_sens"].append(val_metrics["Referable_Sensitivity"])
+            history.setdefault("val_ref_sens_at_spec95", []).append(val_metrics.get("Ref_Sensitivity_at_Spec95", float('nan')))
+            history.setdefault("val_ref_sens_at_spec90", []).append(val_metrics.get("Ref_Sensitivity_at_Spec90", float('nan')))
+            history.setdefault("val_ref_sens_at_spec85", []).append(val_metrics.get("Ref_Sensitivity_at_Spec85", float('nan')))
+            history.setdefault("val_ref_sens_at_spec80", []).append(val_metrics.get("Ref_Sensitivity_at_Spec80", float('nan')))
+            history["val_ref_auc"].append(val_metrics.get("Referable_AUC", float('nan')))
+
+            log_msg = (
+                f"[Epoch {epoch:02d}/{epochs:02d} - {elapsed:.1f}s] "
+                f"Train Loss: {train_metrics['Loss']:.4f} | Train QWK: {train_metrics['QWK']:.4f} || "
+                f"Val Loss: {val_loss:.4f} | Val QWK: {val_qwk:.4f} | "
+                f"Val Within-1: {val_metrics['Within_1_Grade_Acc']*100:.1f}% | "
+                f"Val Ref-Sens: {val_metrics['Referable_Sensitivity']*100:.1f}% | "
+                f"Val Ref-Sens@Spec95: {val_metrics.get('Ref_Sensitivity_at_Spec95', float('nan'))*100:.1f}% | "
+                f"Val Ref-Sens@Spec90: {val_metrics.get('Ref_Sensitivity_at_Spec90', float('nan'))*100:.1f}% | "
+                f"Val Ref-Sens@Spec85: {val_metrics.get('Ref_Sensitivity_at_Spec85', float('nan'))*100:.1f}% | "
+                f"Val Ref-Sens@Spec80: {val_metrics.get('Ref_Sensitivity_at_Spec80', float('nan'))*100:.1f}% | "
+                f"Val Ref-AUC: {val_metrics.get('Referable_AUC', float('nan')):.4f} | "
+                f"LR: {current_lr:.2e}"
+            )
+            logger.info(log_msg)
+
+            # 2. Save current checkpoint
+            # 2. Save current checkpoint
+            checkpoint_state = {
+                "epoch": epoch,
+                "model_state_dict": self.model.state_dict(),
+                "optimizer_state_dict": self.optimizer.state_dict(),
+                "scaler_state_dict": self.scaler.state_dict() if self.use_scaler else None,
+                "scheduler_state_dict": self.lr_scheduler.state_dict() if using_external_scheduler else None,
+                "val_qwk": val_qwk,
+                "best_val_qwk": max(best_val_qwk, val_qwk),
+                "best_val_loss": min(best_val_loss, val_loss),
+                "history": history,
+                "val_metrics": val_metrics,
+                "epochs_no_improve_es": epochs_no_improve_es,
+                "epochs_no_improve_lr": epochs_no_improve_lr
+            }
+            # Always update _last.pth to prevent session loss
+            torch.save(checkpoint_state, last_checkpoint_path)
+
+            # Save _best.pth when Val QWK achieves a new record — AND reset the
+            # early-stopping counter here, since QWK is the true model-selection metric
+            if val_qwk > best_val_qwk:
+                best_val_qwk = val_qwk
+                epochs_no_improve_es = 0
+                torch.save(checkpoint_state, best_checkpoint_path)
+                logger.info(f"  -> Saved new Best Model checkpoint: '{best_checkpoint_path}' (Val QWK: {best_val_qwk:.4f})")
+            else:
+                epochs_no_improve_es += 1
+
+            # 3. Manual ReduceLROnPlateau — kept on val_loss (smoother signal for LR scheduling),
+            #    tracked with its OWN independent counter, decoupled from early stopping
+            if val_loss < best_val_loss - 1e-4:
+                best_val_loss = val_loss
+                epochs_no_improve_lr = 0
+            else:
+                epochs_no_improve_lr += 1
+                if not using_external_scheduler and epochs_no_improve_lr >= patience_reduce_lr:
+                    old_lr = current_lr
+                    new_lr = max(old_lr * reduce_lr_factor, min_lr)
+                    if old_lr > min_lr:
+                        for param_group in self.optimizer.param_groups:
+                            param_group['lr'] = new_lr
+                        logger.info(f"  -> [ReduceLROnPlateau] Val loss plateaued for {patience_reduce_lr} epochs. Reduced LR: {old_lr:.2e} -> {new_lr:.2e}")
+                    epochs_no_improve_lr = 0
+
+            # 4. Early Stopping check — now correctly driven by Val QWK (epochs_no_improve_es),
+            #    consistent with the metric used to select the best checkpoint
+            if epochs_no_improve_es >= patience_early_stopping:
+                logger.info(f"  -> [EarlyStopping] Val QWK did not improve for {patience_early_stopping} epochs. Stopping early!")
+                break
+
+        # ----------------------------------------------------------------------
+        # 4. EVALUATION ON HELD-OUT TEST DISTRIBUTION (Using Best Checkpoint)
+        # ----------------------------------------------------------------------
+        test_metrics = {}
+        if test_loader is not None and os.path.exists(best_checkpoint_path):
+            logger.info("Loading Best Model weights for evaluation on Held-Out Test set...")
+            ckpt = torch.load(best_checkpoint_path, map_location=self.device, weights_only=False)
+            self.model.load_state_dict(ckpt["model_state_dict"])
+            test_metrics, _, _ = self.evaluate(test_loader)
+
+            val_test_gap = best_val_qwk - test_metrics["QWK"]
+            test_metrics["Val_Test_Gap"] = val_test_gap
+
+            logger.info(
+                f"=== HELD-OUT TEST RESULTS (IN-DISTRIBUTION) ===\n"
+                f"Test QWK: {test_metrics['QWK']:.4f} | "
+                f"Val QWK: {best_val_qwk:.4f} | "
+                f"Val-Test Gap: {val_test_gap:.4f} | "
+                f"Test Within-1: {test_metrics['Within_1_Grade_Acc']*100:.1f}% | "
+                f"Test Ref-Sens: {test_metrics['Referable_Sensitivity']*100:.1f}% | "
+                f"Test Ref-Sens@Spec95: {test_metrics.get('Ref_Sensitivity_at_Spec95', float('nan'))*100:.1f}% | "
+                f"Test Ref-Sens@Spec90: {test_metrics.get('Ref_Sensitivity_at_Spec90', float('nan'))*100:.1f}% | "
+                f"Test Ref-Sens@Spec85: {test_metrics.get('Ref_Sensitivity_at_Spec85', float('nan'))*100:.1f}% | "
+                f"Test Ref-Sens@Spec80: {test_metrics.get('Ref_Sensitivity_at_Spec80', float('nan'))*100:.1f}% | "
+                f"Test Ref-AUC: {test_metrics.get('Referable_AUC', float('nan')):.4f}"
+            )
+
+        return {
+            "best_val_qwk": best_val_qwk,
+            "best_checkpoint": best_checkpoint_path,
+            "history": history,
+            "test_metrics": test_metrics,
+            "ood_test_metrics": test_metrics
+        }
+
+=== main_model (6) Cell 70 ===
+# ==============================================================================
+# 4.3 INSTANTIATE MODEL & LAUNCH TRAINING / RESUME
+# ==============================================================================
+
+# 1. Instantiate complete Champion Model architecture from Centralized Config
+main_model = build_model(
+    head_type=HEAD_TYPE,
+    pretrained=PRETRAINED,
+    use_cbam=USE_CBAM,
+    fusion_dim=FUSION_DIM,
+    num_classes=NUM_CLASSES,
+    qwk_weight=TARGET_QWK_WEIGHT
+)
+
+# 2. Setup Optimizer and Learning Rate Scheduler
+optimizer = torch.optim.AdamW(main_model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_MAX, eta_min=MIN_LR)
+
+# 3. Initialize DRTrainer engine
+main_trainer = DRTrainer(
+    model=main_model,
+    optimizer=optimizer,
+    lr_scheduler=scheduler,
+    device="cuda" if torch.cuda.is_available() else "cpu",
+    use_amp=True,
+    grad_clip=GRAD_CLIP,
+    checkpoint_dir=CHECKPOINT_DIR,
+    qwk_warmup_epochs=QWK_WARMUP_EPOCHS
+)
+
+# 4. Automatically inspect existing checkpoints on Google Drive to resume
+model_tag = f"dual_branch_{HEAD_TYPE.lower()}"
+best_checkpoint = os.path.join(CHECKPOINT_DIR, f"{model_tag}_best.pth")
+
+resume_ckpt_path = None
+if os.path.exists(best_checkpoint):
+    resume_ckpt_path = best_checkpoint
+    print(f"[FOUND] Existing best checkpoint found at: {best_checkpoint}")
+else:
+    print("[NEW RUN] No existing checkpoint found. Starting fresh training from Epoch 1.")
+
+# 5. Start training or resume execution
+main_history = main_trainer.fit(
+    train_loader=train_loader,
+    val_loader=val_loader,
+    test_loader=test_loader,
+    epochs=EPOCHS,
+    model_name=model_tag,
+    patience_early_stopping=PATIENCE_EARLY_STOPPING,
+    resume_checkpoint_path=resume_ckpt_path
+)
+
+
+=== main_model (6) Cell 71 ===
+# # SCIENTIFIC ANALYSIS: 5 OUTPUT HEAD ABLATION (END-TO-END VS. FROZEN BACKBONE)
+# #
+# # CLINICAL METHODOLOGICAL EVALUATION:
+# #  1. Technical aspect: Freezing backbone and extracting cached latents to train 5 heads
+# #     saves ~5x compute, which is useful for rapid debugging / fast prototyping.
+# #  2. Scientific validity: NOT valid for the Final Benchmark Table.
+# #     Reason: When the backbone is trained with the CLM_QWK loss, the latent feature space
+# #     is specifically optimized for CLM. Freezing this backbone to train Cross-Entropy or CORAL
+# #     heads puts them at an unfair disadvantage, failing to reflect true end-to-end representation learning.
+# #
+# #  -> BOTH MODES ARE PROVIDED BELOW:
+# #     - MODE 1 (Scientific Benchmark): Independent End-to-End training per head (for official results).
+# #     - MODE 2 (Compute Efficient): Freeze backbone and extract cached latents (for fast prototyping).
+#
+# # ==============================================================================
+# # MODE 1: SCIENTIFIC BENCHMARK (END-TO-END TRAINING OF ALL 5 HEADS)
+# # ==============================================================================
+# HEAD_TYPES = [
+#     "Softmax_CE",
+#     "Softmax_QWK",
+#     "CORAL",
+#     "CORN",
+#     "CLM_QWK"
+# ]
+#
+# ablation_results = {}
+#
+# for head_type in HEAD_TYPES:
+#     # Independent End-to-End training for each architecture head (Backbone + Head).
+#     # Each head learns its own optimal representation.
+#     logger.info(f"\n>>> [SCIENTIFIC BENCHMARK] Training End-to-End Model with Head: {head_type}...")
+#
+#     head_model = build_model(
+#         head_type=head_type,
+#         pretrained=True,
+#         use_cbam=True,
+#         fusion_dim=512,
+#         num_classes=5,
+#         qwk_weight=1.2 if "QWK" in head_type else 0.0
+#     )
+#
+#     head_opt = torch.optim.AdamW(head_model.parameters(), lr=1e-4, weight_decay=1e-3)
+#     head_sched = torch.optim.lr_scheduler.CosineAnnealingLR(head_opt, T_max=T_MAX, eta_min=1e-6)
+#
+#     trainer_head = DRTrainer(
+#         model=head_model,
+#         optimizer=head_opt,
+#         lr_scheduler=head_sched,
+#         use_amp=True,
+#         grad_clip=1.0,
+#         checkpoint_dir=f"./checkpoints_ablation_{head_type}"
+#     )
+#
+#     history = trainer_head.fit(
+#         train_loader=train_loader,
+#         val_loader=val_loader,
+#         test_loader=test_loader,
+#         epochs=EPOCHS,
+#         model_name=f"dual_branch_{head_type.lower()}"
+#     )
+#
+#     ablation_results[head_type] = history
+#
+# # --- MODE 2: COMPUTE EFFICIENT (FREEZE TRAINED BACKBONE TO EXTRACT LATENT CACHE) ---
+# # If rapid exploration is preferred over end-to-end retraining:
+# # 1. Set main_model.eval()
+# # 2. Freeze backbone parameters: for p in main_model.backbone.parameters(): p.requires_grad = False
+# # 3. Extract and cache 512-d embeddings z for train_loader, val_loader, test_loader
+# # 4. Train standalone lightweight heads on the cached tensors in seconds:
+# #
+# # with torch.no_grad():
+# #     logger.info("[INFO] Prepared Frozen Backbone for fast Latent Caching (Fast Prototyping).")

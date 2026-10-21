@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drdg"
+version = "0.1.0"
+description = "Deconstructing Domain Shift in Diabetic Retinopathy Grading"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "albumentations>=1.3.0",
+    "opencv-python>=4.7.0",
+    "scikit-learn>=1.2.0",
+    "pandas>=2.0.0",
+    "numpy>=1.24.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "scipy>=1.10.0",
+    "tqdm>=4.65.0",
+    "pillow>=9.5.0",
+]
+
+[tool.setuptools]
+py-modules = ["config", "paths"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "data*",
+    "models*",
+    "losses*",
+    "training*",
+    "evaluation*",
+    "explainability*",
+    "visualization*",
+    "experiments*",
+    "utils*",
+]
+
+[tool.setuptools.package-dir]
+"drdg" = "."
+"drdg.data" = "data"
+"drdg.models" = "models"
+"drdg.losses" = "losses"
+"drdg.training" = "training"
+"drdg.evaluation" = "evaluation"
+"drdg.explainability" = "explainability"
+"drdg.visualization" = "visualization"
+"drdg.experiments" = "experiments"
+"drdg.utils" = "utils"

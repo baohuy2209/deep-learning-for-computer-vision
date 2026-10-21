@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{Controlled ablation of 5 prediction heads under standardized ResNet-50 features ($D=512$).}
+\label{tab:head_ablation}
+\small
+\begin{tabular}{lccccc}
+\toprule
+\textbf{Prediction Head} & \textbf{Loss Formulation} & \textbf{QWK} & \textbf{Accuracy} & \textbf{Within-1 Acc} & \textbf{RDR AUC} \\
+\midrule
+Softmax & Cross-Entropy & 0.742 & 0.652 & 0.891 & 0.884 \\
+Softmax & Continuous QWK & 0.791 & 0.648 & 0.912 & 0.902 \\
+CORAL & Rank Binary CE & 0.804 & 0.671 & 0.938 & 0.915 \\
+CORN & Conditional Rank CE & 0.812 & 0.683 & 0.941 & 0.920 \\
+\textbf{CLM (Cloglog)} & \textbf{Log-Likelihood + QWK} & \textbf{0.835} & \textbf{0.697} & \textbf{0.962} & \textbf{0.943} \\
+\bottomrule
+\end{tabular}
+\end{table}

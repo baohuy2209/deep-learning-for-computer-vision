@@ -1,0 +1,17 @@
+{
+  "checkpoint": "synthetic_dry_run",
+  "cohort": "idrid_segmentation",
+  "total_images_evaluated": 4,
+  "metrics": {
+    "global_gradcam": {
+      "pointing_game_accuracy": 0.0,
+      "area_matched_saliency_recall": 0.0,
+      "pixel_auroc": 0.0
+    },
+    "local_mil_attention": {
+      "pointing_game_accuracy": 0.5,
+      "area_matched_saliency_recall": 1.0,
+      "pixel_auroc": 0.5
+    }
+  }
+}

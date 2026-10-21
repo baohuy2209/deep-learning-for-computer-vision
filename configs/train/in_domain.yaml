@@ -1,0 +1,57 @@
+experiment:
+  name: "multiscale_mil_in_domain_champion"
+  seed: 42
+  device: "cuda:0"
+  output_dir: "results/in_domain"
+
+data:
+  raw_dir: "data/raw"
+  native_cropped_dir: "data/raw/hybrid/native_cropped"
+  train_csv: "data/raw/hybrid/train_metadata.csv"
+  val_csv: "data/raw/hybrid/val_metadata.csv"
+  test_csv: "data/raw/hybrid/test_metadata.csv"
+  num_workers: 4
+  pin_memory: true
+
+model:
+  architecture: "MultiScaleMILNet"
+  global_branch:
+    backbone: "efficientnet_b0"
+    pretrained: true
+    img_size: 512
+    preprocessing: "ben_graham_green"
+  local_branch:
+    backbone: "efficientnet_b0"
+    pretrained: true
+    patch_size: 224
+    num_patches: 4
+    patch_selection: "saliency_topk"
+  attention:
+    type: "cbam"
+    reduction_ratio: 16
+  head:
+    type: "consistent_ordinal"
+    num_classes: 5
+
+training:
+  epochs: 35
+  batch_size: 16
+  mixed_precision: true
+  optimizer:
+    name: "AdamW"
+    lr: 1.0e-4
+    weight_decay: 1.0e-2
+  scheduler:
+    name: "CosineAnnealingLR"
+    T_max: 35
+    eta_min: 1.0e-6
+  early_stopping:
+    monitor: "val_qwk"
+    mode: "max"
+    patience: 7
+    min_delta: 0.002
+  checkpointing:
+    save_dir: "checkpoints/checkpoints_main"
+    save_top_k: 1
+    save_last: true
+    monitor: "val_qwk"

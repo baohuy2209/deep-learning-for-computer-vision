@@ -1,0 +1,619 @@
+### Cell 4: Config & Paths
+# ==============================================================================
+# 1.2 CONFIGURATION & PATH RESOLUTION (SMOKE_TEST vs. FULL_RUN)
+# ==============================================================================
+# Set SMOKE_TEST = False for official 6-fold LODO evaluation across all datasets
+SMOKE_TEST = True
+
+IMG_SIZE = 512
+PATCH_SIZE = 128
+PATCH_STRIDE = 96
+PATCH_FOV_THRESH = 0.5
+BATCH_SIZE = 8
+QWK_WARMUP_EPOCHS = 3
+LODO_EPOCHS = 3 if SMOKE_TEST else 12
+
+CHECKPOINT_DIR_LODO = "./checkpoints_lodo"
+RESULTS_DIR_LODO = "./results/lodo"
+FIGURES_DIR = "./results/figures"
+os.makedirs(CHECKPOINT_DIR_LODO, exist_ok=True)
+os.makedirs(RESULTS_DIR_LODO, exist_ok=True)
+os.makedirs(FIGURES_DIR, exist_ok=True)
+
+# 6 Raw International Datasets Configuration
+DATASET_CONFIG = {
+    "APTOS": {
+        "name": "APTOS 2019",
+        "csv_path": "aptos/aptos_total.csv",
+        "id_col": "id_code",
+        "label_col": "diagnosis"
+    },
+    "DDR": {
+        "name": "DDR Dataset",
+        "csv_path": "ddr/DR_grading.csv",
+        "id_col": "id_code",
+        "label_col": "diagnosis"
+    },
+    "DeepDRiD": {
+        "name": "DeepDRiD",
+        "csv_path": "deepdrid/deepdrid_total.csv",
+        "id_col": "image_id",
+        "label_col": "patient_DR_Level"
+    },
+    "IDRiD": {
+        "name": "IDRiD",
+        "csv_path": "idrid/idrid_total.csv",
+        "id_col": "image_id",
+        "label_col": "diagnosis"
+    },
+    "Messidor-2": {
+        "name": "Messidor-2",
+        "csv_path": "messidor2preprocess/messidor_data.csv",
+        "id_col": "id_code",
+        "label_col": "diagnosis"
+    },
+    "EyePACS": {
+        "name": "EyePACS (Kaggle)",
+        "csv_path": "zipEyepacs/trainLabels.csv/trainLabels.csv",
+        "id_col": "image",
+        "label_col": "level"
+    }
+}
+
+DATASET_KEYS = list(DATASET_CONFIG.keys())
+print(f"Total LODO Cohorts Configured: {len(DATASET_KEYS)} datasets -> {DATASET_KEYS}")
+print(f"Execution Mode: {'SMOKE TEST (Sanity check)' if SMOKE_TEST else 'FULL 6-FOLD LODO RUN'}")
+
+### Cell 6: Patient Parsing
+# ==============================================================================
+# 2.1 PATIENT ID PARSING & ZERO-LEAKAGE GROUPING
+# ==============================================================================
+def parse_patient_and_side(image_id: str, dataset_key: str) -> Tuple[str, str]:
+    """
+    Extracts patient_id and eye side (left/right) from filename.
+    Guarantees that left and right eyes of the same individual share identical patient_id.
+    Includes cohort namespace prefix to prevent inter-dataset collisions.
+    """
+    img_str = str(image_id).lower()
+    k = dataset_key.lower()
+
+    side = "unknown"
+    if "left" in img_str or "_l" in img_str:
+        side = "left"
+    elif "right" in img_str or "_r" in img_str:
+        side = "right"
+
+    if "idrid" in k:
+        base = img_str.replace(".jpg", "").replace(".png", "")
+        pid = base.split("_")[-1]
+    elif "eyepacs" in k or "deepdrid" in k:
+        pid = img_str.split("_")[0]
+    elif "ddr" in k:
+        parts = img_str.replace(".jpg", "").replace(".png", "").split("-")
+        pid = "-".join(parts[:2]) if len(parts) >= 2 else img_str.split(".")[0]
+    elif "messidor" in k:
+        pid = img_str.split("_")[0]
+    else:
+        pid = img_str
+
+    return f"{dataset_key}::{pid}", side
+
+### Cell 7: Dataset Loading
+# ==============================================================================
+# 2.2 MASTER COHORT INGESTION & HARMONIZATION
+# ==============================================================================
+def load_and_harmonize_master_cohorts() -> pd.DataFrame:
+    """
+    Loads harmonized master dataset metadata across all 6 clinical cohorts.
+    Attempts loading pre-standardized hybrid metadata if available, or constructs it dynamically.
+    """
+    hybrid_paths = [
+        "../../../../data/raw/hybrid/train_metadata.csv",
+        "../../../../data/raw/hybrid/val_metadata.csv",
+        "../../../../data/raw/hybrid/test_metadata.csv"
+    ]
+    
+    existing_paths = [p for p in hybrid_paths if os.path.exists(p)]
+    if len(existing_paths) == 3:
+        dfs = [pd.read_csv(p) for p in existing_paths]
+        master = pd.concat(dfs, ignore_index=True)
+        # Ensure mandatory columns exist
+        if "patient_id" not in master.columns or master["patient_id"].isnull().any():
+            pids, sides = [], []
+            for _, r in master.iterrows():
+                pid, side = parse_patient_and_side(r["image_id"], r.get("dataset_key", "DR"))
+                pids.append(pid)
+                sides.append(side)
+            master["patient_id"] = pids
+            master["side"] = sides
+        print(f"Ingested pre-harmonized master dataset: {len(master):,} images across {master['dataset_key'].nunique()} cohorts.")
+        return master
+
+    # Fallback to sample metadata in smoke test
+    sample_path = "../../../../data/raw/samples/hybrid/sample_50_metadata.csv"
+    if os.path.exists(sample_path):
+        sample_df = pd.read_csv(sample_path)
+        print(f"Loaded fallback sample dataset: {len(sample_df):,} images.")
+        return sample_df
+
+    # Construct synthetic demonstration DataFrame if raw data is unavailable
+    print("[WARN] Constructing synthetic demonstration master DataFrame.")
+    demo_records = []
+    for d_key in DATASET_KEYS:
+        for g in range(5):
+            for i in range(20):
+                img_id = f"{d_key.lower()}_{g}_{i:03d}"
+                pid, side = parse_patient_and_side(img_id, d_key)
+                demo_records.append({
+                    "image_id": img_id,
+                    "diagnosis": g,
+                    "dataset_name": DATASET_CONFIG[d_key]["name"],
+                    "dataset_key": d_key,
+                    "patient_id": pid,
+                    "side": side,
+                    "raw_full_path": f"demo_{img_id}.jpg",
+                    "native_path": f"demo_{img_id}.jpg"
+                })
+    return pd.DataFrame(demo_records)
+
+master_df = load_and_harmonize_master_cohorts()
+print("Master DataFrame Summary by Cohort & Clinical Severity:")
+print(pd.crosstab(master_df["dataset_key"], master_df["diagnosis"]))
+
+### Cell 8: Balancing
+# ==============================================================================
+# 2.3 SOURCE-AWARE TRAINING POOL BALANCING & 85/15 PATIENT-LEVEL SPLIT
+# ==============================================================================
+def create_balanced_training_pool(
+    df_train_5_sources: pd.DataFrame,
+    target_range: Tuple[int, int] = (1000, 2000),
+    seed: int = 42
+) -> pd.DataFrame:
+    """
+    Applies multi-source quota balancing per disease grade on the 5 training datasets.
+    Prevents large cohorts (e.g. EyePACS) from overwhelming smaller cohorts (e.g. IDRiD).
+    """
+    balanced_dfs = []
+    np.random.seed(seed)
+
+    for grade in range(5):
+        grade_subset = df_train_5_sources[df_train_5_sources["diagnosis"] == grade].copy().reset_index(drop=True)
+        current_count = len(grade_subset)
+
+        if current_count == 0:
+            continue
+
+        datasets_in_grade = grade_subset["dataset_key"].unique()
+        num_datasets = len(datasets_in_grade)
+
+        if current_count > target_range[1]:
+            target_count = int(np.random.RandomState(seed + grade).randint(target_range[0], target_range[1] + 1))
+            base_quota = max(1, target_count // max(1, num_datasets))
+
+            sampled_datasets = []
+            leftover_quota = 0
+            eligible_datasets = []
+
+            for ds_name in datasets_in_grade:
+                ds_subset = grade_subset[grade_subset["dataset_key"] == ds_name]
+                ds_count = len(ds_subset)
+
+                if ds_count <= base_quota:
+                    sampled_datasets.append(ds_subset)
+                    leftover_quota += (base_quota - ds_count)
+                else:
+                    eligible_datasets.append((ds_name, ds_subset, ds_count))
+
+            if eligible_datasets:
+                quota_per_large_ds = base_quota + (leftover_quota // len(eligible_datasets))
+                for ds_name, ds_subset, ds_count in eligible_datasets:
+                    take_count = min(quota_per_large_ds, ds_count)
+                    ds_sampled = ds_subset.sample(take_count, random_state=seed)
+                    sampled_datasets.append(ds_sampled)
+
+            selected_subset = pd.concat(sampled_datasets, ignore_index=True)
+            if len(selected_subset) > target_count:
+                selected_subset = selected_subset.sample(target_count, random_state=seed).reset_index(drop=True)
+        else:
+            selected_subset = grade_subset.copy()
+
+        balanced_dfs.append(selected_subset)
+
+    master_balanced = pd.concat(balanced_dfs, ignore_index=True)
+    return master_balanced
+
+
+def split_5_dataset_training_pool(
+    df_pool: pd.DataFrame,
+    train_ratio: float = 0.85,
+    random_state: int = 42
+) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Splits the 5-dataset pool into Train (85%) and In-Domain Val (15%) using GroupShuffleSplit on patient_id.
+    Strictly guarantees zero patient-level overlap between train and validation splits.
+    """
+    gss = GroupShuffleSplit(n_splits=1, train_size=train_ratio, random_state=random_state)
+    train_idx, val_idx = next(gss.split(df_pool, groups=df_pool["patient_id"]))
+    
+    train_df = df_pool.iloc[train_idx].copy().reset_index(drop=True)
+    val_df = df_pool.iloc[val_idx].copy().reset_index(drop=True)
+    
+    train_df["split"] = "train"
+    val_df["split"] = "val"
+    return train_df, val_df
+
+### Cell 10: FOV & MIL Patches
+# ==============================================================================
+# 3.1 ROBUST RETINAL FOV & SPATIAL ANCHOR COORDINATE COMPUTATION
+# ==============================================================================
+
+def compute_fov_mask(img_np: np.ndarray, erode_px: int = 15) -> np.ndarray:
+    """
+    Computes the true retinal Field-of-View (FOV) binary mask for a SINGLE fundus image.
+    IMPORTANT: Must be computed on the RAW RGB fundus image BEFORE Ben Graham preprocessing.
+    """
+    if img_np.ndim == 3:
+        gray = img_np[:, :, 1] if img_np.shape[2] == 3 else img_np[:, :, 0]
+    else:
+        gray = img_np
+
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    _, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (25, 25))
+    closed = cv2.morphologyEx(binary, cv2.MORPH_CLOSE, kernel)
+    cleaned = cv2.morphologyEx(closed, cv2.MORPH_OPEN, kernel)
+
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(cleaned, connectivity=8)
+    if num_labels > 1:
+        largest_label = 1 + np.argmax(stats[1:, cv2.CC_STAT_AREA])
+        fov_mask = (labels == largest_label).astype(np.uint8) * 255
+    else:
+        fov_mask = cleaned
+
+    if erode_px > 0:
+        kernel_erode = cv2.getStructuringElement(
+            cv2.MORPH_ELLIPSE, (erode_px * 2 + 1, erode_px * 2 + 1)
+        )
+        fov_mask = cv2.erode(fov_mask, kernel_erode)
+
+    return (fov_mask > 0).astype(np.uint8)
+
+
+def compute_valid_anchors(
+    img_shape: Tuple[int, int],
+    fov_mask: np.ndarray,
+    patch_size: int = 128,
+    stride: int = 96,
+    fov_thresh: float = 0.5
+) -> np.ndarray:
+    """Calculates 2D top-left coordinate anchors [y0, x0] passing the FOV threshold."""
+    h, w = img_shape[:2]
+    p = patch_size
+
+    if np.any(fov_mask):
+        coords = np.argwhere(fov_mask)
+        y_min, x_min = coords.min(axis=0)
+        y_max, x_max = coords.max(axis=0)
+    else:
+        y_min, x_min, y_max, x_max = 0, 0, h, w
+
+    content_h = max(1, y_max - y_min)
+    content_w = max(1, x_max - x_min)
+
+    def get_coords(curr_stride: int):
+        s = max(1, curr_stride)
+        y_starts = list(range(y_min, y_min + content_h - p + 1, s)) if content_h > p else [y_min]
+        x_starts = list(range(x_min, x_min + content_w - p + 1, s)) if content_w > p else [x_min]
+
+        if content_h > p and (y_min + content_h - p) not in y_starts:
+            y_starts.append(y_min + content_h - p)
+        if content_w > p and (x_min + content_w - p) not in x_starts:
+            x_starts.append(x_min + content_w - p)
+
+        valid_list = []
+        for y0 in y_starts:
+            for x0 in x_starts:
+                y1, x1 = min(y0 + p, h), min(x0 + p, w)
+                mask_patch = fov_mask[y0:y1, x0:x1]
+                fov_ratio = mask_patch.mean() if mask_patch.size > 0 else 0.0
+                if fov_ratio >= fov_thresh:
+                    valid_list.append([y0, x0])
+        return valid_list
+
+    anchors = get_coords(stride)
+    if len(anchors) < 32 and stride > 48 and min(content_h, content_w) > p:
+        dense_anchors = get_coords(48)
+        if len(dense_anchors) > len(anchors):
+            anchors = dense_anchors
+
+    if len(anchors) == 0:
+        cy = max(0, y_min + content_h // 2 - p // 2)
+        cx = max(0, x_min + content_w // 2 - p // 2)
+        anchors = [[cy, cx]]
+
+    return np.array(anchors, dtype=np.int32)
+
+
+def extract_mil_patches_from_anchors(
+    img_np: np.ndarray,
+    anchors: np.ndarray,
+    patch_size: int = 128,
+    mode: str = "train",
+    num_sample: Union[int, Tuple[int, int]] = 48,
+    max_patches_eval: int = 256
+) -> torch.Tensor:
+    """Slices patches using precomputed coordinate anchors [y0, x0]."""
+    h, w, _ = img_np.shape
+    p = patch_size
+    n_anchors = len(anchors)
+
+    if mode == "train":
+        if isinstance(num_sample, (tuple, list)):
+            m_target = int(num_sample[0]) if num_sample[0] == num_sample[1] else int(np.random.randint(num_sample[0], num_sample[1] + 1))
+        else:
+            m_target = int(num_sample)
+        if n_anchors < m_target:
+            idx = np.random.choice(n_anchors, size=m_target, replace=True)
+        else:
+            idx = np.random.choice(n_anchors, size=m_target, replace=False)
+        selected = anchors[idx]
+    else:
+        max_eval = min(n_anchors, max_patches_eval)
+        idx = np.linspace(0, n_anchors - 1, max_eval).astype(int)
+        selected = anchors[idx]
+
+    patches = []
+    for y0, x0 in selected:
+        y1, x1 = min(y0 + p, h), min(x0 + p, w)
+        patch = img_np[y0:y1, x0:x1]
+        if patch.shape[0] < p or patch.shape[1] < p:
+            pad_h = max(0, p - patch.shape[0])
+            pad_w = max(0, p - patch.shape[1])
+            patch = np.pad(patch, ((0, pad_h), (0, pad_w), (0, 0)), mode="reflect")
+        patches.append(patch)
+
+    patches_np = np.stack(patches, axis=0)
+    return torch.from_numpy(patches_np).permute(0, 3, 1, 2).contiguous()
+
+
+def extract_mil_patches_sliding(
+    img_np: np.ndarray,
+    fov_mask: Optional[np.ndarray] = None,
+    patch_size: int = 128,
+    stride: int = 96,
+    fov_thresh: float = 0.5,
+    mode: str = "train",
+    num_sample: Union[int, Tuple[int, int]] = 48,
+    max_patches_eval: int = 256,
+    native_path: Optional[str] = None
+) -> torch.Tensor:
+    """Extracts patches directly from image array."""
+    if fov_mask is None:
+        fov_mask = compute_fov_mask(img_np, erode_px=15)
+    anchors = compute_valid_anchors(
+        img_np.shape[:2], fov_mask, patch_size=patch_size, stride=stride, fov_thresh=fov_thresh
+    )
+    return extract_mil_patches_from_anchors(
+        img_np, anchors, patch_size=patch_size, mode=mode, num_sample=num_sample, max_patches_eval=max_patches_eval
+    )
+
+
+def precompute_dataset_cache(
+    df: pd.DataFrame,
+    img_root: Optional[str] = None,
+    cache_dir: str = "./cache_lodo",
+    patch_size: int = 128,
+    stride: int = 96,
+    fov_thresh: float = 0.5,
+    ablation_mode: str = "ben_graham_green"
+) -> Dict[str, int]:
+    """Offline precomputes and saves compressed NPZ cache files."""
+    os.makedirs(cache_dir, exist_ok=True)
+    records = df.to_dict("records")
+
+    def process_single(row):
+        dataset_key = row.get("dataset_key", "default")
+        native_path_str = str(row.get("native_path", row.get("raw_full_path", "")))
+        img_id = PureWindowsPath(native_path_str).stem if native_path_str else str(row.get("image_id", "sample"))
+
+        target_dir = os.path.join(cache_dir, dataset_key)
+        os.makedirs(target_dir, exist_ok=True)
+        out_path = os.path.join(target_dir, f"{img_id}.npz")
+
+        if os.path.exists(out_path):
+            return True
+
+        if img_root and not os.path.isabs(native_path_str) and not os.path.exists(native_path_str):
+            img_path = os.path.join(img_root, dataset_key, PureWindowsPath(native_path_str).name)
+        else:
+            img_path = native_path_str
+
+        bgr = cv2.imread(img_path)
+        if bgr is None:
+            return False
+
+        img_rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        fov_mask = compute_fov_mask(img_rgb, erode_px=15)
+        processed_u8 = apply_green_channel_ablation(img_rgb, ablation_mode=ablation_mode)
+        valid_anchors = compute_valid_anchors(
+            img_rgb.shape[:2], fov_mask, patch_size=patch_size, stride=stride, fov_thresh=fov_thresh
+        )
+
+        np.savez_compressed(out_path, img=processed_u8, anchors=valid_anchors)
+        return True
+
+    success_count = 0
+    fail_count = 0
+    print(f"[INFO] Precomputing NPZ cache for {len(records)} samples -> '{cache_dir}'...")
+    for r in tqdm(records, desc="Precomputing LODO Cache"):
+        res = process_single(r)
+        if res:
+            success_count += 1
+        else:
+            fail_count += 1
+
+    print(f"[INFO] Cache generation completed: {success_count} succeeded, {fail_count} failed.")
+    return {"success": success_count, "failed": fail_count}
+
+
+def trainer_compatible_collate_fn(
+    batch,
+    mode: str = "train",
+    num_sample: Union[int, Tuple[int, int]] = (32, 64),
+    patch_size: int = 128,
+    max_patches_eval: int = 256
+):
+    """Collate function transmitting raw uint8 tensors across shared memory IPC."""
+    global_imgs = torch.stack([item["global_image"] for item in batch], dim=0)
+    labels = torch.stack([item["label"] for item in batch], dim=0)
+
+    if mode == "train":
+        if isinstance(num_sample, (tuple, list)):
+            batch_m = int(np.random.randint(num_sample[0], num_sample[1] + 1))
+        else:
+            batch_m = int(num_sample)
+    else:
+        batch_m = max_patches_eval
+
+    local_patches_list = [
+        extract_mil_patches_from_anchors(
+            item["local_native_image"],
+            item["valid_anchors"],
+            patch_size=patch_size,
+            mode=mode,
+            num_sample=batch_m,
+            max_patches_eval=max_patches_eval
+        )
+        for item in batch
+    ]
+
+    if mode == "train":
+        local_patches = torch.stack(local_patches_list, dim=0)
+        return {
+            "global_img": global_imgs,
+            "local_patches": local_patches,
+            "label": labels,
+        }
+
+    n_max = max(p.shape[0] for p in local_patches_list)
+    padded, masks = [], []
+    for p in local_patches_list:
+        n = p.shape[0]
+        if n < n_max:
+            pad = torch.zeros((n_max - n, *p.shape[1:]), dtype=p.dtype)
+            p = torch.cat([p, pad], dim=0)
+        mask = torch.zeros(n_max, dtype=torch.bool)
+        mask[:n] = True
+        padded.append(p)
+        masks.append(mask)
+
+    local_patches = torch.stack(padded, dim=0)
+    patch_mask = torch.stack(masks, dim=0)
+
+    return {
+        "global_img": global_imgs,
+        "local_patches": local_patches,
+        "patch_mask": patch_mask,
+        "label": labels,
+    }
+
+
+
+### Cell 11: Dataset & Collate
+class FundusDualBranchDataset(Dataset):
+    def __init__(
+        self,
+        metadata: Union[pd.DataFrame, str],
+        img_size: int = IMG_SIZE,
+        img_root: Optional[str] = None,
+        split: str = "train",
+        ablation_mode: str = "ben_graham_green",
+        cache_dir: Optional[str] = None,
+        patch_size: int = 128,
+        stride: int = 96
+    ):
+        """
+        Dataset serving the proposed Dual-Branch model (Global + Local MIL) with precomputed NPZ cache support.
+        """
+        if isinstance(metadata, str):
+            self.df = pd.read_csv(metadata)
+        else:
+            self.df = metadata.reset_index(drop=True)
+
+        self.records = self.df.to_dict("records")
+        self.img_size = img_size
+        self.patch_size = patch_size
+        self.stride = stride
+        self.split = split
+        self.img_root = img_root
+        self.ablation_mode = ablation_mode
+        self.is_train = (split == "train")
+        self.cache_dir = cache_dir
+
+        self.global_transform = get_global_augmentations(
+            img_size, is_train=self.is_train
+        )
+
+    def __len__(self):
+        return len(self.records)
+
+    def __getitem__(self, idx):
+        row = self.records[idx]
+        label = int(row.get("diagnosis", 0))
+        dataset_key = row.get("dataset_key", "default")
+        native_path_str = str(row.get("native_path", row.get("raw_full_path", "")))
+        img_id = PureWindowsPath(native_path_str).stem if native_path_str else str(row.get("image_id", idx))
+
+        cache_file = os.path.join(self.cache_dir, dataset_key, f"{img_id}.npz") if self.cache_dir else None
+        processed_np = None
+        valid_anchors = None
+
+        if cache_file and os.path.exists(cache_file):
+            try:
+                with np.load(cache_file) as data:
+                    processed_np = data["img"]
+                    valid_anchors = data["anchors"]
+            except Exception:
+                processed_np, valid_anchors = None, None
+
+        if processed_np is None:
+            if self.img_root and not os.path.isabs(native_path_str) and not os.path.exists(native_path_str):
+                img_path = f"{self.img_root}/{dataset_key}/{PureWindowsPath(native_path_str).name}"
+            else:
+                img_path = native_path_str
+
+            bgr = cv2.imread(img_path)
+            if bgr is not None:
+                img_rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+            else:
+                try:
+                    pil_img = Image.open(img_path).convert("RGB")
+                    img_rgb = np.array(pil_img)
+                except Exception as e:
+                    logger.error(f"Error loading image from {img_path}: {e}")
+                    img_rgb = np.zeros((self.img_size, self.img_size, 3), dtype=np.uint8)
+
+            fov_mask = compute_fov_mask(img_rgb, erode_px=15)
+            processed_np = apply_green_channel_ablation(
+                img_rgb, ablation_mode=self.ablation_mode
+            )
+            valid_anchors = compute_valid_anchors(
+                img_rgb.shape[:2], fov_mask, patch_size=self.patch_size, stride=self.stride, fov_thresh=0.5
+            )
+        else:
+            img_path = native_path_str
+
+        # Global stream (uint8)
+        global_augmented = self.global_transform(image=processed_np)
+        global_img = global_augmented["image"]
+        global_tensor = torch.from_numpy(global_img).permute(2, 0, 1).contiguous()
+
+        return {
+            "global_image": global_tensor,
+            "local_native_image": processed_np,
+            "valid_anchors": valid_anchors,
+            "native_path": img_path,
+            "label": torch.tensor(label, dtype=torch.long),
+        }
+

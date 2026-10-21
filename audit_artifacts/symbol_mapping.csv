@@ -1,0 +1,441 @@
+original_file,original_symbol,original_type,refactored_file,refactored_symbol,status,notes
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,current_dir,constant_or_var,src/drdg/config.py,current_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,full_pipeline_path,constant_or_var,src/drdg/config.py,full_pipeline_path,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,logger,constant_or_var,src/drdg/config.py,logger,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,zip_source,constant_or_var,src/drdg/config.py,zip_source,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,extract_dest,constant_or_var,src/drdg/config.py,extract_dest,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,DATA_ROOT,constant_or_var,src/drdg/config.py,DATA_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,RESULT_ROOT,constant_or_var,src/drdg/config.py,RESULT_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,CHECKPOINT_DIR,constant_or_var,src/drdg/config.py,CHECKPOINT_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,CACHE_DIR,constant_or_var,src/drdg/config.py,CACHE_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,FIGURES_DIR,constant_or_var,src/drdg/config.py,FIGURES_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,idrid_seg_root,constant_or_var,src/drdg/config.py,idrid_seg_root,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,idrid_seg_image_dirs,constant_or_var,src/drdg/config.py,idrid_seg_image_dirs,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,idrid_seg_mask_dirs,constant_or_var,src/drdg/config.py,idrid_seg_mask_dirs,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,SMOKE_TEST,constant_or_var,src/drdg/config.py,SMOKE_TEST,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,SEED,constant_or_var,src/drdg/config.py,SEED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,num_workers,constant_or_var,src/drdg/config.py,num_workers,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,use_pin_memory,constant_or_var,src/drdg/config.py,use_pin_memory,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,IMG_SIZE,constant_or_var,src/drdg/config.py,IMG_SIZE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,NUM_CLASSES,constant_or_var,src/drdg/config.py,NUM_CLASSES,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,HEAD_TYPE,constant_or_var,src/drdg/config.py,HEAD_TYPE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,FUSION_DIM,constant_or_var,src/drdg/config.py,FUSION_DIM,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,PRETRAINED,constant_or_var,src/drdg/config.py,PRETRAINED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,USE_CBAM,constant_or_var,src/drdg/config.py,USE_CBAM,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,USE_NONLOCAL,constant_or_var,src/drdg/config.py,USE_NONLOCAL,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,USE_QUADRANT_TOKENS,constant_or_var,src/drdg/config.py,USE_QUADRANT_TOKENS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,TARGET_QWK_WEIGHT,constant_or_var,src/drdg/config.py,TARGET_QWK_WEIGHT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,LEARNING_RATE,constant_or_var,src/drdg/config.py,LEARNING_RATE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,WEIGHT_DECAY,constant_or_var,src/drdg/config.py,WEIGHT_DECAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,MIN_LR,constant_or_var,src/drdg/config.py,MIN_LR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,PATIENCE_EARLY_STOPPING,constant_or_var,src/drdg/config.py,PATIENCE_EARLY_STOPPING,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,PATIENCE_REDUCE_LR,constant_or_var,src/drdg/config.py,PATIENCE_REDUCE_LR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,REDUCE_LR_FACTOR,constant_or_var,src/drdg/config.py,REDUCE_LR_FACTOR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,GRAD_CLIP,constant_or_var,src/drdg/config.py,GRAD_CLIP,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,image_root_dir,constant_or_var,src/drdg/config.py,image_root_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,configure_publication_style,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_NAVY,constant_or_var,src/drdg/config.py,C_NAVY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_ORANGE,constant_or_var,src/drdg/config.py,C_ORANGE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_CHAMP,constant_or_var,src/drdg/config.py,C_CHAMP,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_TEAL,constant_or_var,src/drdg/config.py,C_TEAL,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_GREEN,constant_or_var,src/drdg/config.py,C_GREEN,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_RED,constant_or_var,src/drdg/config.py,C_RED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_CRIMSON,constant_or_var,src/drdg/config.py,C_CRIMSON,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_AMBER,constant_or_var,src/drdg/config.py,C_AMBER,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_PURPLE,constant_or_var,src/drdg/config.py,C_PURPLE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_SLATE,constant_or_var,src/drdg/config.py,C_SLATE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_GRAY,constant_or_var,src/drdg/config.py,C_GRAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_DARKGRAY,constant_or_var,src/drdg/config.py,C_DARKGRAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,C_EMERALD,constant_or_var,src/drdg/config.py,C_EMERALD,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,apply_green_channel_ablation,function,src/drdg/data/fov.py,extract_green_channel,PASS-EXACT,Green channel extraction and replication across 3 channels
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,get_global_augmentations,function,src/drdg/data/transforms.py,get_transforms,PASS-STRUCTURAL,"Albumentations rotation, flip, and affine transforms"
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,FundusDualBranchDataset,class,src/drdg/data/datasets.py,FundusDualBranchDataset,PASS-EXACT,Dual-branch global and patch dataset
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,compute_fov_mask,function,src/drdg/data/fov.py,compute_fov_mask,PASS-EXACT,Otsu and luminance circular FOV segmentation
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,compute_valid_anchors,function,src/drdg/data/patches.py,compute_valid_anchors,PASS-EXACT,Sliding window anchor coordinates inside FOV
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,extract_mil_patches_sliding,function,src/drdg/data/patches.py,extract_mil_patches_sliding,PASS-EXACT,Extract K high-resolution patches from image and mask
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,precompute_dataset_cache,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,trainer_compatible_collate_fn,function,src/drdg/data/collate.py,collate_dual_branch,PASS-STRUCTURAL,Batch collation with variable patch padding
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,train_collate_fn,constant_or_var,src/drdg/config.py,train_collate_fn,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,eval_collate_fn,constant_or_var,src/drdg/config.py,eval_collate_fn,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,train_dataset,constant_or_var,src/drdg/config.py,train_dataset,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,val_dataset,constant_or_var,src/drdg/config.py,val_dataset,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,test_dataset,constant_or_var,src/drdg/config.py,test_dataset,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,warm_cache_dual_branch,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,eval_batch_size,constant_or_var,src/drdg/config.py,eval_batch_size,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,train_loader,constant_or_var,src/drdg/config.py,train_loader,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,val_loader,constant_or_var,src/drdg/config.py,val_loader,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,test_loader,constant_or_var,src/drdg/config.py,test_loader,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,sample_idx,constant_or_var,src/drdg/config.py,sample_idx,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,sample,constant_or_var,src/drdg/config.py,sample,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,global_tensor,constant_or_var,src/drdg/config.py,global_tensor,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,fov_mask,constant_or_var,src/drdg/config.py,fov_mask,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,valid_anchors,constant_or_var,src/drdg/config.py,valid_anchors,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,native_img,constant_or_var,src/drdg/config.py,native_img,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,label_val,constant_or_var,src/drdg/config.py,label_val,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,img_path,constant_or_var,src/drdg/config.py,img_path,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,fov_info,constant_or_var,src/drdg/config.py,fov_info,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,safe_convert_for_plot,function,src/drdg/visualization/paper_figures.py,safe_convert_for_plot,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,img_idx,constant_or_var,src/drdg/config.py,img_idx,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,global_plot,constant_or_var,src/drdg/visualization/paper_figures.py,global_plot,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,patches,constant_or_var,src/drdg/config.py,patches,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,num_patches,constant_or_var,src/drdg/config.py,num_patches,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,ncols,constant_or_var,src/drdg/config.py,ncols,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,nrows,constant_or_var,src/drdg/config.py,nrows,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,axes_flat,constant_or_var,src/drdg/config.py,axes_flat,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,visualize_dataset_statistics,function,src/drdg/visualization/paper_figures.py,visualize_dataset_statistics,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,ChannelAttention,class,src/drdg/models/attention/cbam.py,ChannelAttention,PASS-EXACT,CBAM channel attention submodule
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,SpatialAttention,class,src/drdg/models/attention/cbam.py,SpatialAttention,PASS-EXACT,CBAM spatial attention submodule
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,CBAM,class,src/drdg/models/attention/cbam.py,CBAM,PASS-EXACT,Convolutional Block Attention Module
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,NonLocalBlock2D,class,src/drdg/models/attention/non_local.py,NonLocal2d,PASS-STRUCTURAL,Non-local self-attention block
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,QuadrantTokenAggregator,class,src/drdg/models/attention/quadrant_tokens.py,QuadrantTokenPooling,PASS-STRUCTURAL,Quadrant token pooling module
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,GlobalBranch,class,src/drdg/models/streams/global_context.py,GlobalContextStream,PASS-STRUCTURAL,Global context stream with CBAM and NonLocal
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,GatedAttentionPool,class,src/drdg/models/streams/local_mil.py,GatedAttentionDualPooling,PASS-STRUCTURAL,Ilse et al. gated attention dual pooling
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,LocalMILBranch,class,src/drdg/models/streams/local_mil.py,LocalMILStream,PASS-STRUCTURAL,Local patch MIL stream with EfficientNet-B0
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,DualBranchMILModel,class,src/drdg/models/full_model.py,DRFullModel,PASS-STRUCTURAL,Unified dual-branch model
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,ContinuousQWKLoss,class,src/drdg/losses/qwk.py,ContinuousQWKLoss,PASS-EXACT,Continuous quadratic weighted kappa loss
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,SoftmaxCEHead,class,src/drdg/models/heads/softmax.py,SoftmaxCEHead,PASS-EXACT,Standard linear projection with Cross-Entropy
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,SoftmaxQWKHead,class,src/drdg/models/heads/softmax.py,SoftmaxQWKHead,PASS-EXACT,Softmax head optimized with Continuous QWK
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,CORALHead,class,src/drdg/models/heads/coral.py,CORALHead,PASS-NUMERIC,Consistent Rank Logits ordinal head
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,CORNHead,class,src/drdg/models/heads/corn.py,CORNHead,PASS-NUMERIC,Conditional Rank Neurons ordinal head
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,CumulativeLinkModelQWKHead,class,src/drdg/models/heads/clm.py,CumulativeLinkModel,PASS-NUMERIC,Cumulative Link Model with softplus cutpoints and cloglog link
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,DRFullModel,class,src/drdg/models/full_model.py,DRFullModel,PASS-STRUCTURAL,Complete DR model variant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,build_model,function,src/drdg/models/factory.py,build_variant,PASS-STRUCTURAL,"Model variant factory (v0, v1, v2, v3)"
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,calculate_referable_sensitivity_at_specificity,function,src/drdg/evaluation/rdr.py,calibrate_rdr_threshold,PASS-NUMERIC,Operating threshold calibration at >=95% specificity
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,calibrate_and_evaluate_screening,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,calculate_dr_metrics,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,extract_rank_probs,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,rank_monotonicity_violations,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,DRTrainer,class,src/drdg/training/trainer.py,DualBranchTrainer,PASS-STRUCTURAL,Full training loop with AMP and early stopping
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,print_per_grade_report,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,main_model,constant_or_var,src/drdg/config.py,main_model,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,optimizer,constant_or_var,src/drdg/config.py,optimizer,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,scheduler,constant_or_var,src/drdg/config.py,scheduler,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,main_trainer,constant_or_var,src/drdg/config.py,main_trainer,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,model_tag,constant_or_var,src/drdg/config.py,model_tag,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,best_checkpoint,constant_or_var,src/drdg/config.py,best_checkpoint,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,resume_ckpt_path,constant_or_var,src/drdg/config.py,resume_ckpt_path,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,main_history,constant_or_var,src/drdg/config.py,main_history,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,FundusGradCAM,class,src/drdg/explainability/gradcam.py,GradCAM,PASS-STRUCTURAL,Grad-CAM spatial activation extractor
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,IDRiDXAIEvalDataset,class,src/drdg/explainability/idrid_dataset.py,IDRiDLesionDataset,PASS-STRUCTURAL,IDRiD lesion mask evaluation dataset
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,generate_attention_mil_saliency_map,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,compute_quantitative_xai,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,checkpoint,constant_or_var,src/drdg/config.py,checkpoint,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,eval_trainer,constant_or_var,src/drdg/config.py,eval_trainer,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,idrid_xai_dataset,constant_or_var,src/drdg/config.py,idrid_xai_dataset,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,xai_results,constant_or_var,src/drdg/config.py,xai_results,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,visualize_champion_model_results,function,src/drdg/visualization/paper_figures.py,visualize_champion_model_results,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,extract_model_thetas,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,extract_latent_scalar,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,evaluate_and_extract_artifacts,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,plot_fig3_slope_chart,function,src/drdg/visualization/paper_figures.py,plot_fig3_slope_chart,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,plot_fig6_latent_axis,function,src/drdg/visualization/paper_figures.py,plot_fig6_latent_axis,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,plot_fig7_roc,function,src/drdg/visualization/paper_figures.py,plot_fig7_roc,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,plot_fig8_real_xai,function,src/drdg/visualization/paper_figures.py,plot_fig8_real_xai,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,device,constant_or_var,src/drdg/config.py,device,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,active_model,constant_or_var,src/drdg/config.py,active_model,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,val_results,constant_or_var,src/drdg/config.py,val_results,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb,test_results,constant_or_var,src/drdg/config.py,test_results,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,current_dir,constant_or_var,src/drdg/config.py,current_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,full_pipeline_path,constant_or_var,src/drdg/config.py,full_pipeline_path,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,logger,constant_or_var,src/drdg/config.py,logger,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,configure_publication_style,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_NAVY,constant_or_var,src/drdg/config.py,C_NAVY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_ORANGE,constant_or_var,src/drdg/config.py,C_ORANGE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_CHAMP,constant_or_var,src/drdg/config.py,C_CHAMP,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_TEAL,constant_or_var,src/drdg/config.py,C_TEAL,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_GREEN,constant_or_var,src/drdg/config.py,C_GREEN,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_RED,constant_or_var,src/drdg/config.py,C_RED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_CRIMSON,constant_or_var,src/drdg/config.py,C_CRIMSON,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_AMBER,constant_or_var,src/drdg/config.py,C_AMBER,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_PURPLE,constant_or_var,src/drdg/config.py,C_PURPLE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_SLATE,constant_or_var,src/drdg/config.py,C_SLATE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_GRAY,constant_or_var,src/drdg/config.py,C_GRAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_DARKGRAY,constant_or_var,src/drdg/config.py,C_DARKGRAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,C_EMERALD,constant_or_var,src/drdg/config.py,C_EMERALD,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,zip_source,constant_or_var,src/drdg/config.py,zip_source,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,extract_dest,constant_or_var,src/drdg/config.py,extract_dest,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,DATA_ROOT,constant_or_var,src/drdg/config.py,DATA_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,image_root_dir,constant_or_var,src/drdg/config.py,image_root_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,lodo_zip_source,constant_or_var,src/drdg/config.py,lodo_zip_source,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,lodo_extract_dest,constant_or_var,src/drdg/config.py,lodo_extract_dest,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,LODO_FOLDS_DIR,constant_or_var,src/drdg/config.py,LODO_FOLDS_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,DRIVE_BASE,constant_or_var,src/drdg/config.py,DRIVE_BASE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,RESULT_ROOT,constant_or_var,src/drdg/config.py,RESULT_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,RESULTS_DIR_LODO,constant_or_var,src/drdg/config.py,RESULTS_DIR_LODO,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,CHECKPOINT_DIR_LODO,constant_or_var,src/drdg/config.py,CHECKPOINT_DIR_LODO,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,CACHE_DIR_LODO,constant_or_var,src/drdg/config.py,CACHE_DIR_LODO,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,FIGURES_DIR,constant_or_var,src/drdg/config.py,FIGURES_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,SMOKE_TEST,constant_or_var,src/drdg/config.py,SMOKE_TEST,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,SEED,constant_or_var,src/drdg/config.py,SEED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,num_workers,constant_or_var,src/drdg/config.py,num_workers,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,NUM_WORKERS,constant_or_var,src/drdg/config.py,NUM_WORKERS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,use_pin_memory,constant_or_var,src/drdg/config.py,use_pin_memory,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,IMG_SIZE,constant_or_var,src/drdg/config.py,IMG_SIZE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,NUM_CLASSES,constant_or_var,src/drdg/config.py,NUM_CLASSES,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,HEAD_TYPE,constant_or_var,src/drdg/config.py,HEAD_TYPE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,FUSION_DIM,constant_or_var,src/drdg/config.py,FUSION_DIM,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,PRETRAINED,constant_or_var,src/drdg/config.py,PRETRAINED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,USE_CBAM,constant_or_var,src/drdg/config.py,USE_CBAM,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,USE_NONLOCAL,constant_or_var,src/drdg/config.py,USE_NONLOCAL,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,USE_QUADRANT_TOKENS,constant_or_var,src/drdg/config.py,USE_QUADRANT_TOKENS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,TARGET_QWK_WEIGHT,constant_or_var,src/drdg/config.py,TARGET_QWK_WEIGHT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,LEARNING_RATE,constant_or_var,src/drdg/config.py,LEARNING_RATE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,WEIGHT_DECAY,constant_or_var,src/drdg/config.py,WEIGHT_DECAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,MIN_LR,constant_or_var,src/drdg/config.py,MIN_LR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,PATIENCE_EARLY_STOPPING,constant_or_var,src/drdg/config.py,PATIENCE_EARLY_STOPPING,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,PATIENCE_REDUCE_LR,constant_or_var,src/drdg/config.py,PATIENCE_REDUCE_LR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,REDUCE_LR_FACTOR,constant_or_var,src/drdg/config.py,REDUCE_LR_FACTOR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,GRAD_CLIP,constant_or_var,src/drdg/config.py,GRAD_CLIP,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,SUMMARY_JSON_PATH,constant_or_var,src/drdg/config.py,SUMMARY_JSON_PATH,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,SUMMARY_CSV_PATH,constant_or_var,src/drdg/config.py,SUMMARY_CSV_PATH,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,DATASET_CONFIG,constant_or_var,src/drdg/config.py,DATASET_CONFIG,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,DATASET_KEYS,constant_or_var,src/drdg/config.py,DATASET_KEYS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,ARCHITECTURE_VARIANTS,constant_or_var,src/drdg/config.py,ARCHITECTURE_VARIANTS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,idrid_seg_root_drive,constant_or_var,src/drdg/config.py,idrid_seg_root_drive,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,idrid_seg_root_local,constant_or_var,src/drdg/config.py,idrid_seg_root_local,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,idrid_seg_root,constant_or_var,src/drdg/config.py,idrid_seg_root,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,idrid_seg_image_dirs,constant_or_var,src/drdg/config.py,idrid_seg_image_dirs,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,idrid_seg_mask_dirs,constant_or_var,src/drdg/config.py,idrid_seg_mask_dirs,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,apply_green_channel_ablation,function,src/drdg/data/fov.py,extract_green_channel,PASS-EXACT,Green channel extraction and replication across 3 channels
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,get_global_augmentations,function,src/drdg/data/transforms.py,get_transforms,PASS-STRUCTURAL,"Albumentations rotation, flip, and affine transforms"
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,FundusDualBranchDataset,class,src/drdg/data/datasets.py,FundusDualBranchDataset,PASS-EXACT,Dual-branch global and patch dataset
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,compute_fov_mask,function,src/drdg/data/fov.py,compute_fov_mask,PASS-EXACT,Otsu and luminance circular FOV segmentation
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,compute_valid_anchors,function,src/drdg/data/patches.py,compute_valid_anchors,PASS-EXACT,Sliding window anchor coordinates inside FOV
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,extract_mil_patches_sliding,function,src/drdg/data/patches.py,extract_mil_patches_sliding,PASS-EXACT,Extract K high-resolution patches from image and mask
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,precompute_dataset_cache,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,trainer_compatible_collate_fn,function,src/drdg/data/collate.py,collate_dual_branch,PASS-STRUCTURAL,Batch collation with variable patch padding
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,train_collate_fn,constant_or_var,src/drdg/config.py,train_collate_fn,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,eval_collate_fn,constant_or_var,src/drdg/config.py,eval_collate_fn,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,ChannelAttention,class,src/drdg/models/attention/cbam.py,ChannelAttention,PASS-EXACT,CBAM channel attention submodule
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,SpatialAttention,class,src/drdg/models/attention/cbam.py,SpatialAttention,PASS-EXACT,CBAM spatial attention submodule
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,CBAM,class,src/drdg/models/attention/cbam.py,CBAM,PASS-EXACT,Convolutional Block Attention Module
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,NonLocalBlock2D,class,src/drdg/models/attention/non_local.py,NonLocal2d,PASS-STRUCTURAL,Non-local self-attention block
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,QuadrantTokenAggregator,class,src/drdg/models/attention/quadrant_tokens.py,QuadrantTokenPooling,PASS-STRUCTURAL,Quadrant token pooling module
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,GlobalBranch,class,src/drdg/models/streams/global_context.py,GlobalContextStream,PASS-STRUCTURAL,Global context stream with CBAM and NonLocal
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,GatedAttentionPool,class,src/drdg/models/streams/local_mil.py,GatedAttentionDualPooling,PASS-STRUCTURAL,Ilse et al. gated attention dual pooling
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,LocalMILBranch,class,src/drdg/models/streams/local_mil.py,LocalMILStream,PASS-STRUCTURAL,Local patch MIL stream with EfficientNet-B0
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,DualBranchMILModel,class,src/drdg/models/full_model.py,DRFullModel,PASS-STRUCTURAL,Unified dual-branch model
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,ContinuousQWKLoss,class,src/drdg/losses/qwk.py,ContinuousQWKLoss,PASS-EXACT,Continuous quadratic weighted kappa loss
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,SoftmaxCEHead,class,src/drdg/models/heads/softmax.py,SoftmaxCEHead,PASS-EXACT,Standard linear projection with Cross-Entropy
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,SoftmaxQWKHead,class,src/drdg/models/heads/softmax.py,SoftmaxQWKHead,PASS-EXACT,Softmax head optimized with Continuous QWK
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,CORALHead,class,src/drdg/models/heads/coral.py,CORALHead,PASS-NUMERIC,Consistent Rank Logits ordinal head
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,CORNHead,class,src/drdg/models/heads/corn.py,CORNHead,PASS-NUMERIC,Conditional Rank Neurons ordinal head
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,CumulativeLinkModelQWKHead,class,src/drdg/models/heads/clm.py,CumulativeLinkModel,PASS-NUMERIC,Cumulative Link Model with softplus cutpoints and cloglog link
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,DRFullModel,class,src/drdg/models/full_model.py,DRFullModel,PASS-STRUCTURAL,Complete DR model variant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,build_model,function,src/drdg/models/factory.py,build_variant,PASS-STRUCTURAL,"Model variant factory (v0, v1, v2, v3)"
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,calculate_referable_sensitivity_at_specificity,function,src/drdg/evaluation/rdr.py,calibrate_rdr_threshold,PASS-NUMERIC,Operating threshold calibration at >=95% specificity
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,calibrate_and_evaluate_screening,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,calculate_dr_metrics,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,extract_rank_probs,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,rank_monotonicity_violations,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,print_per_grade_report,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,DRTrainer,class,src/drdg/training/trainer.py,DualBranchTrainer,PASS-STRUCTURAL,Full training loop with AMP and early stopping
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,lodo_results,constant_or_var,src/drdg/config.py,lodo_results,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,eval_fold_artifacts,constant_or_var,src/drdg/config.py,eval_fold_artifacts,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,existing_champion_results,constant_or_var,src/drdg/config.py,existing_champion_results,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,device,constant_or_var,src/drdg/config.py,device,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,extract_tensor_from_outputs,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,extract_model_thetas,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,evaluate_and_extract_artifacts,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,FundusGradCAM,class,src/drdg/explainability/gradcam.py,GradCAM,PASS-STRUCTURAL,Grad-CAM spatial activation extractor
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,IDRiDXAIEvalDataset,class,src/drdg/explainability/idrid_dataset.py,IDRiDLesionDataset,PASS-STRUCTURAL,IDRiD lesion mask evaluation dataset
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,generate_attention_mil_saliency_map,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,compute_quantitative_xai,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,plot_fig2_dataset_distribution,function,src/drdg/visualization/paper_figures.py,plot_fig2_dataset_distribution,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,plot_fig3_slope_chart_per_grade_recall,function,src/drdg/visualization/paper_figures.py,plot_fig3_slope_chart_per_grade_recall,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,extract_ablation_ood_qwk_summary,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,plot_fig4_waterfall_qwk_decomposition,function,src/drdg/visualization/paper_figures.py,plot_fig4_waterfall_qwk_decomposition,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,plot_fig5_lodo_heatmap,function,src/drdg/visualization/paper_figures.py,plot_fig5_lodo_heatmap,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,plot_fig6_latent_severity_axis,function,src/drdg/visualization/paper_figures.py,plot_fig6_latent_severity_axis,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,plot_fig7_referable_dr_roc,function,src/drdg/visualization/paper_figures.py,plot_fig7_referable_dr_roc,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,plot_fig8_real_xai,function,src/drdg/visualization/paper_figures.py,plot_fig8_real_xai,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,test_cohort_dfs,constant_or_var,src/drdg/config.py,test_cohort_dfs,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,master_df,constant_or_var,src/drdg/config.py,master_df,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,save_fig_dual,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,f4,constant_or_var,src/drdg/config.py,f4,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb,f5,constant_or_var,src/drdg/config.py,f5,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,logger,constant_or_var,src/drdg/config.py,logger,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,set_seed,function,src/drdg/utils/seed.py,seed_everything,PASS-EXACT,Deterministic seed initialization
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,device,constant_or_var,src/drdg/config.py,device,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,gpu_name,constant_or_var,src/drdg/config.py,gpu_name,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,amp_dtype,constant_or_var,src/drdg/config.py,amp_dtype,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,DRIVE_ROOT,constant_or_var,src/drdg/config.py,DRIVE_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,LOCAL_RUN_ROOT,constant_or_var,src/drdg/config.py,LOCAL_RUN_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,DATASET_ROOT,constant_or_var,src/drdg/config.py,DATASET_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,RESULT_ROOT,constant_or_var,src/drdg/config.py,RESULT_ROOT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,SMOKE_TEST,constant_or_var,src/drdg/config.py,SMOKE_TEST,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,FORCE_FRESH_TRAINING,constant_or_var,src/drdg/config.py,FORCE_FRESH_TRAINING,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,CHECKPOINT_DIR_HEAD,constant_or_var,src/drdg/config.py,CHECKPOINT_DIR_HEAD,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,RESULTS_DIR_HEAD,constant_or_var,src/drdg/config.py,RESULTS_DIR_HEAD,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,FIGURES_DIR,constant_or_var,src/drdg/config.py,FIGURES_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,CACHE_DIR_HEAD,constant_or_var,src/drdg/config.py,CACHE_DIR_HEAD,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,IMG_SIZE,constant_or_var,src/drdg/config.py,IMG_SIZE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,BATCH_SIZE,constant_or_var,src/drdg/config.py,BATCH_SIZE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,ABLATION_EPOCHS,constant_or_var,src/drdg/config.py,ABLATION_EPOCHS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,LEARNING_RATE,constant_or_var,src/drdg/config.py,LEARNING_RATE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,WEIGHT_DECAY,constant_or_var,src/drdg/config.py,WEIGHT_DECAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,MIN_LR,constant_or_var,src/drdg/config.py,MIN_LR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,PATIENCE_EARLY_STOP,constant_or_var,src/drdg/config.py,PATIENCE_EARLY_STOP,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,USE_CLASS_WEIGHTS,constant_or_var,src/drdg/config.py,USE_CLASS_WEIGHTS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,TARGET_QWK_WEIGHT,constant_or_var,src/drdg/config.py,TARGET_QWK_WEIGHT,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,SOFTMAX_QWK_TARGET,constant_or_var,src/drdg/config.py,SOFTMAX_QWK_TARGET,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,QWK_WARMUP_EPOCHS,constant_or_var,src/drdg/config.py,QWK_WARMUP_EPOCHS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,NUM_WORKERS,constant_or_var,src/drdg/config.py,NUM_WORKERS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,PIN_MEMORY,constant_or_var,src/drdg/config.py,PIN_MEMORY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,USE_AMP,constant_or_var,src/drdg/config.py,USE_AMP,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,EVALUATED_HEADS,constant_or_var,src/drdg/config.py,EVALUATED_HEADS,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,configure_publication_style,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_NAVY,constant_or_var,src/drdg/config.py,C_NAVY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_TEAL,constant_or_var,src/drdg/config.py,C_TEAL,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_ORANGE,constant_or_var,src/drdg/config.py,C_ORANGE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_CRIMSON,constant_or_var,src/drdg/config.py,C_CRIMSON,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_PURPLE,constant_or_var,src/drdg/config.py,C_PURPLE,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_GRAY,constant_or_var,src/drdg/config.py,C_GRAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_DARKGRAY,constant_or_var,src/drdg/config.py,C_DARKGRAY,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_EMERALD,constant_or_var,src/drdg/config.py,C_EMERALD,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,C_AMBER,constant_or_var,src/drdg/config.py,C_AMBER,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,normalize_fundus_tensor,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,load_dataset_metadata,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,apply_green_channel_ablation,function,src/drdg/data/fov.py,extract_green_channel,PASS-EXACT,Green channel extraction and replication across 3 channels
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,resolve_image_path,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,ResNetFundusDataset,class,src/drdg/data/datasets.py,RetinalFundusDataset,PASS-STRUCTURAL,Standard single-image ResNet dataset
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,train_dataset,constant_or_var,src/drdg/config.py,train_dataset,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,val_dataset,constant_or_var,src/drdg/config.py,val_dataset,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,test_dataset,constant_or_var,src/drdg/config.py,test_dataset,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,train_loader,constant_or_var,src/drdg/config.py,train_loader,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,val_loader,constant_or_var,src/drdg/config.py,val_loader,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,test_loader,constant_or_var,src/drdg/config.py,test_loader,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,sample_idx,constant_or_var,src/drdg/config.py,sample_idx,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,sample,constant_or_var,src/drdg/config.py,sample,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,img_tensor,constant_or_var,src/drdg/config.py,img_tensor,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,label_val,constant_or_var,src/drdg/config.py,label_val,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,pid,constant_or_var,src/drdg/config.py,pid,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,dataset_key,constant_or_var,src/drdg/config.py,dataset_key,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,mean_val,constant_or_var,src/drdg/config.py,mean_val,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,std_val,constant_or_var,src/drdg/config.py,std_val,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,safe_convert_for_plot,function,src/drdg/visualization/paper_figures.py,safe_convert_for_plot,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,num_display,constant_or_var,src/drdg/visualization/paper_figures.py,num_display,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,axes,constant_or_var,src/drdg/config.py,axes,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,grade_names,constant_or_var,src/drdg/config.py,grade_names,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,verify_dataset_integrity,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,visualize_dataset_splits_distribution,function,src/drdg/visualization/paper_figures.py,visualize_dataset_splits_distribution,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,ContinuousQWKLoss,class,src/drdg/losses/qwk.py,ContinuousQWKLoss,PASS-EXACT,Continuous quadratic weighted kappa loss
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,SoftmaxCEHead,class,src/drdg/models/heads/softmax.py,SoftmaxCEHead,PASS-EXACT,Standard linear projection with Cross-Entropy
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,SoftmaxQWKHead,class,src/drdg/models/heads/softmax.py,SoftmaxQWKHead,PASS-EXACT,Softmax head optimized with Continuous QWK
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,CORALHead,class,src/drdg/models/heads/coral.py,CORALHead,PASS-NUMERIC,Consistent Rank Logits ordinal head
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,CORNHead,class,src/drdg/models/heads/corn.py,CORNHead,PASS-NUMERIC,Conditional Rank Neurons ordinal head
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,CumulativeLinkModelQWKHead,class,src/drdg/models/heads/clm.py,CumulativeLinkModel,PASS-NUMERIC,Cumulative Link Model with softplus cutpoints and cloglog link
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,ResNet50AblationModel,class,src/drdg/models/factory.py,build_ablation_model,PASS-STRUCTURAL,Standardized ResNet-50 feature extractor + ablated head
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,sample_model,constant_or_var,src/drdg/config.py,sample_model,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,dummy_x,constant_or_var,src/drdg/config.py,dummy_x,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,dummy_targets,constant_or_var,src/drdg/config.py,dummy_targets,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,dummy_out,constant_or_var,src/drdg/config.py,dummy_out,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,calculate_referable_sensitivity_at_specificity,function,src/drdg/evaluation/rdr.py,calibrate_rdr_threshold,PASS-NUMERIC,Operating threshold calibration at >=95% specificity
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,calibrate_and_evaluate_screening,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,extract_rank_probs,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,rank_monotonicity_violations,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,calculate_dr_metrics,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,DRHeadTrainer,class,src/drdg/training/head_trainer.py,HeadTrainer,PASS-STRUCTURAL,Isolated head trainer on fixed embeddings
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,head_ablation_results,constant_or_var,src/drdg/config.py,head_ablation_results,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,head_models_dict,constant_or_var,src/drdg/config.py,head_models_dict,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,df_heads,constant_or_var,src/drdg/config.py,df_heads,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,summary_cols,constant_or_var,src/drdg/config.py,summary_cols,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,plot_fig1_head_metric_comparison,function,src/drdg/visualization/paper_figures.py,plot_fig1_head_metric_comparison,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,plot_fig3_per_grade_recall_emphasis,function,src/drdg/visualization/paper_figures.py,plot_fig3_per_grade_recall_emphasis,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,plot_fig4_waterfall_qwk_decomposition,function,src/drdg/visualization/paper_figures.py,plot_fig4_waterfall_qwk_decomposition,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,plot_fig6_clm_latent_spectrum_dual_dist,function,src/drdg/visualization/paper_figures.py,plot_fig6_clm_latent_spectrum_dual_dist,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,plot_fig7_referable_roc_curves,function,src/drdg/visualization/paper_figures.py,plot_fig7_referable_roc_curves,PASS-STRUCTURAL,Visualization / plotting function
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,calib_summary_rows,constant_or_var,src/drdg/config.py,calib_summary_rows,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb,df_calib_summary,constant_or_var,src/drdg/config.py,df_calib_summary,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,SEED,constant_or_var,src/drdg/config.py,SEED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,get_base_paths,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,HYBRID_RAW_REF,constant_or_var,src/drdg/config.py,HYBRID_RAW_REF,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,NATIVE_PROCESSED_DIR,constant_or_var,src/drdg/config.py,NATIVE_PROCESSED_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,DATASET_CONFIG,constant_or_var,src/drdg/config.py,DATASET_CONFIG,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,parse_patient_and_side,function,src/drdg/data/patient_ids.py,extract_patient_id,PASS-NUMERIC,Regex-based patient identifier extraction
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,load_and_standardize_single_dataset,function,src/drdg/data/metadata.py,standardize_cohort_df,PASS-STRUCTURAL,Standardize cohort columns to master schema
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,merge_and_harmonize_all_datasets,function,src/drdg/data/metadata.py,build_master_metadata,PASS-STRUCTURAL,Merge all 6 cohorts into unified master metadata
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,master_df,constant_or_var,src/drdg/config.py,master_df,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,patient_counts,constant_or_var,src/drdg/config.py,patient_counts,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,crop_fundus_roi,function,src/drdg/data/fov.py,crop_to_fov,PASS-EXACT,Crop fundus to bounding box of FOV mask
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,process_single_image,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,tasks,constant_or_var,src/drdg/config.py,tasks,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,num_workers,constant_or_var,src/drdg/config.py,num_workers,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,create_balanced_train_pool,function,src/drdg/data/balancing.py,balance_dataset,PASS-STRUCTURAL,Class-balanced sampling by grade quotas
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,split_master_pool_patient_level,function,src/drdg/data/splits.py,patient_stratified_split,PASS-STRUCTURAL,Patient-stratified disjoint train/val/test splitting
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,train_balanced_df,constant_or_var,src/drdg/config.py,train_balanced_df,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,val_final_df,constant_or_var,src/drdg/config.py,val_final_df,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,test_final_df,constant_or_var,src/drdg/config.py,test_final_df,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb,normalize_image_tensor,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,SEED,constant_or_var,src/drdg/config.py,SEED,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,get_base_paths,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,DATASET_CONFIG,constant_or_var,src/drdg/config.py,DATASET_CONFIG,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,parse_patient_and_side,function,src/drdg/data/patient_ids.py,extract_patient_id,PASS-NUMERIC,Regex-based patient identifier extraction
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,dfs,constant_or_var,src/drdg/config.py,dfs,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,master_df,constant_or_var,src/drdg/config.py,master_df,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,create_balanced_train_pool,function,src/drdg/data/balancing.py,balance_dataset,PASS-STRUCTURAL,Class-balanced sampling by grade quotas
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,cohort_keys,constant_or_var,src/drdg/config.py,cohort_keys,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,summary_records,constant_or_var,src/drdg/config.py,summary_records,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,summary_df,constant_or_var,src/drdg/config.py,summary_df,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,sum_csv_path,constant_or_var,src/drdg/config.py,sum_csv_path,PASS-STRUCTURAL,Configuration parameter or global constant
+notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb,zip_path,constant_or_var,src/drdg/config.py,zip_path,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/resize_image.py,BASE_HYBRID_DIR,constant_or_var,src/drdg/config.py,BASE_HYBRID_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/resize_image.py,NATIVE_DIR,constant_or_var,src/drdg/config.py,NATIVE_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/resize_image.py,DIR_300,constant_or_var,src/drdg/config.py,DIR_300,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/resize_image.py,DIR_512,constant_or_var,src/drdg/config.py,DIR_512,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/resize_image.py,metadata_files,constant_or_var,src/drdg/config.py,metadata_files,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/resize_image.py,resize_and_save_using_existing_metadata,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+src/get_sample_data/total_aptos.py,BASE_DIR,constant_or_var,src/drdg/config.py,BASE_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_aptos.py,OUTPUT_IMG_DIR,constant_or_var,src/drdg/config.py,OUTPUT_IMG_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_aptos.py,OUTPUT_CSV,constant_or_var,src/drdg/config.py,OUTPUT_CSV,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_aptos.py,train_df,constant_or_var,src/drdg/config.py,train_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_aptos.py,val_df,constant_or_var,src/drdg/config.py,val_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_aptos.py,test_df,constant_or_var,src/drdg/config.py,test_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_aptos.py,process_images_and_paths,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+src/get_sample_data/total_aptos.py,aptos_total_df,constant_or_var,src/drdg/config.py,aptos_total_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,BASE_DIR,constant_or_var,src/drdg/config.py,BASE_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,OUTPUT_IMG_DIR,constant_or_var,src/drdg/config.py,OUTPUT_IMG_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,OUTPUT_CSV,constant_or_var,src/drdg/config.py,OUTPUT_CSV,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,train_df,constant_or_var,src/drdg/config.py,train_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,val_df,constant_or_var,src/drdg/config.py,val_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,challenge_df,constant_or_var,src/drdg/config.py,challenge_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,cols_to_keep,constant_or_var,src/drdg/config.py,cols_to_keep,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,train_clean,constant_or_var,src/drdg/config.py,train_clean,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,val_clean,constant_or_var,src/drdg/config.py,val_clean,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,challenge_clean,constant_or_var,src/drdg/config.py,challenge_clean,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_deepdrid.py,process_and_copy_images,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+src/get_sample_data/total_deepdrid.py,deepdrid_total_df,constant_or_var,src/drdg/config.py,deepdrid_total_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,BASE_IDRID_DIR,constant_or_var,src/drdg/config.py,BASE_IDRID_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,TRAIN_IMG_SRC,constant_or_var,src/drdg/config.py,TRAIN_IMG_SRC,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,TEST_IMG_SRC,constant_or_var,src/drdg/config.py,TEST_IMG_SRC,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,TRAIN_CSV_SRC,constant_or_var,src/drdg/config.py,TRAIN_CSV_SRC,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,TEST_CSV_SRC,constant_or_var,src/drdg/config.py,TEST_CSV_SRC,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,OUTPUT_DIR,constant_or_var,src/drdg/config.py,OUTPUT_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,OUTPUT_IMG_DIR,constant_or_var,src/drdg/config.py,OUTPUT_IMG_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,OUTPUT_CSV,constant_or_var,src/drdg/config.py,OUTPUT_CSV,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,find_image,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+src/get_sample_data/total_idrid.py,load_clean_csv,function,orchestration-only,N/A,PASS-STRUCTURAL,Notebook cell execution or inline script helper
+src/get_sample_data/total_idrid.py,train_df,constant_or_var,src/drdg/config.py,train_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,test_df,constant_or_var,src/drdg/config.py,test_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,records,constant_or_var,src/drdg/config.py,records,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,offset,constant_or_var,src/drdg/config.py,offset,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid.py,final_df,constant_or_var,src/drdg/config.py,final_df,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid-segmentation.py,BASE_DIR,constant_or_var,src/drdg/config.py,BASE_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid-segmentation.py,DEST_FUNDUS_DIR,constant_or_var,src/drdg/config.py,DEST_FUNDUS_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid-segmentation.py,DEST_MASK_DIR,constant_or_var,src/drdg/config.py,DEST_MASK_DIR,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid-segmentation.py,OUTPUT_CSV,constant_or_var,src/drdg/config.py,OUTPUT_CSV,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid-segmentation.py,SUBSET_FOLDERS,constant_or_var,src/drdg/config.py,SUBSET_FOLDERS,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid-segmentation.py,records,constant_or_var,src/drdg/config.py,records,PASS-STRUCTURAL,Configuration parameter or global constant
+src/get_sample_data/total_idrid-segmentation.py,df_total,constant_or_var,src/drdg/config.py,df_total,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/ddr.py,cache_path,constant_or_var,src/drdg/config.py,cache_path,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/ddr.py,target_dir,constant_or_var,src/drdg/config.py,target_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/deep-drid.py,cache_path,constant_or_var,src/drdg/config.py,cache_path,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/deep-drid.py,target_dir,constant_or_var,src/drdg/config.py,target_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/idrid.py,cache_path,constant_or_var,src/drdg/config.py,cache_path,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/idrid.py,target_dir,constant_or_var,src/drdg/config.py,target_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/idrid-segmentation.py,kaggle_user,constant_or_var,src/drdg/config.py,kaggle_user,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/idrid-segmentation.py,kaggle_key,constant_or_var,src/drdg/config.py,kaggle_key,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/idrid-segmentation.py,cache_path,constant_or_var,src/drdg/config.py,cache_path,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/idrid-segmentation.py,target_dir,constant_or_var,src/drdg/config.py,target_dir,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/messidor.py,cache_path,constant_or_var,src/drdg/config.py,cache_path,PASS-STRUCTURAL,Configuration parameter or global constant
+src/download-dataset/messidor.py,target_dir,constant_or_var,src/drdg/config.py,target_dir,PASS-STRUCTURAL,Configuration parameter or global constant

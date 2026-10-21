@@ -1,0 +1,28 @@
+parameter,original_value,refactored_value,source_location,candidate_location,equivalent,severity
+image_size,512,512,main_model_lodo.ipynb (Cell 5),drdg.config.DataConfig.global_image_size,YES,PASS-EXACT
+num_classes,5,5,main_model_lodo.ipynb (Cell 5),drdg.config.ModelConfig.num_classes,YES,PASS-EXACT
+seed,42,42,main_model_lodo.ipynb (Cell 5),drdg.config.DataConfig.seed,YES,PASS-EXACT
+batch_size_lodo,16,"8 (default in config), 16 in trainer override",main_model_lodo.ipynb (Cell 5),drdg.config.DataConfig.batch_size,PARTIAL,MEDIUM
+epochs_lodo,100,100 (TrainConfig.max_epochs),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.max_epochs,YES,PASS-EXACT
+early_stopping_patience,15,15 (TrainConfig.early_stopping_patience),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.early_stopping_patience,YES,PASS-EXACT
+qwk_warmup_epochs,15,15 (TrainConfig.qwk_warmup_epochs),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.qwk_warmup_epochs,YES,PASS-EXACT
+target_qwk_weight,0.4,0.4 (TrainConfig.target_qwk_weight),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.target_qwk_weight,YES,PASS-EXACT
+learning_rate,1e-4,1e-4 (TrainConfig.lr),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.lr,YES,PASS-EXACT
+weight_decay,1e-4,1e-4 (TrainConfig.weight_decay),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.weight_decay,YES,PASS-EXACT
+min_lr,1e-6,1e-6 (TrainConfig.min_lr),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.min_lr,YES,PASS-EXACT
+scheduler_t_max,50,50 (TrainConfig.t_max),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.t_max,YES,PASS-EXACT
+grad_clip,1.0,1.0 (TrainConfig.grad_clip),main_model_lodo.ipynb (Cell 5),drdg.config.TrainConfig.grad_clip,YES,PASS-EXACT
+patch_size,128,"128 (in patches.py default), 224 (in LocalMILConfig default)",main_model_lodo.ipynb (Cell 9-10),drdg.data.patches.py vs drdg.config.LocalMILConfig,PARTIAL,HIGH
+patch_stride,96,"96 (in patches.py default), 112 (in LocalMILConfig default)",main_model_lodo.ipynb (Cell 9-10),drdg.data.patches.py vs drdg.config.LocalMILConfig,PARTIAL,HIGH
+fov_threshold,0.5,"0.5 (in patches.py default), 0.35 (in LocalMILConfig default)",main_model_lodo.ipynb (Cell 9-10),drdg.data.patches.py vs drdg.config.LocalMILConfig,PARTIAL,HIGH
+global_backbone,resnet50,resnet50,main_model_lodo.ipynb (Cell 11),drdg.models.streams.global_context,YES,PASS-EXACT
+local_backbone,efficientnet_b0,efficientnet_b0,main_model_lodo.ipynb (Cell 13),drdg.models.streams.local_mil,YES,PASS-EXACT
+cbam_reduction_ratio,16,16,main_model_lodo.ipynb (Cell 11),drdg.models.attention.cbam,YES,PASS-EXACT
+nonlocal_reduction,2,2,main_model_lodo.ipynb (Cell 12),drdg.models.attention.non_local,YES,PASS-EXACT
+quadrant_tokens_num,4,4,main_model_lodo.ipynb (Cell 11),drdg.models.attention.quadrant_tokens,YES,PASS-EXACT
+fusion_input_dim,1024 (512 global + 512 local),1024 (512 global + 512 local),main_model_lodo.ipynb (Cell 14),drdg.models.fusion,YES,PASS-EXACT
+fusion_output_dim,512,512,main_model_lodo.ipynb (Cell 14),drdg.models.fusion,YES,PASS-EXACT
+clm_link_function,cloglog: 1 - exp(-exp(x)),cloglog: 1 - exp(-exp(x)),main_model_lodo.ipynb (Cell 17),drdg.models.heads.clm,YES,PASS-EXACT
+clm_cutpoint_monotonicity,softplus(delta),softplus(delta),main_model_lodo.ipynb (Cell 17),drdg.models.heads.clm,YES,PASS-EXACT
+rdr_specificity_target,0.95,0.95,main_model_lodo.ipynb (Cell 20),drdg.evaluation.rdr,YES,PASS-EXACT
+rdr_positive_grades,"[2, 3, 4] (Grade >= 2)","[2, 3, 4] (Grade >= 2)",main_model_lodo.ipynb (Cell 20),drdg.evaluation.rdr,YES,PASS-EXACT

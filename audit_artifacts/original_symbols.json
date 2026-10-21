@@ -1,0 +1,3920 @@
+{
+  "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb": [
+    {
+      "name": "current_dir",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 31,
+      "value_preview": "Path().cwd()"
+    },
+    {
+      "name": "full_pipeline_path",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 32,
+      "value_preview": "current_dir.parent.parent.parent / 'pipeline' / 'full'"
+    },
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 50,
+      "value_preview": "logging.getLogger('DRTrainer')"
+    },
+    {
+      "name": "zip_source",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 94,
+      "value_preview": "'/content/drive/MyDrive/native_cropped.zip'"
+    },
+    {
+      "name": "extract_dest",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 95,
+      "value_preview": "'/content/dataset_local'"
+    },
+    {
+      "name": "DATA_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 120,
+      "value_preview": "'/content/dataset_local'"
+    },
+    {
+      "name": "RESULT_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 121,
+      "value_preview": "'/content/drive/MyDrive/Lu\u1eadn V\u0103n T\u1ed1t Nghi\u1ec7p 2026 - 2027/code/notebooks/diabetic_retinopathy/pipel..."
+    },
+    {
+      "name": "CHECKPOINT_DIR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 124,
+      "value_preview": "os.path.join(RESULT_ROOT, 'checkpoints_main')"
+    },
+    {
+      "name": "CACHE_DIR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 125,
+      "value_preview": "os.path.join('/content', 'cache_fundus_dual_branch')"
+    },
+    {
+      "name": "FIGURES_DIR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 126,
+      "value_preview": "os.path.join(RESULT_ROOT, 'figures_publication')"
+    },
+    {
+      "name": "idrid_seg_root",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 129,
+      "value_preview": "'/content/drive/MyDrive/Lu\u1eadn V\u0103n T\u1ed1t Nghi\u1ec7p 2026 - 2027/code/data/raw/idrid_segmentation'"
+    },
+    {
+      "name": "idrid_seg_image_dirs",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 130,
+      "value_preview": "[f'{idrid_seg_root}/DR_Testing_Set/Fundus Images', f'{idrid_seg_root}/DR_Training_Set/Fundus Imag..."
+    },
+    {
+      "name": "idrid_seg_mask_dirs",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 134,
+      "value_preview": "[f'{idrid_seg_root}/DR_Testing_Set/Combined Masks', f'{idrid_seg_root}/DR_Training_Set/Combined M..."
+    },
+    {
+      "name": "SMOKE_TEST",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 149,
+      "value_preview": "False"
+    },
+    {
+      "name": "SEED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 152,
+      "value_preview": "42"
+    },
+    {
+      "name": "num_workers",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 153,
+      "value_preview": "min(8, os.cpu_count() or 4)"
+    },
+    {
+      "name": "use_pin_memory",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 154,
+      "value_preview": "torch.cuda.is_available()"
+    },
+    {
+      "name": "IMG_SIZE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 160,
+      "value_preview": "512"
+    },
+    {
+      "name": "NUM_CLASSES",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 161,
+      "value_preview": "5"
+    },
+    {
+      "name": "HEAD_TYPE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 164,
+      "value_preview": "'CLM_QWK'"
+    },
+    {
+      "name": "FUSION_DIM",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 165,
+      "value_preview": "512"
+    },
+    {
+      "name": "PRETRAINED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 166,
+      "value_preview": "True"
+    },
+    {
+      "name": "USE_CBAM",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 167,
+      "value_preview": "True"
+    },
+    {
+      "name": "USE_NONLOCAL",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 168,
+      "value_preview": "True"
+    },
+    {
+      "name": "USE_QUADRANT_TOKENS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 169,
+      "value_preview": "True"
+    },
+    {
+      "name": "TARGET_QWK_WEIGHT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 173,
+      "value_preview": "0.4"
+    },
+    {
+      "name": "LEARNING_RATE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 176,
+      "value_preview": "0.0001"
+    },
+    {
+      "name": "WEIGHT_DECAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 177,
+      "value_preview": "0.0001"
+    },
+    {
+      "name": "MIN_LR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 178,
+      "value_preview": "1e-06"
+    },
+    {
+      "name": "PATIENCE_EARLY_STOPPING",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 181,
+      "value_preview": "15"
+    },
+    {
+      "name": "PATIENCE_REDUCE_LR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 182,
+      "value_preview": "4"
+    },
+    {
+      "name": "REDUCE_LR_FACTOR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 183,
+      "value_preview": "0.5"
+    },
+    {
+      "name": "GRAD_CLIP",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 184,
+      "value_preview": "1.0"
+    },
+    {
+      "name": "image_root_dir",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 187,
+      "value_preview": "f'{DATA_ROOT}/native_cropped'"
+    },
+    {
+      "name": "configure_publication_style",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 222,
+      "args": []
+    },
+    {
+      "name": "C_NAVY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 266,
+      "value_preview": "'#1f4e79'"
+    },
+    {
+      "name": "C_ORANGE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 267,
+      "value_preview": "'#e65100'"
+    },
+    {
+      "name": "C_CHAMP",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 268,
+      "value_preview": "'#008080'"
+    },
+    {
+      "name": "C_TEAL",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 269,
+      "value_preview": "'#0d9488'"
+    },
+    {
+      "name": "C_GREEN",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 270,
+      "value_preview": "'#2e7d32'"
+    },
+    {
+      "name": "C_RED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 271,
+      "value_preview": "'#c53030'"
+    },
+    {
+      "name": "C_CRIMSON",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 272,
+      "value_preview": "'#c53030'"
+    },
+    {
+      "name": "C_AMBER",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 273,
+      "value_preview": "'#d97706'"
+    },
+    {
+      "name": "C_PURPLE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 274,
+      "value_preview": "'#6b21a8'"
+    },
+    {
+      "name": "C_SLATE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 275,
+      "value_preview": "'#4a5568'"
+    },
+    {
+      "name": "C_GRAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 276,
+      "value_preview": "'#94a3b8'"
+    },
+    {
+      "name": "C_DARKGRAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 277,
+      "value_preview": "'#475569'"
+    },
+    {
+      "name": "C_EMERALD",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 278,
+      "value_preview": "'#16a34a'"
+    },
+    {
+      "name": "apply_green_channel_ablation",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 281,
+      "args": [
+        "img_rgb",
+        "ablation_mode"
+      ]
+    },
+    {
+      "name": "get_global_augmentations",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 324,
+      "args": [
+        "img_size",
+        "is_train"
+      ]
+    },
+    {
+      "name": "FundusDualBranchDataset",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 366,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    },
+    {
+      "name": "compute_fov_mask",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 508,
+      "args": [
+        "img_np",
+        "erode_px"
+      ]
+    },
+    {
+      "name": "compute_valid_anchors",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 553,
+      "args": [
+        "img_shape",
+        "fov_mask",
+        "patch_size",
+        "stride",
+        "fov_thresh"
+      ]
+    },
+    {
+      "name": "extract_mil_patches_sliding",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 614,
+      "args": [
+        "img_np",
+        "fov_mask",
+        "patch_size",
+        "stride",
+        "fov_thresh",
+        "mode",
+        "num_sample",
+        "max_patches_eval",
+        "native_path",
+        "valid_anchors",
+        "return_anchors"
+      ]
+    },
+    {
+      "name": "precompute_dataset_cache",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 756,
+      "args": [
+        "df",
+        "img_root",
+        "cache_dir",
+        "patch_size",
+        "stride",
+        "fov_thresh",
+        "ablation_mode"
+      ]
+    },
+    {
+      "name": "trainer_compatible_collate_fn",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 823,
+      "args": [
+        "batch",
+        "mode",
+        "num_sample"
+      ]
+    },
+    {
+      "name": "train_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 892,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='train', num_sample=(32, 64))"
+    },
+    {
+      "name": "eval_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 893,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='eval')"
+    },
+    {
+      "name": "train_dataset",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 905,
+      "value_preview": "FundusDualBranchDataset(csv_path=csv_train_path, img_root=image_root_dir, img_size=IMG_SIZE, spli..."
+    },
+    {
+      "name": "val_dataset",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 915,
+      "value_preview": "FundusDualBranchDataset(csv_path=csv_val_path, img_root=image_root_dir, img_size=IMG_SIZE, split=..."
+    },
+    {
+      "name": "test_dataset",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 925,
+      "value_preview": "FundusDualBranchDataset(csv_path=csv_test_path, img_root=image_root_dir, img_size=IMG_SIZE, split..."
+    },
+    {
+      "name": "train_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 938,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='train', num_sample=(32, 64))"
+    },
+    {
+      "name": "eval_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 941,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='eval')"
+    },
+    {
+      "name": "warm_cache_dual_branch",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 946,
+      "args": [
+        "dataset",
+        "num_workers",
+        "batch_size"
+      ]
+    },
+    {
+      "name": "eval_batch_size",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 962,
+      "value_preview": "BATCH_SIZE // 4"
+    },
+    {
+      "name": "train_loader",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 964,
+      "value_preview": "DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=num_workers, pin_memor..."
+    },
+    {
+      "name": "val_loader",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 976,
+      "value_preview": "DataLoader(val_dataset, batch_size=eval_batch_size, shuffle=False, num_workers=num_workers, pin_m..."
+    },
+    {
+      "name": "test_loader",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 987,
+      "value_preview": "DataLoader(test_dataset, batch_size=eval_batch_size, shuffle=False, num_workers=num_workers, pin_..."
+    },
+    {
+      "name": "sample_idx",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1006,
+      "value_preview": "0"
+    },
+    {
+      "name": "sample",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1007,
+      "value_preview": "train_dataset[sample_idx]"
+    },
+    {
+      "name": "global_tensor",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1009,
+      "value_preview": "sample['global_image']"
+    },
+    {
+      "name": "fov_mask",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1010,
+      "value_preview": "sample['fov_mask']"
+    },
+    {
+      "name": "valid_anchors",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1011,
+      "value_preview": "sample['valid_anchors']"
+    },
+    {
+      "name": "native_img",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1012,
+      "value_preview": "sample['local_native_image']"
+    },
+    {
+      "name": "label_val",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1013,
+      "value_preview": "sample['label'].item()"
+    },
+    {
+      "name": "img_path",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1014,
+      "value_preview": "sample.get('native_path', 'N/A')"
+    },
+    {
+      "name": "fov_info",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1016,
+      "value_preview": "f'{fov_mask.mean() * 100:.2f}% of total image area' if fov_mask is not None else f'{len(valid_anc..."
+    },
+    {
+      "name": "safe_convert_for_plot",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1042,
+      "args": [
+        "img_data"
+      ]
+    },
+    {
+      "name": "img_idx",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1074,
+      "value_preview": "0"
+    },
+    {
+      "name": "label_val",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1075,
+      "value_preview": "labels[img_idx].item()"
+    },
+    {
+      "name": "global_plot",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1079,
+      "value_preview": "safe_convert_for_plot(global_imgs[img_idx])"
+    },
+    {
+      "name": "patches",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1093,
+      "value_preview": "local_patches[img_idx]"
+    },
+    {
+      "name": "num_patches",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1094,
+      "value_preview": "patches.shape[0]"
+    },
+    {
+      "name": "ncols",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1096,
+      "value_preview": "8 if num_patches >= 16 else 4"
+    },
+    {
+      "name": "nrows",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1097,
+      "value_preview": "int(np.ceil(num_patches / ncols))"
+    },
+    {
+      "name": "axes_flat",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1104,
+      "value_preview": "np.array(axes).flatten()"
+    },
+    {
+      "name": "visualize_dataset_statistics",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1116,
+      "args": [
+        "csv_path",
+        "save_path"
+      ]
+    },
+    {
+      "name": "ChannelAttention",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1217,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "SpatialAttention",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1247,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "CBAM",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1274,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "NonLocalBlock2D",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1299,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "QuadrantTokenAggregator",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1347,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "GlobalBranch",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1393,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "GatedAttentionPool",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1486,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "LocalMILBranch",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1518,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "DualBranchMILModel",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1571,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "ContinuousQWKLoss",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1617,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "SoftmaxCEHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1682,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "SoftmaxQWKHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1716,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CORALHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1779,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CORNHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1853,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CumulativeLinkModelQWKHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 1931,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "set_qwk_weight",
+        "_get_monotonic_cutpoints",
+        "_cloglog_cdf",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "DRFullModel",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2035,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "compute_loss"
+      ]
+    },
+    {
+      "name": "build_model",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2090,
+      "args": [
+        "head_type",
+        "pretrained",
+        "use_cbam",
+        "fusion_dim",
+        "num_classes",
+        "qwk_weight"
+      ]
+    },
+    {
+      "name": "calculate_referable_sensitivity_at_specificity",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2135,
+      "args": [
+        "y_true",
+        "referable_probs",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "calibrate_and_evaluate_screening",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2177,
+      "args": [
+        "val_probs",
+        "val_targets",
+        "test_probs",
+        "test_targets",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "calculate_dr_metrics",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2246,
+      "args": [
+        "y_true",
+        "y_pred",
+        "num_classes",
+        "y_probs",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "extract_rank_probs",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2326,
+      "args": [
+        "outputs"
+      ]
+    },
+    {
+      "name": "rank_monotonicity_violations",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2334,
+      "args": [
+        "rank_probs"
+      ]
+    },
+    {
+      "name": "DRTrainer",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2341,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "train_epoch",
+        "evaluate",
+        "fit"
+      ]
+    },
+    {
+      "name": "print_per_grade_report",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2724,
+      "args": [
+        "val_metrics"
+      ]
+    },
+    {
+      "name": "main_model",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2764,
+      "value_preview": "build_model(head_type=HEAD_TYPE, pretrained=PRETRAINED, use_cbam=USE_CBAM, fusion_dim=FUSION_DIM,..."
+    },
+    {
+      "name": "optimizer",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2774,
+      "value_preview": "torch.optim.AdamW(main_model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)"
+    },
+    {
+      "name": "scheduler",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2775,
+      "value_preview": "torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_MAX, eta_min=MIN_LR)"
+    },
+    {
+      "name": "main_trainer",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2778,
+      "value_preview": "DRTrainer(model=main_model, optimizer=optimizer, lr_scheduler=scheduler, device='cuda' if torch.c..."
+    },
+    {
+      "name": "model_tag",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2790,
+      "value_preview": "f'dual_branch_{HEAD_TYPE.lower()}'"
+    },
+    {
+      "name": "best_checkpoint",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2791,
+      "value_preview": "os.path.join(CHECKPOINT_DIR, f'{model_tag}_best.pth')"
+    },
+    {
+      "name": "resume_ckpt_path",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2793,
+      "value_preview": "None"
+    },
+    {
+      "name": "main_history",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2801,
+      "value_preview": "main_trainer.fit(train_loader=train_loader, val_loader=val_loader, test_loader=test_loader, epoch..."
+    },
+    {
+      "name": "FundusGradCAM",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 2886,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "_register_hooks",
+        "remove_hooks",
+        "generate_cam"
+      ]
+    },
+    {
+      "name": "IDRiDXAIEvalDataset",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3010,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    },
+    {
+      "name": "generate_attention_mil_saliency_map",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3124,
+      "args": [
+        "model",
+        "global_img",
+        "local_patches",
+        "anchors",
+        "patch_mask",
+        "canvas_size",
+        "patch_size"
+      ]
+    },
+    {
+      "name": "compute_quantitative_xai",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3170,
+      "args": [
+        "model",
+        "idrid_xai_dataset",
+        "device",
+        "cam_threshold",
+        "return_samples"
+      ]
+    },
+    {
+      "name": "checkpoint",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3339,
+      "value_preview": "torch.load(best_ckpt_path, map_location=main_trainer.device, weights_only=False)"
+    },
+    {
+      "name": "eval_trainer",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3343,
+      "value_preview": "DRTrainer(model=main_model, optimizer=optimizer, device=main_trainer.device)"
+    },
+    {
+      "name": "idrid_xai_dataset",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3349,
+      "value_preview": "IDRiDXAIEvalDataset(image_dirs=idrid_seg_image_dirs, mask_dirs=idrid_seg_mask_dirs, img_size=IMG_..."
+    },
+    {
+      "name": "xai_results",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3355,
+      "value_preview": "compute_quantitative_xai(main_model, idrid_xai_dataset, device=main_trainer.device)"
+    },
+    {
+      "name": "visualize_champion_model_results",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3377,
+      "args": [
+        "test_metrics",
+        "mean_iou",
+        "pointing_game_acc"
+      ]
+    },
+    {
+      "name": "extract_model_thetas",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3480,
+      "args": [
+        "model",
+        "device"
+      ]
+    },
+    {
+      "name": "extract_latent_scalar",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3497,
+      "args": [
+        "model",
+        "global_img",
+        "local_patches",
+        "patch_mask",
+        "device"
+      ]
+    },
+    {
+      "name": "evaluate_and_extract_artifacts",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3529,
+      "args": [
+        "eval_model",
+        "data_loader",
+        "device"
+      ]
+    },
+    {
+      "name": "plot_fig3_slope_chart",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3624,
+      "args": [
+        "val_recalls",
+        "test_recalls",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig6_latent_axis",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3684,
+      "args": [
+        "val_scores",
+        "test_scores",
+        "cutpoints",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig7_roc",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3729,
+      "args": [
+        "val_data",
+        "test_data",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig8_real_xai",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3781,
+      "args": [
+        "eval_model",
+        "data_loader",
+        "device",
+        "save_path"
+      ]
+    },
+    {
+      "name": "device",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3878,
+      "value_preview": "torch.device('cuda' if torch.cuda.is_available() else 'cpu')"
+    },
+    {
+      "name": "active_model",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3880,
+      "value_preview": "main_model"
+    },
+    {
+      "name": "val_results",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3882,
+      "value_preview": "evaluate_and_extract_artifacts(active_model, val_loader, device=device)"
+    },
+    {
+      "name": "test_results",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model (6).ipynb",
+      "lineno": 3883,
+      "value_preview": "evaluate_and_extract_artifacts(active_model, test_loader, device=device)"
+    }
+  ],
+  "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb": [
+    {
+      "name": "current_dir",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 27,
+      "value_preview": "Path().cwd()"
+    },
+    {
+      "name": "full_pipeline_path",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 28,
+      "value_preview": "current_dir.parent.parent.parent / 'pipeline' / 'full'"
+    },
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 46,
+      "value_preview": "logging.getLogger('DRTrainer')"
+    },
+    {
+      "name": "configure_publication_style",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 74,
+      "args": []
+    },
+    {
+      "name": "C_NAVY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 117,
+      "value_preview": "'#1f4e79'"
+    },
+    {
+      "name": "C_ORANGE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 118,
+      "value_preview": "'#e65100'"
+    },
+    {
+      "name": "C_CHAMP",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 119,
+      "value_preview": "'#008080'"
+    },
+    {
+      "name": "C_TEAL",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 120,
+      "value_preview": "'#0d9488'"
+    },
+    {
+      "name": "C_GREEN",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 121,
+      "value_preview": "'#2e7d32'"
+    },
+    {
+      "name": "C_RED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 122,
+      "value_preview": "'#c53030'"
+    },
+    {
+      "name": "C_CRIMSON",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 123,
+      "value_preview": "'#c53030'"
+    },
+    {
+      "name": "C_AMBER",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 124,
+      "value_preview": "'#d97706'"
+    },
+    {
+      "name": "C_PURPLE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 125,
+      "value_preview": "'#6b21a8'"
+    },
+    {
+      "name": "C_SLATE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 126,
+      "value_preview": "'#4a5568'"
+    },
+    {
+      "name": "C_GRAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 127,
+      "value_preview": "'#94a3b8'"
+    },
+    {
+      "name": "C_DARKGRAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 128,
+      "value_preview": "'#475569'"
+    },
+    {
+      "name": "C_EMERALD",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 129,
+      "value_preview": "'#16a34a'"
+    },
+    {
+      "name": "zip_source",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 151,
+      "value_preview": "'/content/drive/MyDrive/native_cropped.zip'"
+    },
+    {
+      "name": "extract_dest",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 152,
+      "value_preview": "'/content/dataset_local'"
+    },
+    {
+      "name": "DATA_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 167,
+      "value_preview": "'/content/dataset_local' if os.path.exists('/content/dataset_local') else os.path.abspath('data/r..."
+    },
+    {
+      "name": "image_root_dir",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 168,
+      "value_preview": "f'{DATA_ROOT}/native_cropped' if os.path.exists(f'{DATA_ROOT}/native_cropped') else DATA_ROOT"
+    },
+    {
+      "name": "lodo_zip_source",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 174,
+      "value_preview": "'/content/drive/MyDrive/lodo_folds.zip'"
+    },
+    {
+      "name": "lodo_extract_dest",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 175,
+      "value_preview": "'/content/lodo_folds'"
+    },
+    {
+      "name": "LODO_FOLDS_DIR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 185,
+      "value_preview": "'/content/lodo_folds'"
+    },
+    {
+      "name": "DRIVE_BASE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 192,
+      "value_preview": "'/content/drive/MyDrive/Lu\u1eadn V\u0103n T\u1ed1t Nghi\u1ec7p 2026 - 2027/code/notebooks/diabetic_retinopathy/pipel..."
+    },
+    {
+      "name": "RESULT_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 193,
+      "value_preview": "os.path.join(DRIVE_BASE, 'results')"
+    },
+    {
+      "name": "RESULTS_DIR_LODO",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 194,
+      "value_preview": "os.path.join(RESULT_ROOT, 'lodo_benchmark')"
+    },
+    {
+      "name": "CHECKPOINT_DIR_LODO",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 195,
+      "value_preview": "os.path.join(RESULTS_DIR_LODO, 'checkpoints')"
+    },
+    {
+      "name": "CACHE_DIR_LODO",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 196,
+      "value_preview": "'/content/cache_fundus_dual_branch'"
+    },
+    {
+      "name": "FIGURES_DIR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 197,
+      "value_preview": "os.path.join(RESULTS_DIR_LODO, 'figures')"
+    },
+    {
+      "name": "SMOKE_TEST",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 207,
+      "value_preview": "False"
+    },
+    {
+      "name": "SEED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 209,
+      "value_preview": "42"
+    },
+    {
+      "name": "num_workers",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 210,
+      "value_preview": "min(8, os.cpu_count() or 4)"
+    },
+    {
+      "name": "NUM_WORKERS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 211,
+      "value_preview": "num_workers"
+    },
+    {
+      "name": "use_pin_memory",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 212,
+      "value_preview": "torch.cuda.is_available()"
+    },
+    {
+      "name": "IMG_SIZE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 217,
+      "value_preview": "512"
+    },
+    {
+      "name": "NUM_CLASSES",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 218,
+      "value_preview": "5"
+    },
+    {
+      "name": "HEAD_TYPE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 219,
+      "value_preview": "'CLM_QWK'"
+    },
+    {
+      "name": "FUSION_DIM",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 220,
+      "value_preview": "512"
+    },
+    {
+      "name": "PRETRAINED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 221,
+      "value_preview": "True"
+    },
+    {
+      "name": "USE_CBAM",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 222,
+      "value_preview": "True"
+    },
+    {
+      "name": "USE_NONLOCAL",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 223,
+      "value_preview": "True"
+    },
+    {
+      "name": "USE_QUADRANT_TOKENS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 224,
+      "value_preview": "True"
+    },
+    {
+      "name": "TARGET_QWK_WEIGHT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 226,
+      "value_preview": "0.4"
+    },
+    {
+      "name": "LEARNING_RATE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 227,
+      "value_preview": "0.0001"
+    },
+    {
+      "name": "WEIGHT_DECAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 228,
+      "value_preview": "0.0001"
+    },
+    {
+      "name": "MIN_LR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 229,
+      "value_preview": "1e-06"
+    },
+    {
+      "name": "PATIENCE_EARLY_STOPPING",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 231,
+      "value_preview": "15"
+    },
+    {
+      "name": "PATIENCE_REDUCE_LR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 232,
+      "value_preview": "4"
+    },
+    {
+      "name": "REDUCE_LR_FACTOR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 233,
+      "value_preview": "0.5"
+    },
+    {
+      "name": "GRAD_CLIP",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 234,
+      "value_preview": "1.0"
+    },
+    {
+      "name": "SUMMARY_JSON_PATH",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 251,
+      "value_preview": "os.path.join(RESULTS_DIR_LODO, 'lodo_summary.json')"
+    },
+    {
+      "name": "SUMMARY_CSV_PATH",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 252,
+      "value_preview": "os.path.join(RESULTS_DIR_LODO, 'lodo_summary.csv')"
+    },
+    {
+      "name": "DATASET_CONFIG",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 255,
+      "value_preview": "{'aptos': {'name': 'APTOS 2019', 'folder': 'APTOS', 'num_classes': 5}, 'idrid': {'name': 'IDRiD',..."
+    },
+    {
+      "name": "DATASET_KEYS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 263,
+      "value_preview": "list(DATASET_CONFIG.keys())"
+    },
+    {
+      "name": "ARCHITECTURE_VARIANTS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 266,
+      "value_preview": "[{'name': 'V0_Baseline_Softmax_GlobalOnly', 'head_type': 'Softmax_CE', 'use_local_branch': False,..."
+    },
+    {
+      "name": "idrid_seg_root_drive",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 311,
+      "value_preview": "'/content/drive/MyDrive/Lu\u1eadn V\u0103n T\u1ed1t Nghi\u1ec7p 2026 - 2027/code/data/raw/idrid_segmentation'"
+    },
+    {
+      "name": "idrid_seg_root_local",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 312,
+      "value_preview": "'data/raw/idrid_segmentation'"
+    },
+    {
+      "name": "idrid_seg_root",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 313,
+      "value_preview": "idrid_seg_root_drive if os.path.exists(idrid_seg_root_drive) else idrid_seg_root_local"
+    },
+    {
+      "name": "idrid_seg_image_dirs",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 315,
+      "value_preview": "[f'{idrid_seg_root}/DR_Testing_Set/Fundus Images', f'{idrid_seg_root}/DR_Training_Set/Fundus Imag..."
+    },
+    {
+      "name": "idrid_seg_mask_dirs",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 319,
+      "value_preview": "[f'{idrid_seg_root}/DR_Testing_Set/Combined Masks', f'{idrid_seg_root}/DR_Training_Set/Combined M..."
+    },
+    {
+      "name": "apply_green_channel_ablation",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 328,
+      "args": [
+        "img_rgb",
+        "ablation_mode"
+      ]
+    },
+    {
+      "name": "get_global_augmentations",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 371,
+      "args": [
+        "img_size",
+        "is_train"
+      ]
+    },
+    {
+      "name": "FundusDualBranchDataset",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 413,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    },
+    {
+      "name": "compute_fov_mask",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 555,
+      "args": [
+        "img_np",
+        "erode_px"
+      ]
+    },
+    {
+      "name": "compute_valid_anchors",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 600,
+      "args": [
+        "img_shape",
+        "fov_mask",
+        "patch_size",
+        "stride",
+        "fov_thresh"
+      ]
+    },
+    {
+      "name": "extract_mil_patches_sliding",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 661,
+      "args": [
+        "img_np",
+        "fov_mask",
+        "patch_size",
+        "stride",
+        "fov_thresh",
+        "mode",
+        "num_sample",
+        "max_patches_eval",
+        "native_path",
+        "valid_anchors",
+        "return_anchors"
+      ]
+    },
+    {
+      "name": "precompute_dataset_cache",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 803,
+      "args": [
+        "df",
+        "img_root",
+        "cache_dir",
+        "patch_size",
+        "stride",
+        "fov_thresh",
+        "ablation_mode"
+      ]
+    },
+    {
+      "name": "trainer_compatible_collate_fn",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 870,
+      "args": [
+        "batch",
+        "mode",
+        "num_sample"
+      ]
+    },
+    {
+      "name": "train_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 939,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='train', num_sample=(32, 64))"
+    },
+    {
+      "name": "eval_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 940,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='eval')"
+    },
+    {
+      "name": "ChannelAttention",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 943,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "SpatialAttention",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 972,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "CBAM",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 998,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "NonLocalBlock2D",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1023,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "QuadrantTokenAggregator",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1071,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "GlobalBranch",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1117,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "GatedAttentionPool",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1210,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "LocalMILBranch",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1242,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "DualBranchMILModel",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1295,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "ContinuousQWKLoss",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1358,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "SoftmaxCEHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1422,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "SoftmaxQWKHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1455,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CORALHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1517,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CORNHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1591,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CumulativeLinkModelQWKHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1669,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "set_qwk_weight",
+        "_get_monotonic_cutpoints",
+        "_cloglog_cdf",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "DRFullModel",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1776,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "compute_loss"
+      ]
+    },
+    {
+      "name": "build_model",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1830,
+      "args": [
+        "head_type",
+        "pretrained",
+        "use_cbam",
+        "use_local_branch",
+        "use_nonlocal",
+        "use_quadrant_tokens",
+        "fusion_dim",
+        "num_classes",
+        "qwk_weight"
+      ]
+    },
+    {
+      "name": "calculate_referable_sensitivity_at_specificity",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1862,
+      "args": [
+        "y_true",
+        "referable_probs",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "calibrate_and_evaluate_screening",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1904,
+      "args": [
+        "val_probs",
+        "val_targets",
+        "test_probs",
+        "test_targets",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "calculate_dr_metrics",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 1973,
+      "args": [
+        "y_true",
+        "y_pred",
+        "num_classes",
+        "y_probs",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "extract_rank_probs",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2052,
+      "args": [
+        "outputs"
+      ]
+    },
+    {
+      "name": "rank_monotonicity_violations",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2060,
+      "args": [
+        "rank_probs"
+      ]
+    },
+    {
+      "name": "print_per_grade_report",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2066,
+      "args": [
+        "val_metrics"
+      ]
+    },
+    {
+      "name": "DRTrainer",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2101,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "train_epoch",
+        "evaluate",
+        "fit"
+      ]
+    },
+    {
+      "name": "lodo_results",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2487,
+      "value_preview": "{}"
+    },
+    {
+      "name": "eval_fold_artifacts",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2488,
+      "value_preview": "{}"
+    },
+    {
+      "name": "existing_champion_results",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2491,
+      "value_preview": "{}"
+    },
+    {
+      "name": "train_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2513,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='train', num_sample=(32, 64))"
+    },
+    {
+      "name": "eval_collate_fn",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2514,
+      "value_preview": "partial(trainer_compatible_collate_fn, mode='eval')"
+    },
+    {
+      "name": "device",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2516,
+      "value_preview": "'cuda' if torch.cuda.is_available() else 'cpu'"
+    },
+    {
+      "name": "extract_tensor_from_outputs",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2848,
+      "args": [
+        "outputs"
+      ]
+    },
+    {
+      "name": "extract_model_thetas",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2860,
+      "args": [
+        "eval_model",
+        "device"
+      ]
+    },
+    {
+      "name": "evaluate_and_extract_artifacts",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2871,
+      "args": [
+        "eval_model",
+        "data_loader",
+        "device"
+      ]
+    },
+    {
+      "name": "FundusGradCAM",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 2938,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "_register_hooks",
+        "remove_hooks",
+        "generate_cam",
+        "generate"
+      ]
+    },
+    {
+      "name": "IDRiDXAIEvalDataset",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3058,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    },
+    {
+      "name": "generate_attention_mil_saliency_map",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3165,
+      "args": [
+        "model",
+        "global_img",
+        "local_patches",
+        "anchors",
+        "patch_mask",
+        "canvas_size",
+        "patch_size"
+      ]
+    },
+    {
+      "name": "compute_quantitative_xai",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3217,
+      "args": [
+        "model",
+        "idrid_xai_dataset",
+        "device",
+        "cam_threshold",
+        "return_samples"
+      ]
+    },
+    {
+      "name": "plot_fig2_dataset_distribution",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3374,
+      "args": [
+        "dataset_df",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig3_slope_chart_per_grade_recall",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3417,
+      "args": [
+        "in_recalls",
+        "ood_recalls",
+        "lodo_results",
+        "save_path"
+      ]
+    },
+    {
+      "name": "extract_ablation_ood_qwk_summary",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3528,
+      "args": [
+        "lodo_results",
+        "summary_json_path"
+      ]
+    },
+    {
+      "name": "plot_fig4_waterfall_qwk_decomposition",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3598,
+      "args": [
+        "lodo_results",
+        "baseline_qwk",
+        "components",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig5_lodo_heatmap",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3724,
+      "args": [
+        "results_dict",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig6_latent_severity_axis",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3763,
+      "args": [
+        "in_scores",
+        "ood_scores",
+        "cutpoints",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig7_referable_dr_roc",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3809,
+      "args": [
+        "in_fpr",
+        "in_tpr",
+        "in_auc",
+        "ood_fpr",
+        "ood_tpr",
+        "ood_auc",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig8_real_xai",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 3851,
+      "args": [
+        "eval_model",
+        "test_loader",
+        "xai_samples",
+        "idrid_xai_dataset",
+        "device",
+        "save_path"
+      ]
+    },
+    {
+      "name": "test_cohort_dfs",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 4000,
+      "value_preview": "[pd.read_csv(os.path.join(LODO_FOLDS_DIR, f'fold_{i}_{k}_test.csv')) for i, k in enumerate(DATASE..."
+    },
+    {
+      "name": "master_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 4005,
+      "value_preview": "pd.concat(test_cohort_dfs, ignore_index=True) if test_cohort_dfs else None"
+    },
+    {
+      "name": "save_fig_dual",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 4007,
+      "args": [
+        "fig",
+        "basename"
+      ]
+    },
+    {
+      "name": "f4",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 4024,
+      "value_preview": "plot_fig4_waterfall_qwk_decomposition(lodo_results=lodo_results)"
+    },
+    {
+      "name": "f5",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_lodo.ipynb",
+      "lineno": 4030,
+      "value_preview": "plot_fig5_lodo_heatmap(lodo_results)"
+    }
+  ],
+  "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb": [
+    {
+      "name": "logger",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 48,
+      "value_preview": "logging.getLogger('HeadAblation')"
+    },
+    {
+      "name": "set_seed",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 57,
+      "args": [
+        "seed"
+      ]
+    },
+    {
+      "name": "device",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 69,
+      "value_preview": "torch.device('cuda' if torch.cuda.is_available() else 'cpu')"
+    },
+    {
+      "name": "gpu_name",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 70,
+      "value_preview": "torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'"
+    },
+    {
+      "name": "amp_dtype",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 71,
+      "value_preview": "torch.bfloat16 if torch.cuda.is_available() and torch.cuda.is_bf16_supported() else torch.float16"
+    },
+    {
+      "name": "DRIVE_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 117,
+      "value_preview": "'/content/drive/MyDrive/Lu\u1eadn V\u0103n T\u1ed1t Nghi\u1ec7p 2026 - 2027/code/notebooks/diabetic_retinopathy/pipel..."
+    },
+    {
+      "name": "LOCAL_RUN_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 120,
+      "value_preview": "'/content/local_run'"
+    },
+    {
+      "name": "DATASET_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 124,
+      "value_preview": "'/content/dataset_local'"
+    },
+    {
+      "name": "RESULT_ROOT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 125,
+      "value_preview": "LOCAL_RUN_ROOT"
+    },
+    {
+      "name": "SMOKE_TEST",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 137,
+      "value_preview": "False"
+    },
+    {
+      "name": "FORCE_FRESH_TRAINING",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 138,
+      "value_preview": "True"
+    },
+    {
+      "name": "CHECKPOINT_DIR_HEAD",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 141,
+      "value_preview": "f'{DRIVE_ROOT}/checkpoints_head_ablation'"
+    },
+    {
+      "name": "RESULTS_DIR_HEAD",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 142,
+      "value_preview": "f'{DRIVE_ROOT}/results/head_ablation'"
+    },
+    {
+      "name": "FIGURES_DIR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 143,
+      "value_preview": "f'{DRIVE_ROOT}/results/figures'"
+    },
+    {
+      "name": "CACHE_DIR_HEAD",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 144,
+      "value_preview": "f'{LOCAL_RUN_ROOT}/cache_head_ablation'"
+    },
+    {
+      "name": "IMG_SIZE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 152,
+      "value_preview": "512"
+    },
+    {
+      "name": "BATCH_SIZE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 153,
+      "value_preview": "48"
+    },
+    {
+      "name": "ABLATION_EPOCHS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 154,
+      "value_preview": "2 if SMOKE_TEST else 25"
+    },
+    {
+      "name": "LEARNING_RATE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 155,
+      "value_preview": "0.0001"
+    },
+    {
+      "name": "WEIGHT_DECAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 156,
+      "value_preview": "0.001"
+    },
+    {
+      "name": "MIN_LR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 157,
+      "value_preview": "1e-06"
+    },
+    {
+      "name": "PATIENCE_EARLY_STOP",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 158,
+      "value_preview": "15"
+    },
+    {
+      "name": "USE_CLASS_WEIGHTS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 162,
+      "value_preview": "False"
+    },
+    {
+      "name": "TARGET_QWK_WEIGHT",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 164,
+      "value_preview": "0.4"
+    },
+    {
+      "name": "SOFTMAX_QWK_TARGET",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 165,
+      "value_preview": "0.4"
+    },
+    {
+      "name": "QWK_WARMUP_EPOCHS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 167,
+      "value_preview": "15 if not SMOKE_TEST else 1"
+    },
+    {
+      "name": "NUM_WORKERS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 170,
+      "value_preview": "min(4, os.cpu_count() or 2)"
+    },
+    {
+      "name": "PIN_MEMORY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 171,
+      "value_preview": "torch.cuda.is_available()"
+    },
+    {
+      "name": "USE_AMP",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 172,
+      "value_preview": "True"
+    },
+    {
+      "name": "EVALUATED_HEADS",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 175,
+      "value_preview": "['Softmax_CE', 'Softmax_QWK', 'CORAL', 'CORN', 'CLM_QWK']"
+    },
+    {
+      "name": "configure_publication_style",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 193,
+      "args": []
+    },
+    {
+      "name": "C_NAVY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 225,
+      "value_preview": "'#1a365d'"
+    },
+    {
+      "name": "C_TEAL",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 226,
+      "value_preview": "'#0d9488'"
+    },
+    {
+      "name": "C_ORANGE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 227,
+      "value_preview": "'#e65100'"
+    },
+    {
+      "name": "C_CRIMSON",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 228,
+      "value_preview": "'#c53030'"
+    },
+    {
+      "name": "C_PURPLE",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 229,
+      "value_preview": "'#6b21a8'"
+    },
+    {
+      "name": "C_GRAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 230,
+      "value_preview": "'#94a3b8'"
+    },
+    {
+      "name": "C_DARKGRAY",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 231,
+      "value_preview": "'#475569'"
+    },
+    {
+      "name": "C_EMERALD",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 232,
+      "value_preview": "'#16a34a'"
+    },
+    {
+      "name": "C_AMBER",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 233,
+      "value_preview": "'#d97706'"
+    },
+    {
+      "name": "normalize_fundus_tensor",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 236,
+      "args": [
+        "images",
+        "device"
+      ]
+    },
+    {
+      "name": "load_dataset_metadata",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 253,
+      "args": [
+        "data_dir",
+        "smoke_test"
+      ]
+    },
+    {
+      "name": "apply_green_channel_ablation",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 291,
+      "args": [
+        "img_rgb",
+        "ablation_mode"
+      ]
+    },
+    {
+      "name": "resolve_image_path",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 309,
+      "args": [
+        "row",
+        "dataset_root"
+      ]
+    },
+    {
+      "name": "ResNetFundusDataset",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 345,
+      "bases": [
+        "Dataset"
+      ],
+      "methods": [
+        "__init__",
+        "__len__",
+        "__getitem__"
+      ]
+    },
+    {
+      "name": "train_dataset",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 439,
+      "value_preview": "ResNetFundusDataset(train_metadata, img_size=IMG_SIZE, split='train', cache_dir=CACHE_DIR_HEAD)"
+    },
+    {
+      "name": "val_dataset",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 440,
+      "value_preview": "ResNetFundusDataset(val_metadata, img_size=IMG_SIZE, split='val', cache_dir=CACHE_DIR_HEAD)"
+    },
+    {
+      "name": "test_dataset",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 441,
+      "value_preview": "ResNetFundusDataset(test_metadata, img_size=IMG_SIZE, split='test', cache_dir=CACHE_DIR_HEAD)"
+    },
+    {
+      "name": "train_loader",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 463,
+      "value_preview": "DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=NUM_WORKERS, pin_memor..."
+    },
+    {
+      "name": "val_loader",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 468,
+      "value_preview": "DataLoader(val_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS, pin_memory..."
+    },
+    {
+      "name": "test_loader",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 472,
+      "value_preview": "DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, num_workers=NUM_WORKERS, pin_memor..."
+    },
+    {
+      "name": "sample_idx",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 486,
+      "value_preview": "0"
+    },
+    {
+      "name": "sample",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 487,
+      "value_preview": "train_dataset[sample_idx]"
+    },
+    {
+      "name": "img_tensor",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 489,
+      "value_preview": "sample['image']"
+    },
+    {
+      "name": "label_val",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 490,
+      "value_preview": "sample['label'].item()"
+    },
+    {
+      "name": "pid",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 491,
+      "value_preview": "sample.get('patient_id', 'N/A')"
+    },
+    {
+      "name": "dataset_key",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 492,
+      "value_preview": "sample.get('dataset_key', 'N/A')"
+    },
+    {
+      "name": "mean_val",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 493,
+      "value_preview": "img_tensor.float().mean().item()"
+    },
+    {
+      "name": "std_val",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 494,
+      "value_preview": "img_tensor.float().std().item()"
+    },
+    {
+      "name": "safe_convert_for_plot",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 522,
+      "args": [
+        "img_data"
+      ]
+    },
+    {
+      "name": "num_display",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 552,
+      "value_preview": "min(8, len(batch_imgs))"
+    },
+    {
+      "name": "axes",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 554,
+      "value_preview": "axes.flatten()"
+    },
+    {
+      "name": "grade_names",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 556,
+      "value_preview": "['0: Normal', '1: Mild', '2: Moderate', '3: Severe', '4: Proliferative']"
+    },
+    {
+      "name": "verify_dataset_integrity",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 583,
+      "args": [
+        "dataset",
+        "num_check"
+      ]
+    },
+    {
+      "name": "visualize_dataset_splits_distribution",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 617,
+      "args": [
+        "train_df",
+        "val_df",
+        "test_df"
+      ]
+    },
+    {
+      "name": "ContinuousQWKLoss",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 673,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward"
+      ]
+    },
+    {
+      "name": "SoftmaxCEHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 723,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "SoftmaxQWKHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 754,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "set_qwk_weight",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CORALHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 811,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CORNHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 879,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "CumulativeLinkModelQWKHead",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 946,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "set_qwk_weight",
+        "_get_monotonic_cutpoints",
+        "_cloglog_cdf",
+        "forward",
+        "loss_fn"
+      ]
+    },
+    {
+      "name": "ResNet50AblationModel",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1054,
+      "bases": [
+        "nn.Module"
+      ],
+      "methods": [
+        "__init__",
+        "extract_features",
+        "forward"
+      ]
+    },
+    {
+      "name": "sample_model",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1112,
+      "value_preview": "ResNet50AblationModel(head_type='CLM_QWK', pretrained=False).to(device)"
+    },
+    {
+      "name": "dummy_x",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1113,
+      "value_preview": "torch.randn(2, 3, 512, 512, device=device)"
+    },
+    {
+      "name": "dummy_targets",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1114,
+      "value_preview": "torch.tensor([0, 2], device=device)"
+    },
+    {
+      "name": "dummy_out",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1115,
+      "value_preview": "sample_model(dummy_x, targets=dummy_targets, class_weights=class_weights_tensor)"
+    },
+    {
+      "name": "calculate_referable_sensitivity_at_specificity",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1123,
+      "args": [
+        "y_true",
+        "referable_probs",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "calibrate_and_evaluate_screening",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1160,
+      "args": [
+        "val_probs",
+        "val_targets",
+        "test_probs",
+        "test_targets",
+        "target_specificities"
+      ]
+    },
+    {
+      "name": "extract_rank_probs",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1227,
+      "args": [
+        "outputs"
+      ]
+    },
+    {
+      "name": "rank_monotonicity_violations",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1236,
+      "args": [
+        "rank_probs"
+      ]
+    },
+    {
+      "name": "calculate_dr_metrics",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1243,
+      "args": [
+        "y_true",
+        "y_pred",
+        "y_probs",
+        "rank_probs"
+      ]
+    },
+    {
+      "name": "DRHeadTrainer",
+      "type": "class",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1289,
+      "bases": [],
+      "methods": [
+        "__init__",
+        "train_epoch",
+        "evaluate",
+        "fit"
+      ]
+    },
+    {
+      "name": "head_ablation_results",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1629,
+      "value_preview": "{}"
+    },
+    {
+      "name": "head_models_dict",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1630,
+      "value_preview": "{}"
+    },
+    {
+      "name": "df_heads",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1727,
+      "value_preview": "pd.DataFrame.from_dict(head_ablation_results, orient='index')"
+    },
+    {
+      "name": "summary_cols",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1735,
+      "value_preview": "['Head', 'Val_QWK', 'Test_QWK', 'Generalization_Gap', 'Within_1_Grade_Acc', 'Ref_Sens_Spec95', 'R..."
+    },
+    {
+      "name": "plot_fig1_head_metric_comparison",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1767,
+      "args": [
+        "results_dict",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig3_per_grade_recall_emphasis",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1801,
+      "args": [
+        "results_dict",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig4_waterfall_qwk_decomposition",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1836,
+      "args": [
+        "results_dict",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig6_clm_latent_spectrum_dual_dist",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1887,
+      "args": [
+        "clm_model",
+        "val_loader",
+        "test_loader",
+        "device",
+        "save_path"
+      ]
+    },
+    {
+      "name": "plot_fig7_referable_roc_curves",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 1947,
+      "args": [
+        "head_models",
+        "test_loader",
+        "device",
+        "save_path"
+      ]
+    },
+    {
+      "name": "calib_summary_rows",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 2058,
+      "value_preview": "[]"
+    },
+    {
+      "name": "df_calib_summary",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/model/main_model_head_ablation (3).ipynb",
+      "lineno": 2069,
+      "value_preview": "pd.DataFrame(calib_summary_rows)"
+    }
+  ],
+  "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb": [
+    {
+      "name": "SEED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 21,
+      "value_preview": "42"
+    },
+    {
+      "name": "get_base_paths",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 29,
+      "args": []
+    },
+    {
+      "name": "HYBRID_RAW_REF",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 41,
+      "value_preview": "os.path.join(BASE_RAW_DIR, 'hybrid')"
+    },
+    {
+      "name": "NATIVE_PROCESSED_DIR",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 42,
+      "value_preview": "os.path.join(HYBRID_RAW_REF, 'native_cropped')"
+    },
+    {
+      "name": "DATASET_CONFIG",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 47,
+      "value_preview": "{'APTOS': {'name': 'APTOS 2019', 'csv_path': os.path.join('aptos', 'aptos_total.csv'), 'img_dir':..."
+    },
+    {
+      "name": "parse_patient_and_side",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 99,
+      "args": [
+        "image_id",
+        "dataset_key"
+      ]
+    },
+    {
+      "name": "load_and_standardize_single_dataset",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 130,
+      "args": [
+        "key",
+        "cfg",
+        "base_dir"
+      ]
+    },
+    {
+      "name": "merge_and_harmonize_all_datasets",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 170,
+      "args": [
+        "config_dict",
+        "base_dir"
+      ]
+    },
+    {
+      "name": "master_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 182,
+      "value_preview": "merge_and_harmonize_all_datasets(DATASET_CONFIG, BASE_RAW_DIR)"
+    },
+    {
+      "name": "patient_counts",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 188,
+      "value_preview": "master_df.groupby('dataset_name')['patient_id'].nunique()"
+    },
+    {
+      "name": "crop_fundus_roi",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 194,
+      "args": [
+        "img_bgr",
+        "tolerance"
+      ]
+    },
+    {
+      "name": "process_single_image",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 215,
+      "args": [
+        "args"
+      ]
+    },
+    {
+      "name": "tasks",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 250,
+      "value_preview": "list(zip(master_df['raw_full_path'], master_df['native_path']))"
+    },
+    {
+      "name": "num_workers",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 253,
+      "value_preview": "min(8, os.cpu_count() or 4)"
+    },
+    {
+      "name": "master_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 266,
+      "value_preview": "master_df[master_df['native_path'].apply(os.path.exists)].reset_index(drop=True)"
+    },
+    {
+      "name": "create_balanced_train_pool",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 273,
+      "args": [
+        "train_df",
+        "target_range",
+        "seed"
+      ]
+    },
+    {
+      "name": "split_master_pool_patient_level",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 317,
+      "args": [
+        "df",
+        "random_state"
+      ]
+    },
+    {
+      "name": "train_balanced_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 343,
+      "value_preview": "create_balanced_train_pool(train_raw_df, target_range=(1500, 2500), seed=SEED)"
+    },
+    {
+      "name": "val_final_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 345,
+      "value_preview": "val_raw_df.copy()"
+    },
+    {
+      "name": "test_final_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 346,
+      "value_preview": "test_raw_df.copy()"
+    },
+    {
+      "name": "normalize_image_tensor",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge-dataset.ipynb",
+      "lineno": 362,
+      "args": [
+        "img_np",
+        "mode"
+      ]
+    }
+  ],
+  "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb": [
+    {
+      "name": "SEED",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 16,
+      "value_preview": "42"
+    },
+    {
+      "name": "get_base_paths",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 24,
+      "args": []
+    },
+    {
+      "name": "DATASET_CONFIG",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 48,
+      "value_preview": "{'APTOS': {'name': 'APTOS 2019', 'csv_path': os.path.join('aptos', 'aptos_total.csv'), 'id_col': ..."
+    },
+    {
+      "name": "parse_patient_and_side",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 98,
+      "args": [
+        "image_id",
+        "dataset_key"
+      ]
+    },
+    {
+      "name": "dfs",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 133,
+      "value_preview": "[]"
+    },
+    {
+      "name": "master_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 168,
+      "value_preview": "pd.concat(dfs, ignore_index=True)"
+    },
+    {
+      "name": "create_balanced_train_pool",
+      "type": "function",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 175,
+      "args": [
+        "train_df",
+        "target_range",
+        "seed"
+      ]
+    },
+    {
+      "name": "cohort_keys",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 228,
+      "value_preview": "list(DATASET_CONFIG.keys())"
+    },
+    {
+      "name": "summary_records",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 229,
+      "value_preview": "[]"
+    },
+    {
+      "name": "summary_df",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 300,
+      "value_preview": "pd.DataFrame(summary_records)"
+    },
+    {
+      "name": "sum_csv_path",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 301,
+      "value_preview": "os.path.join(LODO_FOLDS_DIR, 'lodo_splits_summary.csv')"
+    },
+    {
+      "name": "zip_path",
+      "type": "constant_or_var",
+      "source": "notebooks/diabetic_retinopathy/pipeline/merge-dataset/merge_dataset_lodo.ipynb",
+      "lineno": 310,
+      "value_preview": "os.path.join(os.path.dirname(LODO_FOLDS_DIR), 'lodo_folds.zip')"
+    }
+  ],
+  "src/get_sample_data/resize_image.py": [
+    {
+      "name": "BASE_HYBRID_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/resize_image.py",
+      "lineno": 11,
+      "value_preview": "os.path.abspath(os.path.join('..', '..', 'data', 'processed', 'hybrid'))"
+    },
+    {
+      "name": "NATIVE_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/resize_image.py",
+      "lineno": 14,
+      "value_preview": "os.path.join(BASE_HYBRID_DIR, 'native_cropped')"
+    },
+    {
+      "name": "DIR_300",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/resize_image.py",
+      "lineno": 16,
+      "value_preview": "os.path.join(BASE_HYBRID_DIR, '300x300')"
+    },
+    {
+      "name": "DIR_512",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/resize_image.py",
+      "lineno": 17,
+      "value_preview": "os.path.join(BASE_HYBRID_DIR, '512x512')"
+    },
+    {
+      "name": "metadata_files",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/resize_image.py",
+      "lineno": 23,
+      "value_preview": "{'train': os.path.join(BASE_HYBRID_DIR, 'train_balanced_metadata.csv'), 'val': os.path.join(BASE_..."
+    },
+    {
+      "name": "resize_and_save_using_existing_metadata",
+      "type": "function",
+      "source": "src/get_sample_data/resize_image.py",
+      "lineno": 33,
+      "args": []
+    }
+  ],
+  "src/get_sample_data/total_aptos.py": [
+    {
+      "name": "BASE_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 8,
+      "value_preview": "Path('../../data/raw/aptos')"
+    },
+    {
+      "name": "OUTPUT_IMG_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 9,
+      "value_preview": "BASE_DIR / 'aptos_total_images'"
+    },
+    {
+      "name": "OUTPUT_CSV",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 10,
+      "value_preview": "BASE_DIR / 'aptos_total.csv'"
+    },
+    {
+      "name": "train_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 16,
+      "value_preview": "pd.read_csv(BASE_DIR / 'train_1.csv')"
+    },
+    {
+      "name": "val_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 17,
+      "value_preview": "pd.read_csv(BASE_DIR / 'valid.csv')"
+    },
+    {
+      "name": "test_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 18,
+      "value_preview": "pd.read_csv(BASE_DIR / 'test.csv')"
+    },
+    {
+      "name": "process_images_and_paths",
+      "type": "function",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 22,
+      "args": [
+        "df",
+        "source_subfolder"
+      ]
+    },
+    {
+      "name": "train_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 45,
+      "value_preview": "process_images_and_paths(train_df, 'train_images/train_images')"
+    },
+    {
+      "name": "val_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 50,
+      "value_preview": "process_images_and_paths(val_df, 'val_images/val_images')"
+    },
+    {
+      "name": "test_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 53,
+      "value_preview": "process_images_and_paths(test_df, 'test_images/test_images')"
+    },
+    {
+      "name": "aptos_total_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_aptos.py",
+      "lineno": 56,
+      "value_preview": "pd.concat([train_df, val_df, test_df], ignore_index=True)"
+    }
+  ],
+  "src/get_sample_data/total_deepdrid.py": [
+    {
+      "name": "BASE_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 9,
+      "value_preview": "Path('../../data/raw/deepdrid/DeepDRiD-master/regular_fundus_images')"
+    },
+    {
+      "name": "OUTPUT_IMG_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 12,
+      "value_preview": "Path('../../data/raw/deepdrid/deepdrid_total_images')"
+    },
+    {
+      "name": "OUTPUT_CSV",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 13,
+      "value_preview": "Path('../../data/raw/deepdrid/deepdrid_total.csv')"
+    },
+    {
+      "name": "train_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 19,
+      "value_preview": "pd.read_csv(BASE_DIR / 'regular-fundus-training/regular-fundus-training.csv')"
+    },
+    {
+      "name": "val_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 22,
+      "value_preview": "pd.read_csv(BASE_DIR / 'regular-fundus-validation/regular-fundus-validation.csv')"
+    },
+    {
+      "name": "challenge_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 25,
+      "value_preview": "pd.read_excel(BASE_DIR / 'Online-Challenge1&2-Evaluation/Challenge1_labels.xlsx')"
+    },
+    {
+      "name": "challenge_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 31,
+      "value_preview": "challenge_df.rename(columns={'DR_Levels': 'patient_DR_Level'})"
+    },
+    {
+      "name": "cols_to_keep",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 37,
+      "value_preview": "['image_id', 'patient_id', 'patient_DR_Level']"
+    },
+    {
+      "name": "train_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 38,
+      "value_preview": "train_df.dropna(subset=['patient_DR_Level'])[cols_to_keep].copy()"
+    },
+    {
+      "name": "val_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 39,
+      "value_preview": "val_df.dropna(subset=['patient_DR_Level'])[cols_to_keep].copy()"
+    },
+    {
+      "name": "challenge_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 40,
+      "value_preview": "challenge_df.dropna(subset=['patient_DR_Level'])[cols_to_keep].copy()"
+    },
+    {
+      "name": "process_and_copy_images",
+      "type": "function",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 46,
+      "args": [
+        "df",
+        "source_subfolder",
+        "is_nested"
+      ]
+    },
+    {
+      "name": "train_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 79,
+      "value_preview": "process_and_copy_images(train_clean, 'regular-fundus-training', is_nested=True)"
+    },
+    {
+      "name": "val_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 84,
+      "value_preview": "process_and_copy_images(val_clean, 'regular-fundus-validation', is_nested=True)"
+    },
+    {
+      "name": "challenge_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 89,
+      "value_preview": "process_and_copy_images(challenge_clean, 'Online-Challenge1&2-Evaluation', is_nested=True)"
+    },
+    {
+      "name": "train_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 94,
+      "value_preview": "train_clean.dropna(subset=['image_path'])"
+    },
+    {
+      "name": "val_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 95,
+      "value_preview": "val_clean.dropna(subset=['image_path'])"
+    },
+    {
+      "name": "challenge_clean",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 96,
+      "value_preview": "challenge_clean.dropna(subset=['image_path'])"
+    },
+    {
+      "name": "deepdrid_total_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_deepdrid.py",
+      "lineno": 99,
+      "value_preview": "pd.concat([train_clean, val_clean, challenge_clean], ignore_index=True)"
+    }
+  ],
+  "src/get_sample_data/total_idrid.py": [
+    {
+      "name": "BASE_IDRID_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 9,
+      "value_preview": "Path('../../data/raw/idrid/Disease Grading')"
+    },
+    {
+      "name": "TRAIN_IMG_SRC",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 11,
+      "value_preview": "BASE_IDRID_DIR / '1. Original Images/a. Training Set'"
+    },
+    {
+      "name": "TEST_IMG_SRC",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 12,
+      "value_preview": "BASE_IDRID_DIR / '1. Original Images/b. Testing Set'"
+    },
+    {
+      "name": "TRAIN_CSV_SRC",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 14,
+      "value_preview": "BASE_IDRID_DIR / '2. Groundtruths/a. IDRiD_Disease Grading_Training Labels.csv'"
+    },
+    {
+      "name": "TEST_CSV_SRC",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 18,
+      "value_preview": "BASE_IDRID_DIR / '2. Groundtruths/b. IDRiD_Disease Grading_Testing Labels.csv'"
+    },
+    {
+      "name": "OUTPUT_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 23,
+      "value_preview": "Path('../../data/raw/idrid')"
+    },
+    {
+      "name": "OUTPUT_IMG_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 24,
+      "value_preview": "OUTPUT_DIR / 'idrid_total_images'"
+    },
+    {
+      "name": "OUTPUT_CSV",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 25,
+      "value_preview": "OUTPUT_DIR / 'idrid_total.csv'"
+    },
+    {
+      "name": "find_image",
+      "type": "function",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 31,
+      "args": [
+        "folder",
+        "base_name"
+      ]
+    },
+    {
+      "name": "load_clean_csv",
+      "type": "function",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 40,
+      "args": [
+        "csv_path"
+      ]
+    },
+    {
+      "name": "train_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 78,
+      "value_preview": "load_clean_csv(TRAIN_CSV_SRC)"
+    },
+    {
+      "name": "test_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 79,
+      "value_preview": "load_clean_csv(TEST_CSV_SRC)"
+    },
+    {
+      "name": "records",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 82,
+      "value_preview": "[]"
+    },
+    {
+      "name": "offset",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 100,
+      "value_preview": "len(records)"
+    },
+    {
+      "name": "final_df",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid.py",
+      "lineno": 119,
+      "value_preview": "pd.DataFrame(records)"
+    }
+  ],
+  "src/get_sample_data/total_idrid-segmentation.py": [
+    {
+      "name": "BASE_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid-segmentation.py",
+      "lineno": 7,
+      "value_preview": "Path('../../data/raw/idrid_segmentation')"
+    },
+    {
+      "name": "DEST_FUNDUS_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid-segmentation.py",
+      "lineno": 10,
+      "value_preview": "BASE_DIR / 'idrid_segmentation_total_images'"
+    },
+    {
+      "name": "DEST_MASK_DIR",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid-segmentation.py",
+      "lineno": 11,
+      "value_preview": "BASE_DIR / 'idrid_segmentation_total_masks'"
+    },
+    {
+      "name": "OUTPUT_CSV",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid-segmentation.py",
+      "lineno": 12,
+      "value_preview": "BASE_DIR / 'idrid_segmentation_total.csv'"
+    },
+    {
+      "name": "SUBSET_FOLDERS",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid-segmentation.py",
+      "lineno": 18,
+      "value_preview": "[BASE_DIR / 'DR_Training_Set', BASE_DIR / 'DR_Testing_Set']"
+    },
+    {
+      "name": "records",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid-segmentation.py",
+      "lineno": 24,
+      "value_preview": "[]"
+    },
+    {
+      "name": "df_total",
+      "type": "constant_or_var",
+      "source": "src/get_sample_data/total_idrid-segmentation.py",
+      "lineno": 56,
+      "value_preview": "pd.DataFrame(records)"
+    }
+  ],
+  "src/download-dataset/ddr.py": [
+    {
+      "name": "cache_path",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/ddr.py",
+      "lineno": 7,
+      "value_preview": "kagglehub.dataset_download('mariaherrerot/ddrdataset')"
+    },
+    {
+      "name": "target_dir",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/ddr.py",
+      "lineno": 12,
+      "value_preview": "Path('../../data/raw/ddr')"
+    }
+  ],
+  "src/download-dataset/deep-drid.py": [
+    {
+      "name": "cache_path",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/deep-drid.py",
+      "lineno": 6,
+      "value_preview": "kagglehub.dataset_download('yoctoman/deepdrid')"
+    },
+    {
+      "name": "target_dir",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/deep-drid.py",
+      "lineno": 9,
+      "value_preview": "Path('../../data/raw/deepdrid')"
+    }
+  ],
+  "src/download-dataset/idrid.py": [
+    {
+      "name": "cache_path",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/idrid.py",
+      "lineno": 6,
+      "value_preview": "kagglehub.dataset_download('abdullahshafi315/indian-diabetic-retinopathy-image-datasetidrid')"
+    },
+    {
+      "name": "target_dir",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/idrid.py",
+      "lineno": 9,
+      "value_preview": "Path('../../data/raw/idrid')"
+    }
+  ],
+  "src/download-dataset/idrid-segmentation.py": [
+    {
+      "name": "kaggle_user",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/idrid-segmentation.py",
+      "lineno": 8,
+      "value_preview": "os.environ.get('KAGGLE_USERNAME')"
+    },
+    {
+      "name": "kaggle_key",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/idrid-segmentation.py",
+      "lineno": 9,
+      "value_preview": "os.environ.get('KAGGLE_KEY')"
+    },
+    {
+      "name": "cache_path",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/idrid-segmentation.py",
+      "lineno": 13,
+      "value_preview": "kagglehub.dataset_download('realhaadkhan/idrid-segmentation-dataset')"
+    },
+    {
+      "name": "target_dir",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/idrid-segmentation.py",
+      "lineno": 19,
+      "value_preview": "Path('../../data/raw/idrid_segmentation')"
+    }
+  ],
+  "src/download-dataset/messidor.py": [
+    {
+      "name": "cache_path",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/messidor.py",
+      "lineno": 6,
+      "value_preview": "kagglehub.dataset_download('mariaherrerot/messidor2preprocess')"
+    },
+    {
+      "name": "target_dir",
+      "type": "constant_or_var",
+      "source": "src/download-dataset/messidor.py",
+      "lineno": 9,
+      "value_preview": "Path('../../data/raw/messidor2preprocess')"
+    }
+  ]
+}

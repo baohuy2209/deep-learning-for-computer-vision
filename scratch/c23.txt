@@ -1,0 +1,358 @@
+=== CELL 23 ===
+======================================================================
+# ==============================================================================
+# 5.1 MULTI-VARIANT LEAVE-ONE-DATASET-OUT (LODO) ABLATION ORCHESTRATION LOOP
+# ==============================================================================
+lodo_results = {}
+eval_fold_artifacts = {}
+
+# Ingest existing Champion results if summary_json exists
+existing_champion_results = {}
+if os.path.exists(SUMMARY_JSON_PATH):
+    try:
+        with open(SUMMARY_JSON_PATH, "r") as f:
+            prev_sum = json.load(f)
+            if "V3_PlusOrdinalHead_H3_Champion" in prev_sum:
+                existing_champion_results = prev_sum["V3_PlusOrdinalHead_H3_Champion"]
+            elif any(k in DATASET_KEYS for k in prev_sum.keys()):
+                existing_champion_results = prev_sum
+        print(f"[INFO] Ingested existing results for {len(existing_champion_results)} folds from '{SUMMARY_JSON_PATH}'!")
+    except Exception as e:
+        print(f"[WARN] Unable to load summary_json: {e}")
+
+if "V3_PlusOrdinalHead_H3_Champion" not in lodo_results and existing_champion_results:
+    if any(k in DATASET_KEYS for k in existing_champion_results.keys()):
+        lodo_results["V3_PlusOrdinalHead_H3_Champion"] = existing_champion_results
+        print("[INFO] Successfully merged existing Champion results into 'V3_PlusOrdinalHead_H3_Champion'!")
+
+print(f"\n{'='*75}")
+print("STARTING MULTI-VARIANT ARCHITECTURE ABLATION LODO BENCHMARK")
+print(f"{'='*75}\n")
+
+train_collate_fn = partial(trainer_compatible_collate_fn, mode="train", num_sample=(32, 64))
+eval_collate_fn = partial(trainer_compatible_collate_fn, mode="eval")
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+for v_idx, variant in enumerate(ARCHITECTURE_VARIANTS):
+    variant_name = variant["name"]
+    is_run_enabled = variant.get("run", True)
+    hypothesis = variant.get("hypothesis", "")
+
+    print(f"\n{'#'*75}")
+    print(f"VARIANT [{v_idx + 1}/{len(ARCHITECTURE_VARIANTS)}]: {variant_name}")
+    print(f"Hypothesis : {hypothesis}")
+    print(f"Run Status : {'ENABLED (Executing)' if is_run_enabled else 'SKIPPED (Using Saved Results)'}")
+    print(f"{'#'*75}\n")
+
+    if not is_run_enabled:
+        print(f"[INFO] Skipping training for {variant_name} (Preserved existing results).")
+        continue
+
+    if variant_name not in lodo_results:
+        lodo_results[variant_name] = {}
+    if variant_name not in eval_fold_artifacts:
+        eval_fold_artifacts[variant_name] = {}
+
+    target_folds = variant.get("folds", DATASET_KEYS)
+
+    for fold_idx, held_out_key in enumerate(target_folds):
+        held_out_name = DATASET_CONFIG[held_out_key]["name"]
+        print(f"\n{'='*70}")
+        print(f"[{variant_name}] FOLD {fold_idx + 1}/{len(target_folds)}: Holding out [{held_out_name}] as OOD Test")
+        print(f"{'='*70}")
+
+        fold_model_name = f"lodo_{variant_name}_fold_{fold_idx}_{held_out_key}"
+        best_checkpoint_path = os.path.join(CHECKPOINT_DIR_LODO, f"{fold_model_name}_best.pth")
+        last_checkpoint_path = os.path.join(CHECKPOINT_DIR_LODO, f"{fold_model_name}_last.pth")
+
+        # ======================================================================
+        # 1. CHECKPOINT COMPLETION CHECK: FOLD COMPLETED -> ADVANCE TO NEXT FOLD
+        # ======================================================================
+        is_fold_completed = False
+        saved_metrics = None
+
+        if os.path.exists(best_checkpoint_path):
+            try:
+                ckpt_meta = torch.load(best_checkpoint_path, map_location="cpu", weights_only=False)
+                if ckpt_meta.get("is_completed", False):
+                    is_fold_completed = True
+                    saved_metrics = ckpt_meta.get("metrics") or ckpt_meta.get("val_metrics")
+            except Exception as e:
+                print(f"[WARN] Error reading checkpoint completion flag: {e}")
+
+        # Check in existing summary if present
+        if not is_fold_completed and variant_name in lodo_results and held_out_key in lodo_results[variant_name]:
+            existing_metrics = lodo_results[variant_name][held_out_key]
+            if existing_metrics.get("in_domain_val_qwk", 0) > 0 and os.path.exists(best_checkpoint_path):
+                is_fold_completed = True
+                saved_metrics = existing_metrics
+
+        if is_fold_completed:
+            print(f"[SKIP COMPLETED] Fold {fold_idx + 1} ({held_out_name}) for {variant_name} ALREADY COMPLETED!")
+            if saved_metrics and os.path.exists(best_checkpoint_path):
+                print(f"  -> In-Domain Val QWK: {saved_metrics.get('in_domain_val_qwk', 'N/A')} | OOD Test QWK: {saved_metrics.get('ood_test_qwk', 'N/A')}")
+                lodo_results[variant_name][held_out_key] = saved_metrics
+
+            # Preserve model & loaders in eval_fold_artifacts for publication visualization & XAI
+            if (variant_name not in eval_fold_artifacts or held_out_key not in eval_fold_artifacts[variant_name]) and os.path.exists(best_checkpoint_path):
+                try:
+                    # QUAN TRỌNG: dựng model MỚI riêng cho fold này, không tái dùng fold_model của vòng lặp trước
+                    skip_model = build_model(
+                        head_type=variant["head_type"],
+                        use_local_branch=variant["use_local_branch"],
+                        use_nonlocal=variant["use_nonlocal"],
+                        use_quadrant_tokens=variant["use_quadrant_tokens"],
+                        use_cbam=variant["use_cbam"],
+                    ).to(device)
+                    ckpt = torch.load(best_checkpoint_path, map_location=device, weights_only=False)
+                    skip_model.load_state_dict(ckpt["model_state_dict"])
+                    skip_model.eval()
+
+                    skip_val_csv  = os.path.join(LODO_FOLDS_DIR, f"fold_{fold_idx}_{held_out_key}_val.csv")
+                    skip_test_csv = os.path.join(LODO_FOLDS_DIR, f"fold_{fold_idx}_{held_out_key}_test.csv")
+
+                    skip_val_ds = FundusDualBranchDataset(
+                        csv_path=skip_val_csv, img_root=image_root_dir, img_size=IMG_SIZE,
+                        split="val", ablation_mode="ben_graham_green", cache_dir=CACHE_DIR_LODO
+                    )
+                    skip_test_ds = FundusDualBranchDataset(
+                        csv_path=skip_test_csv, img_root=image_root_dir, img_size=IMG_SIZE,
+                        split="test", ablation_mode="ben_graham_green", cache_dir=CACHE_DIR_LODO
+                    )
+                    skip_val_loader = DataLoader(
+                        skip_val_ds, batch_size=BATCH_SIZE, shuffle=False,
+                        num_workers=NUM_WORKERS, pin_memory=use_pin_memory, collate_fn=eval_collate_fn
+                    )
+                    skip_test_loader = DataLoader(
+                        skip_test_ds, batch_size=BATCH_SIZE, shuffle=False,
+                        num_workers=NUM_WORKERS, pin_memory=use_pin_memory, collate_fn=eval_collate_fn
+                    )
+
+                    eval_fold_artifacts[variant_name][held_out_key] = {
+                        "model": skip_model,
+                        "val_loader": skip_val_loader,
+                        "test_loader": skip_test_loader
+                    }
+                except Exception as e:
+                    logger.warning(f"[SKIP-ARTIFACT] Fold {held_out_key} ({variant_name}): "
+                                    f"không dựng lại được model/loader để visualize — {e}")
+            continue
+
+        # ======================================================================
+        # 2. CHECKPOINT RESUMPTION CHECK: INCOMPLETE RUN -> RESUME FROM CHECKPOINT
+        # ======================================================================
+        resume_ckpt_path = None
+        if os.path.exists(last_checkpoint_path):
+            resume_ckpt_path = last_checkpoint_path
+            print(f"[RESUME IN-PROGRESS] Found last checkpoint: {last_checkpoint_path}. Resuming training mid-run...")
+        elif os.path.exists(best_checkpoint_path):
+            resume_ckpt_path = best_checkpoint_path
+            print(f"[RESUME IN-PROGRESS] Found best checkpoint: {best_checkpoint_path}. Resuming training...")
+        else:
+            print(f"[NEW RUN] No checkpoint found for Fold {fold_idx + 1}. Starting fresh training from Epoch 1.")
+
+        # ======================================================================
+        # 3. LOAD PRE-GENERATED SPLIT CSVS DIRECTLY FROM /content/lodo_folds/
+        # ======================================================================
+        train_csv = os.path.join(LODO_FOLDS_DIR, f"fold_{fold_idx}_{held_out_key}_train.csv")
+        val_csv   = os.path.join(LODO_FOLDS_DIR, f"fold_{fold_idx}_{held_out_key}_val.csv")
+        test_csv  = os.path.join(LODO_FOLDS_DIR, f"fold_{fold_idx}_{held_out_key}_test.csv")
+
+        if not os.path.exists(train_csv):
+            raise FileNotFoundError(
+                f"[ERROR] Required LODO split CSV '{train_csv}' not found.\n"
+                f"Please ensure CSV files are uploaded to '{LODO_FOLDS_DIR}/fold_{fold_idx}_{held_out_key}_{{train,val,test}}.csv'."
+            )
+
+        print(f"  [DATA] Fold {fold_idx + 1} ({held_out_name}) Loading CSVs from '{LODO_FOLDS_DIR}':")
+        print(f"    - Train: {train_csv}")
+        print(f"    - Val:   {val_csv}")
+        print(f"    - Test:  {test_csv}")
+
+        # ======================================================================
+        # 4. BUILD PYTORCH DUAL-BRANCH DATASETS & DATALOADERS (EXACT main_model (6))
+        # ======================================================================
+        train_ds = FundusDualBranchDataset(
+            csv_path=train_csv,
+            img_root=image_root_dir,
+            img_size=IMG_SIZE,
+            split="train",
+            ablation_mode="ben_graham_green",
+            cache_dir=CACHE_DIR_LODO
+        )
+        val_ds = FundusDualBranchDataset(
+            csv_path=val_csv,
+            img_root=image_root_dir,
+            img_size=IMG_SIZE,
+            split="val",
+            ablation_mode="ben_graham_green",
+            cache_dir=CACHE_DIR_LODO
+        )
+        test_ds = FundusDualBranchDataset(
+            csv_path=test_csv,
+            img_root=image_root_dir,
+            img_size=IMG_SIZE,
+            split="test",
+            ablation_mode="ben_graham_green",
+            cache_dir=CACHE_DIR_LODO
+        )
+
+        print(f"  [DATA] Sample Counts: Train={len(train_ds):,d} | Val={len(val_ds):,d} | Test (OOD)={len(test_ds):,d}")
+
+        eval_batch_size = max(1, BATCH_SIZE // 4)
+        train_loader = DataLoader(
+            train_ds, batch_size=BATCH_SIZE, shuffle=True, drop_last=True,
+            num_workers=NUM_WORKERS, collate_fn=train_collate_fn,
+            pin_memory=use_pin_memory, persistent_workers=(NUM_WORKERS > 0)
+        )
+        val_loader = DataLoader(
+            val_ds, batch_size=eval_batch_size, shuffle=False,
+            num_workers=NUM_WORKERS, collate_fn=eval_collate_fn,
+            pin_memory=use_pin_memory, persistent_workers=(NUM_WORKERS > 0)
+        )
+        test_loader = DataLoader(
+            test_ds, batch_size=eval_batch_size, shuffle=False,
+            num_workers=NUM_WORKERS, collate_fn=eval_collate_fn,
+            pin_memory=use_pin_memory, persistent_workers=(NUM_WORKERS > 0)
+        )
+
+        # ======================================================================
+        # 5. BUILD MODEL, OPTIMIZER, SCHEDULER & DRTRAINER (EXACT main_model (6))
+        # ======================================================================
+        fold_model = build_model(
+            head_type=variant.get("head_type", HEAD_TYPE),
+            pretrained=PRETRAINED,
+            use_cbam=variant.get("use_cbam", USE_CBAM),
+            use_local_branch=variant.get("use_local_branch", True),
+            use_nonlocal=variant.get("use_nonlocal", USE_NONLOCAL),
+            use_quadrant_tokens=variant.get("use_quadrant_tokens", USE_QUADRANT_TOKENS),
+            fusion_dim=FUSION_DIM,
+            num_classes=NUM_CLASSES,
+            qwk_weight=TARGET_QWK_WEIGHT
+        )
+        optimizer = torch.optim.AdamW(fold_model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=T_MAX, eta_min=MIN_LR)
+
+        # Initialize DRTrainer: exact parameter signature matching main_model (6).ipynb Cell 125 & 130
+        trainer = DRTrainer(
+            model=fold_model,
+            optimizer=optimizer,
+            lr_scheduler=scheduler,
+            device=device,
+            use_amp=True,
+            grad_clip=GRAD_CLIP,
+            checkpoint_dir=CHECKPOINT_DIR_LODO,
+            qwk_warmup_epochs=QWK_WARMUP_EPOCHS
+        )
+
+        # ======================================================================
+        # 6. EXECUTE TRAINING LOOP VIA trainer.fit() (EXACT main_model (6))
+        # ======================================================================
+        fit_results = trainer.fit(
+            train_loader=train_loader,
+            val_loader=val_loader,
+            test_loader=test_loader,
+            epochs=LODO_EPOCHS,
+            model_name=fold_model_name,
+            patience_early_stopping=PATIENCE_EARLY_STOPPING,
+            patience_reduce_lr=PATIENCE_REDUCE_LR,
+            reduce_lr_factor=REDUCE_LR_FACTOR,
+            min_lr=MIN_LR,
+            resume_checkpoint_path=resume_ckpt_path
+        )
+
+        # ======================================================================
+        # 7. FINAL EVALUATION USING RESTORED BEST CHECKPOINT WEIGHTS
+        # ======================================================================
+        if os.path.exists(best_checkpoint_path):
+            best_ckpt = torch.load(best_checkpoint_path, map_location=device, weights_only=False)
+            fold_model.load_state_dict(best_ckpt["model_state_dict"])
+            print(f"[RESTORE] Loaded best weights from '{best_checkpoint_path}' for final evaluation.")
+
+        fold_model.eval()
+        val_eval_metrics, _, _ = trainer.evaluate(val_loader)
+        ood_eval_metrics, _, _ = trainer.evaluate(test_loader)
+
+        delta_lodo = float(val_eval_metrics["QWK"] - ood_eval_metrics["QWK"])
+        print(f"\n>>> [{variant_name} | Fold {fold_idx + 1} ({held_out_name}) Results]:")
+        print(f"    In-Domain Val QWK : {val_eval_metrics['QWK']:.4f}")
+        print(f"    OOD Test QWK      : {ood_eval_metrics['QWK']:.4f}")
+        print(f"    Generalization Drop (Delta LODO) : {delta_lodo:.4f}")
+
+        # Extract per-grade recalls according to Advisor HD_1 directive
+        val_recalls = {f"grade_{c}": float(val_eval_metrics.get(f"Recall_Grade_{c}", 0.0)) for c in range(5)}
+        ood_recalls = {f"grade_{c}": float(ood_eval_metrics.get(f"Recall_Grade_{c}", 0.0)) for c in range(5)}
+
+        fold_result_entry = {
+            "variant": variant_name,
+            "held_out_dataset": held_out_name,
+            "held_out_key": held_out_key,
+            "fold": fold_idx + 1,
+            "in_domain_val_qwk": float(val_eval_metrics["QWK"]),
+            "ood_test_qwk": float(ood_eval_metrics["QWK"]),
+            "delta_lodo": float(delta_lodo),
+            "delta_qwk": float(delta_lodo),
+            "val_per_grade_recall": val_recalls,
+            "ood_per_grade_recall": ood_recalls,
+            "val_within_1_grade_acc": float(val_eval_metrics.get("Within_1_Grade_Acc", 0.0)),
+            "ood_within_1_grade_acc": float(ood_eval_metrics.get("Within_1_Grade_Acc", 0.0)),
+            "val_referable_sensitivity_at_95spec": float(val_eval_metrics.get("Ref_Sensitivity_at_Spec95", float("nan"))),
+            "ood_referable_sensitivity_at_95spec": float(ood_eval_metrics.get("Ref_Sensitivity_at_Spec95", float("nan"))),
+            "val_referable_sensitivity_at_90spec": float(val_eval_metrics.get("Ref_Sensitivity_at_Spec90", float("nan"))),
+            "ood_referable_sensitivity_at_90spec": float(ood_eval_metrics.get("Ref_Sensitivity_at_Spec90", float("nan"))),
+            "val_referable_sensitivity_at_85spec": float(val_eval_metrics.get("Ref_Sensitivity_at_Spec85", float("nan"))),
+            "ood_referable_sensitivity_at_85spec": float(ood_eval_metrics.get("Ref_Sensitivity_at_Spec85", float("nan"))),
+            "val_referable_sensitivity_at_80spec": float(val_eval_metrics.get("Ref_Sensitivity_at_Spec80", float("nan"))),
+            "ood_referable_sensitivity_at_80spec": float(ood_eval_metrics.get("Ref_Sensitivity_at_Spec80", float("nan"))),
+            "val_monotonicity_violations": "N/A" if "SOFTMAX" in variant.get("head_type", "").upper() else val_eval_metrics.get("Monotonicity_Violations", "N/A"),
+            "ood_monotonicity_violations": "N/A" if "SOFTMAX" in variant.get("head_type", "").upper() else ood_eval_metrics.get("Monotonicity_Violations", "N/A"),
+        }
+        lodo_results[variant_name][held_out_key] = fold_result_entry
+
+        # Save artifacts for publication figures
+        eval_fold_artifacts[variant_name][held_out_key] = {
+            "model": fold_model,
+            "val_loader": val_loader,
+            "test_loader": test_loader,
+            "val_metrics": val_eval_metrics,
+            "ood_metrics": ood_eval_metrics
+        }
+
+        # ======================================================================
+        # 8. MARK CHECKPOINT AS COMPLETED (PROTECTS COMPUTE UNITS ON FUTURE RUNS)
+        # ======================================================================
+        if os.path.exists(best_checkpoint_path):
+            try:
+                ckpt_meta = torch.load(best_checkpoint_path, map_location="cpu", weights_only=False)
+                ckpt_meta["is_completed"] = True
+                ckpt_meta["metrics"] = fold_result_entry
+                torch.save(ckpt_meta, best_checkpoint_path)
+            except Exception as e:
+                print(f"[WARN] Failed to write is_completed flag to {best_checkpoint_path}: {e}")
+
+        if os.path.exists(last_checkpoint_path):
+            try:
+                last_meta = torch.load(last_checkpoint_path, map_location="cpu", weights_only=False)
+                last_meta["is_completed"] = True
+                torch.save(last_meta, last_checkpoint_path)
+            except Exception as e:
+                pass
+
+        # Persist incremental summary JSON & CSV
+        with open(SUMMARY_JSON_PATH, "w") as f:
+            json.dump(lodo_results, f, indent=2)
+
+        flat_records = []
+        for v_k, v_dict in lodo_results.items():
+            for c_k, c_metrics in v_dict.items():
+                flat_records.append(c_metrics)
+        if flat_records:
+            pd.DataFrame(flat_records).to_csv(SUMMARY_CSV_PATH, index=False)
+
+print(f"\n{'='*75}")
+print(f"[SUCCESS] Multi-Variant Architecture-Ablation LODO Orchestration Completed!")
+print(f"Results persisted to '{SUMMARY_JSON_PATH}' and '{SUMMARY_CSV_PATH}'")
+print(f"{'='*75}\n")
+
+======================================================================

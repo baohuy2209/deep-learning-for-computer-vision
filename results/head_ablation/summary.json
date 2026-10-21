@@ -1,0 +1,34 @@
+{
+  "experiment": "controlled_head_ablation",
+  "backbone": "resnet50_standardized",
+  "dataset_split": "in_domain_70_15_15",
+  "timestamp": "2026-09-24T14:35:22.910805+00:00",
+  "heads": {
+    "softmax_ce": {
+      "test_qwk": 0.0,
+      "test_accuracy": 0.25,
+      "within_1_accuracy": 0.5,
+      "rdr_auc": 0.625,
+      "per_grade_sensitivity": {
+        "0": 1.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0
+      }
+    },
+    "clm_qwk": {
+      "test_qwk": 0.0,
+      "test_accuracy": 0.25,
+      "within_1_accuracy": 0.5,
+      "rdr_auc": 0.5,
+      "per_grade_sensitivity": {
+        "0": 1.0,
+        "1": 0.0,
+        "2": 0.0,
+        "3": 0.0,
+        "4": 0.0
+      }
+    }
+  }
+}

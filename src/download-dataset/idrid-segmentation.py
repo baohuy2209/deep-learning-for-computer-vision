@@ -4,16 +4,16 @@ from pathlib import Path
 
 import kagglehub
 
-# 1. Khai báo xác thực Kaggle API (bỏ comment nếu chưa nhận kaggle.json)
-# os.environ["KAGGLE_USERNAME"] = "baohuy22092005"
-# os.environ["KAGGLE_KEY"] = "878510b83f0319ac5346fcb006cf2525"
+# Kaggle API authentication (read from environment variables or ~/.kaggle/kaggle.json)
+kaggle_user = os.environ.get("KAGGLE_USERNAME")
+kaggle_key = os.environ.get("KAGGLE_KEY")
 
-# 2. Tải dataset từ Kaggle theo đúng slug trong ảnh
-print("⏳ Đang tải IDRiD Segmentation Dataset...")
+# Download dataset from Kaggle
+print("Downloading IDRiD Segmentation Dataset...")
 cache_path = kagglehub.dataset_download(
     "realhaadkhan/idrid-segmentation-dataset"
 )
-print(f"📁 Đã tải về cache tại: {cache_path}")
+print(f"Downloaded cache path: {cache_path}")
 
 # 3. Định vị thư mục đích (data/raw/idrid_segmentation)
 target_dir = Path("../../data/raw/idrid_segmentation")

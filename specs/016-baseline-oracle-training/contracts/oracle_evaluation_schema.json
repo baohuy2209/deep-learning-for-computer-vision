@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OracleEvaluationResultSchema",
+  "description": "Schema for reporting Oracle in-domain vs. LODO cross-domain benchmark results.",
+  "type": "object",
+  "required": [
+    "cohort",
+    "test_sample_size",
+    "test_class_distribution",
+    "oracle_in_domain",
+    "lodo_cross_domain",
+    "delta_transfer"
+  ],
+  "properties": {
+    "cohort": {
+      "type": "string",
+      "enum": ["APTOS 2019", "DDR", "DeepDRiD", "IDRiD", "Messidor-2", "EyePACS"]
+    },
+    "test_sample_size": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "test_class_distribution": {
+      "type": "object",
+      "required": ["0", "1", "2", "3", "4"],
+      "properties": {
+        "0": { "type": "integer" },
+        "1": { "type": "integer" },
+        "2": { "type": "integer" },
+        "3": { "type": "integer" },
+        "4": { "type": "integer" }
+      }
+    },
+    "oracle_in_domain": {
+      "type": "object",
+      "required": ["qwk", "within_1_accuracy", "referable_auc"],
+      "properties": {
+        "qwk": { "type": "number" },
+        "within_1_accuracy": { "type": "number" },
+        "referable_auc": { "type": "number" },
+        "sens_at_spec95": { "type": "number" }
+      }
+    },
+    "lodo_cross_domain": {
+      "type": "object",
+      "required": ["qwk", "within_1_accuracy", "referable_auc"],
+      "properties": {
+        "qwk": { "type": "number" },
+        "within_1_accuracy": { "type": "number" },
+        "referable_auc": { "type": "number" },
+        "sens_at_spec95": { "type": "number" }
+      }
+    },
+    "delta_transfer": {
+      "type": "object",
+      "required": ["delta_qwk", "delta_within_1", "delta_ref_auc"],
+      "properties": {
+        "delta_qwk": { "type": "number" },
+        "delta_within_1": { "type": "number" },
+        "delta_ref_auc": { "type": "number" },
+        "interpretation": { "type": "string" }
+      }
+    }
+  }
+}

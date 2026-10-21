@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DRCheckpointState",
+  "type": "object",
+  "description": "Standardized schema for all saved PyTorch checkpoint files (_best.pth and _last.pth)",
+  "required": [
+    "epoch",
+    "model_state_dict",
+    "optimizer_state_dict",
+    "val_qwk",
+    "best_val_qwk",
+    "best_val_loss",
+    "history",
+    "val_metrics",
+    "epochs_no_improve_es",
+    "epochs_no_improve_lr"
+  ],
+  "properties": {
+    "epoch": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "1-indexed epoch count at checkpoint time"
+    },
+    "model_state_dict": {
+      "type": "object",
+      "description": "PyTorch module weights dictionary"
+    },
+    "optimizer_state_dict": {
+      "type": "object",
+      "description": "AdamW optimizer state dictionary"
+    },
+    "scaler_state_dict": {
+      "type": ["object", "null"],
+      "description": "GradScaler state dictionary if FP16 AMP was used"
+    },
+    "scheduler_state_dict": {
+      "type": ["object", "null"],
+      "description": "Learning rate scheduler state dictionary if external scheduler was provided"
+    },
+    "val_qwk": {
+      "type": "number",
+      "description": "Validation Quadratic Weighted Kappa for the epoch"
+    },
+    "best_val_qwk": {
+      "type": "number",
+      "description": "Best Validation Quadratic Weighted Kappa recorded so far"
+    },
+    "best_val_loss": {
+      "type": "number",
+      "description": "Lowest Validation Loss recorded so far"
+    },
+    "history": {
+      "type": "object",
+      "description": "Historical metric progression dictionary",
+      "required": ["train_loss", "val_loss", "train_qwk", "val_qwk", "val_within_1", "val_ref_sens", "val_ref_auc"],
+      "properties": {
+        "train_loss": { "type": "array", "items": { "type": "number" } },
+        "val_loss": { "type": "array", "items": { "type": "number" } },
+        "train_qwk": { "type": "array", "items": { "type": "number" } },
+        "val_qwk": { "type": "array", "items": { "type": "number" } },
+        "val_within_1": { "type": "array", "items": { "type": "number" } },
+        "val_ref_sens": { "type": "array", "items": { "type": "number" } },
+        "val_ref_sens_at_spec95": { "type": "array", "items": { "type": "number" } },
+        "val_ref_sens_at_spec90": { "type": "array", "items": { "type": "number" } },
+        "val_ref_sens_at_spec85": { "type": "array", "items": { "type": "number" } },
+        "val_ref_sens_at_spec80": { "type": "array", "items": { "type": "number" } },
+        "val_ref_auc": { "type": "array", "items": { "type": "number" } }
+      }
+    },
+    "val_metrics": {
+      "type": "object",
+      "description": "Comprehensive clinical validation metrics evaluated at checkpoint time"
+    },
+    "epochs_no_improve_es": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Early stopping counter tracking epochs without val_qwk improvement"
+    },
+    "epochs_no_improve_lr": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Plateau decay counter tracking epochs without val_loss improvement"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "description": "Set to true when the training fold / round has finished all scheduled epochs"
+    },
+    "metrics": {
+      "type": "object",
+      "description": "Final consolidated test metrics recorded upon completion"
+    }
+  }
+}

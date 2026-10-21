@@ -1,0 +1,494 @@
+{
+  "headers": [
+    "Cụm 1: Bỏ qua bản chất tiến triển thứ tự y khoa (Nominal Classification & Standard Softmax)",
+    null,
+    null
+  ],
+  "rows": [
+    [
+      "Đặc điểm chung: Coi 5 giai đoạn tiến triển bệnh DR ($0 \\to 4$) là các lớp danh nghĩa độc lập (nominal classes). Huấn luyện bằng hàm Cross-Entropy hoặc ArcFace với đầu ra Softmax, phạt sai số nhầm Mức 4 thành Mức 0 tương đương với nhầm Mức 3 thành Mức 4.",
+      null,
+      null
+    ],
+    [
+      "Các bài nghiên cứu thuộc cụm này:",
+      null,
+      null
+    ],
+    [
+      "Tyagi et al. (2026) — ResNet50 + Gaussian Filter (dùng Cross-Entropy tĩnh).",
+      null,
+      null
+    ],
+    [
+      "Dharrao et al. (2025) — EfficientNetB0 + MSAG (tối ưu Cross-Entropy).",
+      null,
+      null
+    ],
+    [
+      "Lu et al. (2026 - MRAMnet) — ResNet50 + MRAM + ArcFace (phân loại danh nghĩa).",
+      null,
+      null
+    ],
+    [
+      "Folorunsho et al. (2025) — CNN-LSTM-SRNN + XGBoost Stacking (đơn giản hóa thành bài toán nhị phân).",
+      null,
+      null
+    ],
+    [
+      "Mohanty et al. (2023) — DenseNet121 & VGG16+XGBoost (chuyển thành bài toán nhị phân).",
+      null,
+      null
+    ],
+    [
+      "Al-Antary et al. (2021) — MSA-Net (ResNet + Atrous Attention dùng Cross-Entropy).",
+      null,
+      null
+    ],
+    [
+      "Cụm 2: Thất thoát điểm ảnh tổn thương sớm do nén ảnh thô (Pixel-Loss / Uniform Resizing)",
+      null,
+      null
+    ],
+    [
+      "Đặc điểm chung: Resize đồng nhất ảnh màu đáy mắt độ phân giải cao ($\\sim 2000 \\times 2000\\text{px}$) xuống kích thước tiêu chuẩn ($224 \\times 224\\text{px}$ hoặc $300 \\times 300\\text{px}$). Việc nén này làm tiêu biến hoàn toàn các tổn thương vi phình mạch (microaneurysms) có đường kính chỉ từ 2–10 pixels, khiến mô hình \"mù tịt\" hoặc đạt F1-score rất thấp ở giai đoạn Mild DR (Mức 1).",
+      null,
+      null
+    ],
+    [
+      "Các bài nghiên cứu thuộc cụm này:",
+      null,
+      null
+    ],
+    [
+      "Mohanty et al. (2023) — Resize về $224 \\times 224\\text{px}$.",
+      null,
+      null
+    ],
+    [
+      "Dharrao et al. (2025) — Resize về $224 \\times 224\\text{px}$ (lớp Mild DR chỉ đạt F1 = 0.81).",
+      null,
+      null
+    ],
+    [
+      "Folorunsho et al. (2025) — Nén ảnh xuống $128 \\times 128\\text{px}$.",
+      null,
+      null
+    ],
+    [
+      "Tyagi et al. (2026) — Resize về $224 \\times 224\\text{px}$ (lớp Mild DR dừng ở F1 = 0.86).",
+      null,
+      null
+    ],
+    [
+      "Hamza Shahbaz et al. (2026) — Resize về $300 \\times 300\\text{px}$ (lớp Mild DR chỉ đạt F1 = 0.84).",
+      null,
+      null
+    ],
+    [
+      "Pamula et al. (2024) — Resize về $224 \\times 224\\text{px}$ (Capsule Network vẫn bị giảm Recall ở lớp Mild).",
+      null,
+      null
+    ],
+    [
+      "Cụm 3: Mô hình \"Hộp đen\" & Thiếu khả năng giải thích y tế (Black-Box Models / Lack of Multi-Scale XAI)",
+      null,
+      null
+    ],
+    [
+      "Đặc điểm chung: Chỉ đưa ra nhãn dự báo hoặc chỉ số xác suất mà không cung cấp công cụ trực quan hóa vùng tổn thương thực thể ở độ phân giải gốc, làm giảm niềm tin lâm sàng (clinical trust) của bác sĩ nhãn khoa.",
+      null,
+      null
+    ],
+    [
+      "Các bài nghiên cứu thuộc cụm này:",
+      null,
+      null
+    ],
+    [
+      "Tyagi et al. (2026), Mohanty et al. (2023), Aiche et al. (2026 - RDE-DR), Al-Smadi et al. (2021), Mutawa et al. (2023), Chilukoti et al. (2024).",
+      null,
+      null
+    ],
+    [
+      "Ghi chú: Một số bài báo có dùng Grad-CAM (như Dharrao et al., 2025) nhưng chỉ chiếu trên ảnh nén thấp, không thể hiển thị rõ các nốt vi phình mạch cấp độ pixel.",
+      null,
+      null
+    ],
+    [
+      "Cụm 4: Sụp đổ độ nhạy chẩn đoán ngoại viện do Lệch miền hình ảnh (Out-of-Domain Performance Collapse / Domain Shift)",
+      null,
+      null
+    ],
+    [
+      "Đặc điểm chung: Mô hình đạt độ chính xác rất cao trên tập kiểm thử nội viện (in-domain), nhưng hiệu năng sụt giảm nghiêm trọng khi đưa vào kiểm thử chéo ngoại viện (zero-shot external validation) trên dữ liệu đến từ các bệnh viện hoặc thiết bị chụp khác.",
+      null,
+      null
+    ],
+    [
+      "Các bài nghiên cứu thuộc cụm này:",
+      null,
+      null
+    ],
+    [
+      "Afshan Hashmi (2026) — QWK giảm từ 0.882 (APTOS) xuống 0.679 (Messidor-2), lớp Mild sụp đổ F1 từ 0.542 xuống 0.264.",
+      null,
+      null
+    ],
+    [
+      "Galappaththige et al. (2024) — Phân tích chi tiết hiện tượng sụp đổ hiệu năng của ERM-ViT và SD-ViT dưới quy chuẩn DomainBed.",
+      null,
+      null
+    ],
+    [
+      "Al-Antary et al. (2021) — MSA-Net giảm độ chính xác từ 98.1% (APTOS) xuống 87.5% (EyePACS).",
+      null,
+      null
+    ],
+    [
+      "Athira et al. (2022), Tariq et al. (2021).",
+      null,
+      null
+    ],
+    [
+      "Cụm 5: Mất cân bằng dữ liệu đuôi dài & Xung đột Gradient (Long-tailed Class Imbalance & Gradient Conflict)",
+      null,
+      null
+    ],
+    [
+      "Đặc điểm chung: Các ca bệnh nặng đe dọa thị lực (Severe NPDR, Proliferative DR) chiếm tỷ lệ cực thấp (<10–13%), khiến mô hình bị thiên lệch dự đoán về phía các lớp đa số (No DR, Moderate).",
+      null,
+      null
+    ],
+    [
+      "Các bài nghiên cứu thuộc cụm này:",
+      null,
+      null
+    ],
+    [
+      "Lu et al. (2026 - MRAMnet), Ju et al. (2022), Cai et al. (2024 - BPaCo), Chen et al. (2025 - LMD), Teng et al. (2024 - MediDRNet).",
+      null,
+      null
+    ],
+    [
+      "Cụm 6: Đơn phương thức hình ảnh & Thiếu thuộc tính lâm sàng phi hình ảnh (Single-Modality / Lack of Clinical Metadata)",
+      null,
+      null
+    ],
+    [
+      "Đặc điểm chung: Chẩn đoán hoàn toàn dựa trên ảnh chụp võng mạc màu (CFP), bỏ qua các chỉ số sinh hóa và hồ sơ bệnh án sống còn của bệnh nhân (chỉ số đường huyết HbA1c, thời gian mắc đái tháo đường, tuổi tác, huyết áp).",
+      null,
+      null
+    ],
+    [
+      "Các bài nghiên cứu thuộc cụm này:",
+      null,
+      null
+    ],
+    [
+      "Hầu như toàn bộ các bài báo trong tổng quan tài liệu (Tyagi 2026, Dharrao 2025, Mohanty 2023, Lu 2026, Afshan Hashmi 2026, Galappaththige 2024) đều mắc phải khoảng trống này do hạn chế của các bộ dữ liệu công khai.",
+      null,
+      null
+    ],
+    [
+      "II. THIẾT LẬP HỆ THỐNG KHOẢNG TRỐNG NGHIÊN CỨU CHO ĐỀ TÀI NCS (HOM-DFD-NET)",
+      null,
+      null
+    ],
+    [
+      "Nghiên cứu sinh (NCS) cần xác định 01 GAP CHÍNH đủ độ sâu, độ rộng và giá trị thực tiễn lâm sàng, được bổ trợ chặt chẽ bởi 03 GAP PHỤ BỔ TRỢ.",
+      null,
+      null
+    ],
+    [
+      "1. GAP CHÍNH (PRIMARY GAP - LINH HỒN KHOA HỌC CỦA ĐỀ TÀI)",
+      null,
+      null
+    ],
+    [
+      "🎯 TÊN GAP CHÍNH: \"Giải quyết sự sụp đổ ranh giới quyết định lâm sàng và độ nhạy chẩn đoán ngoại viện khi phân cấp Bệnh võng mạc tiểu đường 5 giai đoạn dưới tác động của Lệch miền hình ảnh (Imaging Domain Shift) bằng Khung Hồi quy Thứ tự Nhất quán (CORAL) kết hợp Hàm Mất mát Lai Ordinal-QWK.\"",
+      null,
+      null
+    ],
+    [
+      "Lập luận học thuật & Độ sâu/rộng của Gap chính:",
+      null,
+      null
+    ],
+    [
+      "Tính thời sự toàn cầu & Độ sâu y khoa: Khoảng cách giữa hiệu năng phòng thí nghiệm (In-domain accuracy >95%) và hiệu năng triển khai thực địa (Out-of-domain accuracy <65%) là rào cản lớn nhất ngăn AI y tế được các cơ quan quản lý (như FDA/CE) phê duyệt.",
+      null,
+      null
+    ],
+    [
+      "Bệ đỡ lý thuyết & Bằng chứng thực nghiệm vững chắc:",
+      null,
+      null
+    ],
+    [
+      "Nghiên cứu mỏ neo của Afshan Hashmi (2026) đã chứng minh một phát hiện đắt giá: \"Ordering survives domain shift, grade boundaries do not\" (Mô hình bảo tồn tính thứ tự bệnh lý khi gặp dịch chuyển miền, nhưng các ranh giới quyết định phân cấp bị sai lệch nghiêm trọng).",
+      null,
+      null
+    ],
+    [
+      "Bài tổng quan mỏ neo của Yang et al. (2022 - Frontiers in Endocrinology) chỉ ra rằng các thang đo ICDR 5 cấp độ ra đời từ 2002 bị các mô hình AI dự báo như các lớp danh nghĩa rời rạc (nominal Softmax), phạt sai số nhầm Mức 4 thành Mức 0 bằng đúng sai số nhầm Mức 3 thành Mức 4.",
+      null,
+      null
+    ],
+    [
+      "Giải pháp kỹ thuật có chiều sâu:",
+      null,
+      null
+    ],
+    [
+      "Đề tài đề xuất thay thế lớp Softmax danh nghĩa bằng Đầu phân loại Hồi quy thứ tự CORAL (Consistent Rank Logits), phân rã bài toán 5 lớp thành 4 tác vụ phân loại nhị phân xếp tầng ($DR > 0, DR > 1, DR > 2, DR > 3$).",
+      null,
+      null
+    ],
+    [
+      "Kết hợp tối ưu hóa trực tiếp hàm loss lai: $$\\mathcal{L}_{Total} = \\alpha \\cdot \\mathcal{L}_{WCE} + \\beta \\cdot \\mathcal{L}_{Ordinal} + \\gamma \\cdot \\mathcal{L}_{QWK}$$",
+      null,
+      null
+    ],
+    [
+      "Trong đó, $\\mathcal{L}_{QWK}$ (hàm xấp xỉ khả vi của chỉ số Quadratic Weighted Kappa) áp dụng cơ chế phạt theo bình phương khoảng cách $(i - j)^2$. Việc này ép ranh giới quyết định của mô hình phải an toàn y khoa (đạt chỉ số Within-one-grade accuracy $>95\\%$), triệt tiêu hoàn toàn các sai sót chẩn đoán xa nhau ngay cả khi xảy ra hiện tượng lệch miền ngoại viện.",
+      null,
+      null
+    ],
+    [
+      "2. CÁC GAP PHỤ BỔ TRỢ (SUPPORTING SECONDARY GAPS)",
+      null,
+      null
+    ],
+    [
+      "Các gap phụ đóng vai trò làm \"bệ đỡ\" trực tiếp để nuôi dưỡng và chứng minh cho Gap chính:",
+      null,
+      null
+    ],
+    [
+      "┌────────────────────────────────────────────────────────────────────────────────────────┐",
+      null,
+      null
+    ],
+    [
+      "│                                 GAP CHÍNH (PRIMARY GAP)                                │",
+      null,
+      null
+    ],
+    [
+      "│      Tái hiệu chuẩn ranh giới quyết định lâm sàng out-of-domain bằng CORAL + Loss QWK  │",
+      null,
+      null
+    ],
+    [
+      "└───────────────────────────────────────────▲────────────────────────────────────────────┘",
+      null,
+      null
+    ],
+    [
+      "│ (Yêu cầu đặc trưng tổn thương phải sắc nét)",
+      null,
+      null
+    ],
+    [
+      "│",
+      null,
+      null
+    ],
+    [
+      "┌───────────────────────────────────────────┴────────────────────────────────────────────┐",
+      null,
+      null
+    ],
+    [
+      "│                       GAP PHỤ BỔ TRỢ 1 (SUPPORTING GAP 1 - ARCHITECTURE)               │",
+      null,
+      null
+    ],
+    [
+      "│          Khắc phục Pixel-loss bằng Kiến trúc All-CNN Multi-Scale Hybrid Extraction      │",
+      null,
+      null
+    ],
+    [
+      "│            (Global ResNet50-CBAM + Local Patch EfficientNetB0 Native Resolution)       │",
+      null,
+      null
+    ],
+    [
+      "└───────────────────────────────────────────▲────────────────────────────────────────────┘",
+      null,
+      null
+    ],
+    [
+      "│ (Yêu cầu minh bạch hóa quyết định)",
+      null,
+      null
+    ],
+    [
+      "│",
+      null,
+      null
+    ],
+    [
+      "┌───────────────────────────────────────────┴────────────────────────────────────────────┐",
+      null,
+      null
+    ],
+    [
+      "│                       GAP PHỤ BỔ TRỢ 2 (SUPPORTING GAP 2 - INTERPRETABILITY)          │",
+      null,
+      null
+    ],
+    [
+      "│                Minh bạch hóa chẩn đoán y tế bằng XAI Đa tầng (Multi-Scale XAI)          │",
+      null,
+      null
+    ],
+    [
+      "│              (Grad-CAM trên Local Patch phân giải gốc + SHAP định lượng đặc trưng)     │",
+      null,
+      null
+    ],
+    [
+      "└────────────────────────────────────────────────────────────────────────────────────────┘",
+      null,
+      null
+    ],
+    [
+      "🛠️ Gap phụ 1: Khắc phục sự thất thoát điểm ảnh tổn thương sớm (Pixel-Loss) bằng Kiến trúc Lai đa độ phân giải Thuần CNN (All-CNN Multi-Scale Hybrid Extractor)",
+      null,
+      null
+    ],
+    [
+      "Lập luận phản biện: Để đầu phân loại Hồi quy thứ tự (Gap chính) phân định chính xác ranh giới giữa Mức 0 (No DR) và Mức 1 (Mild DR), nó đòi hỏi các đặc trưng vi phình mạch (microaneurysms) không bị tiêu biến. Tuy nhiên, các nghiên cứu đi trước (Mohanty 2023, Dharrao 2025, Tyagi 2026) resize đồng nhất ảnh về $224 \\times 224\\text{px}$, trực tiếp gây ra hiện tượng mất mát điểm ảnh (pixel-loss). Ngược lại, các mô hình Vision Transformer (ViT) tuy giữ ngữ cảnh toàn cục tốt nhưng lại \"khát dữ liệu\" và có độ phức tạp tính toán bậc hai $\\mathcal{O}(N^2)$ gây cạn kiệt VRAM.",
+      null,
+      null
+    ],
+    [
+      "Giải pháp đề xuất: Thiết kế kiến trúc All-CNN song nhánh:",
+      null,
+      null
+    ],
+    [
+      "Luồng Zoom-out (Global Context): Resize ảnh về $300 \\times 300\\text{px}$ đưa qua ResNet50 + CBAM Attention để định vị ngữ cảnh vĩ mô (hoàng điểm, đĩa thị).",
+      null,
+      null
+    ],
+    [
+      "Luồng Local Zoom-in (Native Local Patches): Cắt tự động các patch kích thước $128 \\times 128\\text{px}$ từ ảnh phân giải gốc cao đưa vào EfficientNetB0 (sử dụng cơ chế trượt MIL hoặc Dense Grid Sampling) đóng vai trò \"kính hiển vi số\" quét tìm vi phình mạch cấp độ pixel mà không gây OOM.",
+      null,
+      null
+    ],
+    [
+      "🛠️ Gap phụ 2: Minh bạch hóa quyết định chẩn đoán y tế bằng Trí tuệ Nhân tạo Giải thích được Đa tầng (Multi-Scale Explainable AI - XAI)",
+      null,
+      null
+    ],
+    [
+      "Lập luận phản biện: Bài báo Afshan Hashmi (2026) và các mô hình ensemble/ordinal khác hoàn toàn hoạt động như một \"hộp đen\" y tế, không thể giải thích tại sao ranh giới quyết định lại bị dịch chuyển khi sang miền dữ liệu mới.",
+      null,
+      null
+    ],
+    [
+      "Giải pháp đề xuất: Tích hợp cơ chế giải thích hai cấp độ:",
+      null,
+      null
+    ],
+    [
+      "Grad-CAM trên Luồng Local Patch: Trực quan hóa bản đồ nhiệt (heatmaps) đè trực tiếp lên các patch $128 \\times 128\\text{px}$ ở độ phân giải gốc, khoanh đỏ chính xác từng nốt vi phình mạch hoặc vệt xuất huyết ngọn lửa.",
+      null,
+      null
+    ],
+    [
+      "SHAP (SHapley Additive exPlanations): Định lượng hóa mức đóng góp của từng luồng đặc trưng vào xác suất dự báo, giúp bác sĩ nhãn khoa kiểm chứng và xây dựng niềm tin lâm sàng (clinical trust).",
+      null,
+      null
+    ],
+    [
+      "🛠️ Gap phụ 3: Dung hợp thông tin lâm sàng đa phương thức & Hài hòa hóa Dữ liệu vô trùng (Multimodal Data Fusion & Sterile Dataset Harmonization)",
+      null,
+      null
+    ],
+    [
+      "Lập luận phản biện: Bác sĩ không bao giờ chẩn đoán mức độ DR chỉ dựa vào ảnh mắt đơn lẻ mà luôn kết hợp với chỉ số đường huyết HbA1c và thời gian mắc bệnh tiểu đường. Đồng thời, việc phân chia train/test ngẫu nhiên ở cấp độ ảnh trong các nghiên cứu cũ gây ra rủi ro rò rỉ dữ liệu (Data Leakage) do trùng lặp ảnh cùng bệnh nhân.",
+      null,
+      null
+    ],
+    [
+      "Giải pháp đề xuất: Xây dựng nhánh Tabular Data Fusion (TabNet/MLP) dung hợp metadata lâm sàng với vector đặc trưng hình ảnh; áp dụng giao thức phân chia tệp vô trùng theo định danh bệnh nhân (Sterile Patient-wise Stratified Split) và chuẩn hóa sắc độ Ben Graham + CLAHE trên bộ dữ liệu lai đa nguồn (APTOS 2019, EyePACS, Messidor-2, IDRiD).",
+      null,
+      null
+    ],
+    [
+      "III. BẢN ĐỒ CHIẾN LƯỢC KẾT NỐI VÀ MA TRẬN PHẢN BIỆN TÀI LIỆU",
+      null,
+      null
+    ],
+    [
+      "Dưới đây là ma trận sử dụng các bài báo mỏ neo để phản biện và bảo vệ hệ thống Gap cho đề tài luận án:",
+      null,
+      null
+    ],
+    [
+      "Bài báo mỏ neo",
+      "Tử huyệt kỹ thuật / Hạn chế của họ",
+      "Cách đề tài HOM-DFD-Net dùng để khai thác GAP"
+    ],
+    [
+      "Afshan Hashmi (2026)",
+      "Phát hiện \"Ordering survives domain shift, grade boundaries do not\" nhưng chỉ dùng EfficientNetB0/B3 nén ảnh và chưa có XAI.",
+      "Dùng làm bệ đỡ lý thuyết cho Gap chính: Khẳng định tính đúng đắn của việc dùng đầu CORAL + Loss QWK để tái hiệu chỉnh ranh giới quyết định out-of-domain."
+    ],
+    [
+      "Yang et al. (2022 - Frontiers)",
+      "Review chỉ ra 8 hạn chế của ICDR 5 cấp độ (coi là lớp danh nghĩa, bỏ qua tổn thương thần kinh & pixel loss).",
+      "Dùng làm căn cứ lý luận: Minh chứng sự cần thiết phải chuyển dịch từ phân loại danh nghĩa (Softmax) sang phân loại có thứ tự và bảo toàn điểm ảnh tổn thương."
+    ],
+    [
+      "Tyagi et al. (2026)",
+      "ResNet50 + Gaussian đạt accuracy cao nhưng nén ảnh $224 \\times 224$ làm F1 lớp Mild DR chỉ dừng ở 0.86 và dùng Cross-Entropy tĩnh.",
+      "Phản biện cho Gap chính & Gap phụ 1: Luồng Local Patch $128 \\times 128$ gốc giúp nâng F1 lớp Mild DR; đầu CORAL + QWK Loss thay thế Cross-Entropy tĩnh."
+    ],
+    [
+      "Lu et al. (2026 - MRAMnet)",
+      "Chia $2 \\times 2$ góc phần tư cố định, dùng ArcFace phân loại danh nghĩa, không giải quyết được xung đột thứ tự.",
+      "Phản biện cho Gap chính & Gap phụ 1: Thay chia $2 \\times 2$ cố định bằng cơ chế trượt MIL Native Patches; thay ArcFace bằng Hồi quy thứ tự CORAL."
+    ],
+    [
+      "Dharrao et al. (2025)",
+      "EfficientNetB0 + MSAG dùng trên ảnh nén $300 \\times 300$, tổn thương vi mô bị tiêu biến trước khi vào khối attention.",
+      "Phản biện cho Gap phụ 1: Đưa EfficientNetB0 xuống xử lý trực tiếp trên các Local Patches độ phân giải gốc để làm \"kính hiển vi số\"."
+    ],
+    [
+      "Folorunsho et al. (2025) / Mohanty et al. (2023)",
+      "Đơn giản hóa bài toán 5 cấp độ thành phân loại nhị phân (DR vs No DR) để lấy accuracy cao 95-97%.",
+      "Phản biện cho Gap chính: Khẳng định phân loại nhị phân mất giá trị chẩn đoán lâm sàng; HOM-DFD-Net giải quyết trọn vẹn 5 cấp độ y khoa an toàn."
+    ],
+    [
+      "IV. LỜI KHUYÊN DÀNH CHO NGHIÊN CỨU SINH KHI BẢO VỆ ĐỀ CƯƠNG (DEFENSE TIPS)",
+      null,
+      null
+    ],
+    [
+      "Khi Hội đồng hỏi: \"Tại sao không dùng Vision Transformer (ViT) cho toàn bộ mô hình mà lại chọn All-CNN?\"",
+      null,
+      null
+    ],
+    [
+      "Trả lời: ViT mạnh về ngữ cảnh toàn cục nhưng có độ phức tạp tính toán $\\mathcal{O}(N^2)$, cực kỳ \"khát dữ liệu\" và dễ quá khớp trên dữ liệu y tế quy mô nhỏ. Mô hình All-CNN của chúng tôi kết hợp ResNet50 + CBAM ở luồng Global (học ngữ cảnh vĩ mô tương đương ViT nhờ cơ chế attention) và EfficientNetB0 ở luồng Local Patch (học chi tiết vi mô), vừa duy trì trọn vẹn tính thiên kiến quy nạp (inductive bias), vừa nhẹ về VRAM, hội tụ nhanh và tối ưu cho triển khai trên thiết bị y tế di động (Edge devices).",
+      null,
+      null
+    ],
+    [
+      "Khi Hội đồng hỏi: \"Chỉ số nào là quan trọng nhất để chứng minh mô hình an toàn y khoa?\"",
+      null,
+      null
+    ],
+    [
+      "Trả lời: Không phải Accuracy hay Precision, mà chính là chỉ số Quadratic Weighted Kappa (QWK) và tỷ lệ Within-one-grade accuracy (Dự đoán nằm trong phạm vi lệch tối đa 1 cấp độ). Hàm loss lai Ordinal-QWK của chúng tôi bị ép phạt theo bình phương khoảng cách, đảm bảo không xảy ra các sai sót chết người (như đoán Mức 4 thành Mức 0), đạt tỷ lệ Within-one-grade $>95\\%$ trên dữ liệu ngoại viện.",
+      null,
+      null
+    ]
+  ]
+}

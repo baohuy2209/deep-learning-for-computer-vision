@@ -1,0 +1,248 @@
+=== PAGE 1 ===
+Phần A. Nội dung học thuật 
+A1. Bảng 3 đang mâu thuẫn với chính luận điểm của bài 
+Đây là vấn đề lớn nhất, em phải xử lý trước khi viết tiếp Results. 
+Caption Bảng 3 và Eq. 21 đều định nghĩa Δ = QWK_ID − QWK_OOD. Kiểm lại từng ô: 
+Cohort OOD ID Trong bảng ID − OOD OOD − ID Nhận xét 
+APTOS 0,70 0,82 −0,12 +0,12 −0,12  
+IDRiD 0,75 0,71 +0,04 −0,04 +0,04 OOD > ID 
+Messidor-2 0,75 0,65 +0,10 −0,10 +0,10 OOD > ID 
+DDR 0,76 0,72 +0,04 −0,04 +0,04 OOD > ID 
+EyePACS 0,83 0,53 +0,30 −0,30 +0,30 OOD > ID 
+DeepDRiD 0,72 0,76 −0,04 +0,04 −0,04  
+Hai vấn đề tách biệt 
+1. Dấu bị đảo. Bảng đang tính OOD − ID, nhưng caption và Eq. 21 định nghĩa ngược lại. 
+2. Ở 4/6 fold, OOD cao hơn ID. EyePACS chênh tới +0,30. Dữ liệu hiện tại đang nói mô hình chạy 
+TỐT HƠN ngoài miền, điều này phủ định toàn bộ tiền đề "domain-shift penalty" mà Abstract và 
+Introduction đang xây. 
+Nguyên nhân 
+QWK phụ thuộc vào phân bố lớp biên. QWK_ID tính trên pool 5 cohort với một phân bố; QWK_OOD 
+tính trên 1 cohort với phân bố khác hẳn. Một cohort có phổ grade rộng và cân (EyePACS) sẽ cho 
+QWK cao hơn một cohort dồn vào vài grade (thuần tuý cơ học), không liên quan tới chất lượng mô 
+hình. 
+Nói cách khác, Δ hiện tại đang trộn lẫn domain shift với prior shift và độ khó nội tại của từng 
+cohort. Nó không đo được thứ em muốn đo. 
+Ba phương án xử lý 
+# Phương án Đánh giá 
+1 Đổi metric chính: lấy per-grade sensitivity và RDR 
+AUROC làm chính, QWK làm phụ 
+Rẻ, nhưng làm yếu vai trò của QWK vốn là 
+metric chuẩn của lĩnh vực 
+2 Chuẩn hoá prior: reweight pool ID về đúng prior 
+của cohort OOD rồi mới tính Δ 
+Đúng về mặt thống kê nhưng khó giải thích với 
+reviewer 
+3 Thêm baseline "oracle": với mỗi cohort đích, huấn 
+luyện thêm một mô hình trên chính cohort đó 
+(split nội bộ) để lấy cận trên in-domain riêng cho 
+cohort ấy 
+KHUYẾN NGHỊ. Là chuẩn mực trong literature 
+domain generalization, reviewer quen thuộc 
+
+=== PAGE 2 ===
+# Phương án Đánh giá 
+Phương án 3: chi tiết 
+Δ_transfer = QWK_oracle(target) − QWK_OOD(target) 
+Hai số cùng tính trên CÙNG một tập test, CÙNG một prior → Δ mới thực sự đo domain shift. Kết 
+quả đang tự mâu thuẫn sẽ trở thành một kết quả sạch. 
+Chi phí: 6 lần train thêm nhưng mỗi lần chỉ trên 1 cohort nên rẻ hơn LODO nhiều. 
+A2. Framing đang giả định một kết luận mà dữ liệu chưa ủng hộ 
+Abstract vi ết "QWK decreases from [X] to [X] (ΔQWK = [X])" , câu này gi ả định s ẵn là CÓ gi ảm. 
+Introduction cũng h ỏi "how is domain -shift degradation distributed" , tức mặc định degradation t ồn 
+tại. Nếu sau khi sửa A1 mà Δ vẫn không đồng đều về dấu, em sẽ phải viết lại Abstract từ đầu. 
+Cách phòng ngừa và nó làm bài mạnh hơn: 
+Chuyển trục từ "chúng tôi đo hình phạt" sang "chúng tôi hỏi liệu so sánh QWK giữa các cohort có hợp 
+lệ không, và chỉ ra rằng phân rã theo grade là bắt buộc". 
+Câu kết luận em đã viết sẵn rồi: "aggregate benchmark performance alone can obscure grade-specific 
+failure modes". Chỉ cần đẩy nó lên thành trục chính thay vì để ở cuối. Framing này bền với mọi chiều 
+kết quả: Δ dương, âm, hay lẫn lộn đều thành bằng chứng cho luận điểm. 
+A3. Bảng 1 thiếu cột phân bố lớp 
+Vì A1, đây thành bắt buộc. Thêm cột "Grade distribution (%)" hoặc G0/G1/G2/G3/G4. Không có nó, 
+reviewer không tự kiểm chứng được phần thảo luận về prior shift mà em đã nêu class-prior shift 
+trong Limitations. 
+Đổi lại có thể bỏ cột Camera Models, cột dài nhất bảng mà thông tin không được dùng ở bất kỳ phân 
+tích nào sau đó. Gộp thành một cột "Device / FOV" ngắn hơn. 
+A4. Lỗi chỉ số trong công thức CLM 
+Eq. 14:  θ1 ∈ R,  θ_{k+1} = θ_k + softplus(α_k) + 1e-4,  k ∈ {1,2,3} 
+         -> định nghĩa θ1, θ2, θ3, θ4   (chỉ số chạy 1..4) 
+  
+Eq. 15:  P(Y ≤ k | x) = 1 − exp[−exp(θ_k − s(x))],  k = 0,...,3 
+         -> tham chiếu θ0   <-- KHÔNG TỒN TẠI 
+Phải thống nhất một hệ chỉ số: hoặc θ₀..θ₃, hoặc k = 1..4. 
+A5. Xử lý thống kê chưa đủ 
+Mục 5.3 có "the paired improvement is [X] ± [X] percentage points (p = [X])" nhưng thiếu ba thứ: 
+• Không nêu dùng kiểm định gì? Wilcoxon signed-rank hay paired t-test? 
+• n = 6 fold nên lực thống kê rất thấp. Với Wilcoxon n = 6, p nhỏ nhất có thể đạt là 0,031 (hai 
+phía). Phải nêu giới hạn này. 
+
+=== PAGE 3 ===
+• Không đề cập số seed. Mỗi cấu hình chạy một lần hay nhiều lần? Nếu một lần thì phải ghi vào 
+Limitations. 
+Thêm một câu vào §4.4: 
+"Each configuration is trained once per fold; results are reported as the 
+ mean across the six LODO folds, with paired Wilcoxon signed-rank tests 
+ (n = 6) used for component comparisons." 
+A6. Các điểm nhỏ 
+• §2.3: hai câu liên tiếp cùng trích [20] cho hai ý khác nhau, hãy gộp lại thành một câu. 
+• Bảng 3 lệch số thập phân: 0.8 cạnh 0.82, 0.7 cạnh 0.70. Thống nhất 2 chữ số, hoặc 3 cho 
+QWK. 
+Phần B. Bố cục trình bày 
+B1. Lỗi cấu trúc cần sửa ngay 
+Lỗi Cách sửa 
+§5.9 Conclusion nằm bên trong Section 5 Tách ra thành §6 Conclusion độc lập 
+Running head vẫn là "Domain-Robust Multi-
+Scale MIL for DR Grading" 
+Không khớp tiêu đề mới. Sửa \titlerunning{} 
+9 chỗ Figure ?? và 1 chỗ Section ?? Còn thiếu \label{} tương ứng 
+§5 gộp "Results and Discussion" Chấp nhận được với LNCS, nhưng tách §5 Results / §6 
+Discussion thì mạch rõ hơn 
+B2. Cảnh báo quan trọng nhất về độ dài 
+Bản hiện tại 19 trang, mới có ĐÚNG 1 hình (Fig. 1). Nhưng Results đang tham chiếu tới 9 chỗ 
+`Figure ??`, tức còn khoảng 5–6 hình chưa chèn. 
+Mỗi hình LNCS kèm caption chiếm khoảng 0,3–0,4 trang. Chèn đủ → bản thảo sẽ thành 21–22 
+trang. 
+Như vậy mình thật sự phải phải cắt  tầm 7-8 trang để về 15 trang (thật sự 15 trang cũng là đã 
+vượt 3 trang, nhưng không sao em nhé). 
+Phần C. Kế hoạch cắt về 15 trang 
+C1. Ngân sách trang mục tiêu 
+Phần Hiện tại Mục tiêu Cắt 
+Title + Abstract 0,9 0,9 — 
+1 Introduction 1,7 1,3 −0,4 
+
+=== PAGE 4 ===
+Phần Hiện tại Mục tiêu Cắt 
+2 Related Work 1,9 1,2 −0,7 
+3 Methodology (+ Fig.1, Bảng 1) 4,6 2,6 −2,0 
+4 Experimental Protocol 3,4 1,8 −1,6 
+5 Results (+ 4 hình, 3 bảng) 5,0 4,5 −0,5 (và phải nhận 
+thêm ~1,5 trang hình) 
+6 Conclusion (trong §5) 0,3 — 
+Availability + Ack 0,4 0,3 −0,1 
+References (25) 2,2 2,2 — 
+Tổng 19 + hình 15,1  
+C2. Methodology: cắt 2,0 trang (mục tiêu lớn nhất) 
+Bản thảo đang có 25 công thức đánh số. Con số hợp lý cho một bài LNCS 15 trang là 8–10. 
+Nguyên tắc: chỉ đánh số công thức nào LÀ đóng góp của em. Công thức sách giáo khoa thì trích 
+dẫn, công thức tầm thường thì viết thành câu. 
+Xoá 15 công thức sau 
+Eq. Nội dung Thay bằng 
+2 Non-local block Trích [21], một câu 
+4 GAP Một cụm từ trong câu 
+5, 10, 
+11 
+Ba phép concat Viết inline: F_Global = [F_GAP ‖ F_Quadrant] ∈ R^4096 
+6 Ngưỡng FOV ≥ 0,50 "patches with less than 50% FOV coverage are discarded" 
+7 Max pooling Inline 
+8 Gated attention (tử số) Trích [12], giữ mỗi Eq. 9 
+12 MLP hai lớp "a two-layer MLP with LayerNorm, Mish activation and dropout 
+maps F_Fused to z ∈ R^512" 
+19 Lịch warm-up "λ warms linearly from 0 to λ_target = 0.4 over the first 15 
+epochs" 
+22 Định nghĩa QWK Sách giáo khoa — trích dẫn 
+23 Sens = TP/(TP+FN) Xoá hẳn 
+24 Within-1 accuracy Một câu 
+25 P(Y≥2) = 1 − P(Y≤1) Inline 
+GIỮ 10 công thức: 1 (Ben Graham), 3 (Quadrant token), 13, 14, 15, 16+17 (gộp thành một dòng), 18, 
+20, 21. Tiết kiệm khoảng 1,3 trang. 
+
+=== PAGE 5 ===
+Hai chỗ khác 
+• §3.1 Framework Overview (2 đoạn) đang lặp lại caption Fig. 1 và câu thứ ba của Abstract. Rút 
+còn 3 câu. −0,2 
+• §3.3 Preprocessing (4 đoạn) rút còn 2. Chi tiết "intensity tolerance of 7", "lightly smoothed" là 
+mức chi tiết của phụ lục, không phải của Methodology. −0,3 
+C3. Experimental Protocol: cắt 1,6 trang 
+Mục Hiện tại Cách cắt Tiết kiệm 
+§4.2 Bảng 2 Bảng 4×4 Xoá bảng. Một câu là đủ: "V0: global CNN with 
+Softmax; V1: + native-resolution local MIL; V2: + 
+global relational context; V3: + CLM ordinal head." 
+−0,30 
+§4.3 Danh sách 5 head 
+đánh số 
+Chuyển thành một câu văn xuôi kèm trích dẫn −0,25 
+§4.4 3 đoạn 
+hyperparameter 
+Gộp thành 4–5 dòng liền mạch −0,30 
+§4.5 
+Evaluation 
+Metrics 
+4 tiểu mục + 4 công 
+thức 
+Một đoạn văn + giữ đúng Eq. 21. Đây là chỗ cắt dễ 
+và hiệu quả nhất trong cả bài 
+−0,70 
+§4.6 Danh sách 3 metric 
+XAI 
+Văn xuôi −0,15 
+C4. Related Work: cắt 0,7 trang 
+Cả 2.1, 2.2, 2.3 đều kết bằng một đoạn "gap + định vị của chúng tôi". Ba đoạn định vị là thừa hai, 
+chúng lặp lại chính Introduction. 
+• Giữ định vị ở 2.1 thôi, hoặc gom cả ba thành MỘT đoạn ngắn cuối §2. → −0,5 
+• Gộp hai câu cùng trích [20] ở §2.3. → −0,1 
+C5. Introduction: cắt 0,4 trang 
+• Đoạn 1 liệt kê đầy đủ tên 5 grade ICDRS, rồi đoạn 3 lại định nghĩa lại Grade 1 và Grade 3. Giữ 
+định nghĩa ở đoạn 3 — nơi nó làm việc thật là dẫn xuất RQ — và rút gọn đoạn 1. → −0,25 
+• Đoạn "We address these questions using a six-fold LODO..." lặp lại đoạn RQ và Abstract. Rút còn 
+2 câu. → −0,2 
+C6. Results: cắt 0,5 trang text để nhường chỗ cho hình 
+• §5.8 Limitations: 4 đoạn → 1 đoạn dày. LNCS chấp nhận limitations gọn. → −0,4 
+• §5.5 và §5.7: mỗi mục có một đoạn mô tả "Figure ?? cho thấy..." — nội dung này thuộc về 
+CAPTION, không phải thân bài. → −0,3 
+• §5.6: dãy sensitivity tại 90/85/80% spec viết thành câu dài → một dòng hoặc đưa vào bảng. → 
+−0,1 
+C7. Ngân sách hình: chỉ được 4 hình 
+
+=== PAGE 6 ===
+Với 15 trang và 3 bảng, em tối đa 4 hình. Hiện đang tham chiếu 5–6. 
+Quyết định Hình Lý do 
+GIỮ Fig. 1: kiến trúc Bắt buộc 
+GIỮ Slope chart per-grade ID→OOD Bằng chứng trực tiếp cho H1 và H2. Hình quan trọng 
+nhất của bài 
+GIỮ Trục severity latent + cutpoints θ Bằng chứng cho H3, và là hình không bài nào khác có 
+GIỮ Lưới XAI định tính Ảnh / Grad-CAM global / Attention-MIL local / mask 
+IDRiD 
+BỎ Heatmap 6 fold Nội dung đã nằm trọn trong Bảng 3 
+BỎ Bar chart stepwise OOD QWK Cũng đã có trong Bảng 3 
+BỎ Đường ROC Báo cáo bằng số trong Bảng 5, không cần hình riêng 
+Phần D. Thứ tự thực hiện 
+D1. Hôm nay: sửa nhanh, không cần suy nghĩ 
+1. Sửa dấu Δ trong Bảng 3 cho khớp Eq. 21 
+2. Thống nhất chỉ số θ giữa Eq. 14 và Eq. 15 
+3. Đổi §5.9 → §6, sửa \titlerunning{} 
+4. Thêm cột phân bố lớp vào Bảng 1, bỏ cột Camera Models 
+5. Thống nhất số thập phân trong Bảng 3 
+D2. 1 ngày: quyết định khoa học 
+1. Chốt cách xử lý A1. Khuyến nghị chạy thêm 6 oracle baseline. Cần quyết ngay vì tốn GPU và 
+quyết định luôn cách viết §5.1. 
+2. Chuyển trục framing sang A2 để Abstract bền với mọi chiều kết quả 
+3. Bổ sung câu về kiểm định thống kê và số seed vào §4.4 
+D3. Song song: không cần GPU 
+1. Thực hiện C2 → C6 theo đúng thứ tự. Làm Methodology trước vì cắt được nhiều nhất. 
+2. Chốt 4 hình theo C7, bỏ hẳn 3 hình còn lại khỏi kế hoạch 
+3. Kiểm tra chính sách double-blind của hội nghị đích 
+Cắt xong C2–C6 sẽ về khoảng 15,1 trang kể cả 4 hình. Nếu vẫn dư 0,5 trang thì cắt tiếp Related 
+Work §2.2 — đó là tiểu mục ít gắn với RQ nhất. 
+D4. Checklist thực hiện 
+☐ Hạng mục 
+
+=== PAGE 7 ===
+☐ Dấu Δ trong Bảng 3 khớp với Eq. 21 
+☐ Chỉ số θ thống nhất giữa Eq. 14 và Eq. 15 
+☐ §5.9 đã tách thành §6 Conclusion 
+☐ titlerunning khớp với tiêu đề mới 
+☐ Không còn Figure ?? hay Section ?? nào 
+☐ Bảng 1 có cột phân bố lớp, đã bỏ cột Camera Models 
+☐ Số thập phân trong Bảng 3 đã thống nhất 
+☐ Đã chốt phương án xử lý A1 (oracle baseline hoặc phương án khác) 
+☐ Abstract đã chuyển sang framing bền với mọi chiều kết quả 
+☐ §4.4 có nêu tên kiểm định thống kê và số seed 
+☐ Số công thức đánh số còn 8–10 (hiện 25) 
+☐ Đã xoá Bảng 2 
+☐ §4.5 đã gộp thành một đoạn văn 
+☐ Ba đoạn định vị ở Related Work đã gom còn một 
+☐ Limitations đã rút còn một đoạn 
+☐ Đã chốt đúng 4 hình 
+☐ Đã kiểm tra chính sách double-blind 
+☐ Đã xác minh DOI Zenodo 
+☐ Tổng độ dài ≤ 15 trang kể cả hình và tài liệu tham khảo 
+ 

@@ -1,0 +1,96 @@
+class FundusDualBranchDataset(Dataset):
+    def __init__(
+        self,
+        metadata: Union[pd.DataFrame, str],
+        img_size: int = IMG_SIZE,
+        img_root: Optional[str] = None,
+        split: str = "train",
+        ablation_mode: str = "ben_graham_green",
+        cache_dir: Optional[str] = None,
+        patch_size: int = 128,
+        stride: int = 96
+    ):
+        """
+        Dataset serving the proposed Dual-Branch model (Global + Local MIL) with precomputed NPZ cache support.
+        """
+        if isinstance(metadata, str):
+            self.df = pd.read_csv(metadata)
+        else:
+            self.df = metadata.reset_index(drop=True)
+
+        self.records = self.df.to_dict("records")
+        self.img_size = img_size
+        self.patch_size = patch_size
+        self.stride = stride
+        self.split = split
+        self.img_root = img_root
+        self.ablation_mode = ablation_mode
+        self.is_train = (split == "train")
+        self.cache_dir = cache_dir
+
+        self.global_transform = get_global_augmentations(
+            img_size, is_train=self.is_train
+        )
+
+    def __len__(self):
+        return len(self.records)
+
+    def __getitem__(self, idx):
+        row = self.records[idx]
+        label = int(row.get("diagnosis", 0))
+        dataset_key = row.get("dataset_key", "default")
+        native_path_str = str(row.get("native_path", row.get("raw_full_path", "")))
+        img_id = PureWindowsPath(native_path_str).stem if native_path_str else str(row.get("image_id", idx))
+
+        cache_file = os.path.join(self.cache_dir, dataset_key, f"{img_id}.npz") if self.cache_dir else None
+        processed_np = None
+        valid_anchors = None
+
+        if cache_file and os.path.exists(cache_file):
+            try:
+                with np.load(cache_file) as data:
+                    processed_np = data["img"]
+                    valid_anchors = data["anchors"]
+            except Exception:
+                processed_np, valid_anchors = None, None
+
+        if processed_np is None:
+            if self.img_root and not os.path.isabs(native_path_str) and not os.path.exists(native_path_str):
+                img_path = f"{self.img_root}/{dataset_key}/{PureWindowsPath(native_path_str).name}"
+            else:
+                img_path = native_path_str
+
+            bgr = cv2.imread(img_path)
+            if bgr is not None:
+                img_rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+            else:
+                try:
+                    pil_img = Image.open(img_path).convert("RGB")
+                    img_rgb = np.array(pil_img)
+                except Exception as e:
+                    logger.error(f"Error loading image from {img_path}: {e}")
+                    img_rgb = np.zeros((self.img_size, self.img_size, 3), dtype=np.uint8)
+
+            fov_mask = compute_fov_mask(img_rgb, erode_px=15)
+            processed_np = apply_green_channel_ablation(
+                img_rgb, ablation_mode=self.ablation_mode
+            )
+            valid_anchors = compute_valid_anchors(
+                img_rgb.shape[:2], fov_mask, patch_size=self.patch_size, stride=self.stride, fov_thresh=0.5
+            )
+        else:
+            img_path = native_path_str
+
+        # Global stream (uint8)
+        global_augmented = self.global_transform(image=processed_np)
+        global_img = global_augmented["image"]
+        global_tensor = torch.from_numpy(global_img).permute(2, 0, 1).contiguous()
+
+        return {
+            "global_image": global_tensor,
+            "local_native_image": processed_np,
+            "valid_anchors": valid_anchors,
+            "native_path": img_path,
+            "label": torch.tensor(label, dtype=torch.long),
+        }
+

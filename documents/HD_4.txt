@@ -1,0 +1,200 @@
+--- PAGE 1 ---
+Chẩn đoán của em Nhận xét 
+Referable Sensitivity thấp do Ordinal 
+Loss chỉ phạt nhẹ sai số ±1 grade 
+Đúng hướng nhưng sai cơ chế. Ref-AUC = 0,9063 chứng minh 
+vấn đề nằm ở vị trí ngưỡng, không nằm ở khả năng phân biệt. 
+Em xem Phần 1. 
+XAI giảm mạnh do collate_fn chưa 
+truyền toạ độ patch [y0, x0] 
+Sai vị trí. Grad-CAM đang chạy trên nhánh Global, không đụng 
+tới patch nào. Có 3 nguyên nhân thật, khác hẳn. Em xem Phần 
+2. 
+Nên ưu tiên Threshold Calibration hay 
+Class-weight? 
+Ưu tiên Threshold Calibration nhưng không phải vì nó rẻ hơn. 
+Xem Phần 3. 
+P1. Referable Sensitivity — chẩn đoán lại 
+Con số quyết định nằm ngay trong log của em 
+Test Ref-AUC: 0.9063 
+AUC 0,906 nghĩa là thang điểm liên tục P(y≥2) đã phân tách referable / non-referable rất tốt. Vấn đề 
+không nằm ở khả năng phân biệt của mô hình mà nó nằm hoàn toàn ở vị trí ngưỡng quyết định. 
+Đường vận hành suy ra từ AUC 
+Từ AUC = 0,9063 suy ra d′ = 1,864 (mô hình binormal) cho ra bảng sau: 
+Độ đặc hiệu Độ nhạy kỳ vọng Ghi chú 
+95% 58,7% Gần điểm argmax hiện tại của em 
+90% 72,0%  
+85% 79,6% Sát mục tiêu 
+80% 84,7% Vượt mục tiêu 80% mà em đặt ra 
+75% 88,3%  
+Em đang báo cáo Ref-Sens 64,8% tại điểm argmax mà điểm argmax rơi vào khoảng specificity 95%. 
+Chỉ cần đổi điểm vận hành là đạt ≥80% độ nhạy, không cần train lại một epoch nào. 
+Điểm sâu hơn (xét về phương pháp) 
+Báo cáo độ nhạy sàng lọc tại điểm argmax là sai v ề phương pháp ngay từ đầu. Argmax của bài 
+toán phân lo ại 5 l ớp không ph ải là đi ểm vận hành c ủa bài toán sàng l ọc nhị phân. Đó là hai bài 
+toán khác nhau với hai ngưỡng khác nhau. Dù em có train lại bao nhiêu lần, cách báo cáo đó vẫn 
+sai. 
+ 
+Vì sao Class-weight là công cụ sai 
+Phân bố lớp của tập train: 
+G0: 1602   G1: 2336   G2: 2288   G3: 1326   G4: 1527 
+           ^^^^^^^^^^^^^^^^^^^^  hai lớp LỚN NHẤT 
+
+--- PAGE 2 ---
+G2 recall chỉ 37,5% không phải do thiếu mẫu mà đó là vấn đề phân biệt thật sự ở ranh giới G1/G2, 
+ranh giới khó nhất về lâm sàng (moderate NPDR đòi hỏi đếm tổn thương ngoài vi phình mạch). 
+ Threshold Calibration Class-weight 1,3–1,5 
+Tác dụng thực tế Dịch chuyển biên quyết định Dịch chuyển biên quyết định, cùng một việc 
+Chi phí 0 giờ GPU Train lại toàn bộ 
+Kiểm soát Chính xác, chọn được điểm vận 
+hành mong muốn 
+Không kiểm soát được dịch bao nhiêu 
+Rủi ro Không có Có thể làm giảm AUC, tức làm hỏng thứ đang 
+tốt 
+Dùng class-weight để sửa một vấn đề ngưỡng là kiểu như “dùng búa tạ để đóng đinh ghim” 
+Phần 2. XAI, chẩn đoán lại 
+Vì sao giả thuyết toạ độ patch không đúng 
+# trong compute_quantitative_xai 
+target_layer = model.backbone.global_branch.layer4[-1] 
+#                              ^^^^^^^^^^^^^ nhánh GLOBAL 
+Grad-CAM đang chạy trên nhánh Global. Toạ độ patch không xuất hiện ở bất kỳ dòng nào trong hàm 
+đó nên nó không thể là nguyên nhân. 
+Nguyên nhân 1: IoU bị chặn trần, không phải mô hình sai 
+IoU tối đa (khi CAM phủ trọn mask) = diện tích mask ÷ diện tích CAM: 
+Mask phủ CAM 20% CAM 30% CAM 40% 
+1,0% 0,050 0,033 0,025 
+1,5% 0,075 0,050 0,038 
+2,0% 0,100 0,067 0,050 
+Mask IDRiD phủ khoảng 1–2%, CAM ở ngưỡng 0,5 phủ khoảng 30% → trần lý thuyết là 0,05. Em đạt 
+0,0199, tức 40% của trần. Kể cả một mô hình hoàn hảo cũng không vượt được 0,05. 
+IoU là metric SAI cho tổn thương siêu nhỏ. Đừng báo cáo nó như một thất bại. 
+Nguyên nhân 2: giới hạn vật lý của Grad-CAM tại layer4 
+Input 512  ->  feature map layer4 = 16 x 16 
+1 ô CAM = 32 x 32 px ở ảnh 512 
+        = 268 x 268 px ở ảnh gốc IDRiD (4288 px) 
+  
+Vi phình mạch ~ 30-60 px  ->  MỘT ô CAM chứa khoảng 35 vi phình mạch 
+Đây là giới hạn vật lý của kiến trúc, không phải bug. Muốn định vị mịn hơn phải lấy CAM ở layer3 
+(32×32) hoặc dùng LayerCAM / Grad-CAM++. 
+Nguyên nhân 3: bug thật, gần với trực giác của em 
+idrid_seg_image_dirs = [f"{idrid_seg_root}/DR_Testing_Set/Fundus Images", ...] 
+
+--- PAGE 3 ---
+#                                                        ^^^^^^^^^^^^^^ 
+#                        ảnh IDRiD GỐC, chưa qua crop_fundus_roi 
+Mô hình được train trên native_cropped (đã cắt viền đen). IDRiD gốc là 4288×2848 với dải đen 
+lớn hai bên, đĩa võng mạc chỉ chiếm phần giữa. Nên lúc eval XAI, mô hình nhìn thấy khung ảnh khác 
+hẳn lúc train: võng mạc chiếm tỷ lệ nhỏ hơn, scale khác. 
+Đây chính là "lệch scale" em cảm nhận được nhưng nằm ở khâu crop ảnh, không phải toạ độ patch. 
+# Sửa: crop cả ảnh VÀ mask bằng đúng MỘT bounding box, rồi mới resize 
+ys, xs = np.where(compute_fov_mask(img_np, erode_px=0)) 
+y0, y1, x0, x1 = ys.min(), ys.max()+1, xs.min(), xs.max()+1 
+img_np      = img_np[y0:y1, x0:x1] 
+lesion_mask = lesion_mask[y0:y1, x0:x1]     # <-- cùng bbox 
+ 
+Pointing Game 11,11% không tệ như em nghĩ 
+Mask phủ Mức ngẫu nhiên Kết quả của em Tỷ lệ vượt 
+1,0% 1,0% 11,11% 11× 
+1,5% 1,5% 11,11% 7,4× 
+2,0% 2,0% 11,11% 5,6× 
+Con số cần báo cáo là "11,1% so với mức ngẫu nhiên 1,5%", không phải "11,1%" trần trụi. Mọi metric 
+localization đều phải kèm mức ngẫu nhiên. 
+Phần 3. Sự ưu tiên? 
+Threshold Calibration trước nhưng không phải vì nó rẻ hơn mà vì nó là việc đúng phải làm bất 
+kể tài nguyên. 
+1. AUC 0,9063 đã chứng minh vấn đề nằm ở ngưỡng, không nằm ở biểu diễn đặc trưng. 
+2. Báo cáo sàng lọc BẮT BUỘC phải là AUC + đường ROC + độ nhạy tại độ đặc hiệu cố định. Một 
+con số tại argmax là không đủ dù em có train lại bao nhiêu lần. 
+3. Class-weight và Threshold Calibration làm cùng một việc. Một cái tốn 0 giờ và kiểm soát được 
+chính xác; cái kia tốn nhiều giờ và không kiểm soát được. 
+Hiệu chỉnh ngưỡng trên tập VAL, báo cáo trên tập TEST. Tuyệt đối không chỉnh trên test. 
+ 
+Phải báo cáo trung thực chỗ này 
+Chuẩn sàng lọc DR của UK NSC là độ nhạy ≥80% VÀ độ đặc hiệu ≥95% đồng thời. 
+Chỉ tiêu Yêu cầu Mô hình hiện tại 
+Độ nhạy tại spec 95% ≥ 80% ~59–63%, chưa đạt 
+Ref-AUC cần có để đạt cả hai ≥ 0,961 0,906 
+
+--- PAGE 4 ---
+Đừng chọn spec 80% rồi báo "đạt 84,7% độ nhạy" như thể đã đạt chuẩn. Cách mình nên viết là: báo 
+cáo cả đường ROC, nêu rõ điểm vận hành đã chọn và lý do chọn rồi ghi vào Limitations rằng mô hình 
+chưa đạt đồng thời chuẩn 80/95. 
+Phần 4. Nếu train lại, sửa cái khác chứ không phải class weight 
+Chỗ có headroom thật sự 
+Train QWK: 0.8295  ->  0.8797     (leo đều) 
+Val   QWK: 0.6327  ->  0.6904     (dao động dữ dội) 
+           ------------------ 
+           khoảng cách ~ 0.20     <-- đây mới là vấn đề 
+ 
+Val QWK dao động (nguyên nhân đã xác định) 
+Epoch 08: 0.5638 
+Epoch 10: 0.6761 
+Epoch 11: 0.5917 
+Epoch 12: 0.6559 
+Epoch 15: 0.5893 
+Epoch 16: 0.6904 
+Dao động bắt đầu đúng từ epoch 7, tức ngay sau khi warmup 5 epoch kết thúc và QWK loss vào full 
+weight λ = 1,2. Đây chính xác là vấn đề bất ổn định mà bài Vargas cảnh báo: QWK loss tính trên ma 
+trận nhầm lẫn mềm ở mức batch nên gradient có phương sai rất cao. 
+Ba việc em nên làm, xếp theo ưu tiên 
+# Việc Chi tiết 
+1 Ổn định QWK loss Kéo dài warmup từ 5 lên 15 epoch, hoặc giảm λ từ 1,2 xuống 0,3–0,5 
+2 Chống overfit Tăng weight decay, tăng dropout, augmentation mạnh hơn, layer-wise 
+LR decay cho backbone pretrained 
+3 Sửa tiêu chí dừng EarlyStopping đang theo val loss (dừng ở epoch 16) trong khi 
+ModelCheckpoint theo val QWK. Hai tiêu chí khác nhau nên nó dừng 
+lúc QWK còn đang cải thiện. Thống nhất cả hai theo val QWK, patience 
+15–20 
+Em mới chạy 16/100 epoch. LR mới đi từ 1e-4 xuống 9,43e-5, giảm đúng 6%. Mô hình CHƯA 
+HỘI TỤ. 
+Con số QWK 0,700 hiện tại chưa phải giới hạn của kiến trúc này. 
+Phần 5. Ý tưởng toạ độ patch (em dùng đúng chỗ thì rất hay) 
+Trực giác của em đúng, chỉ đặt sai chỗ. Lưu (y0, x0) không dùng để sửa Grad-CAM mà để xây một 
+bản đồ saliency mới từ trọng số attention MIL. 
+1. Mỗi patch có toạ độ (y0, x0) và trọng số αₖ từ GatedAttentionPool 
+2. Vẽ αₖ lên đúng vị trí đó → bản đồ định vị ở độ phân giải 128 px, thay vì 268 px của Grad-CAM 
+layer4 
+
+--- PAGE 5 ---
+3. Đây là XAI sinh ra từ chính kiến trúc chứ không phải gắn thêm từ ngoài 
+Vì sao đây là một đóng góp cho bài báo 
+So sánh "Grad-CAM (nhánh Global) vs Attention-MIL (nhánh Local)" trên cùng bộ mask IDRiD. 
+Nếu Attention-MIL định vị tốt hơn thì em có thêm một bằng chứng độc lập cho H1, tức nhánh 
+Local thực sự bắt được tổn thương vi mô. 
+ 
+Bộ metric XAI nên đổi 
+Metric Xử lý Lý do 
+Pointing Game Giữ, báo kèm mức 
+ngẫu nhiên 
+Phù hợp với tổn thương nhỏ, dễ diễn giải 
+Mean IoU thô Bỏ Bị chặn trần ở ~0,05, không phân biệt được mô hình 
+tốt và xấu 
+Saliency recall @ area-
+matched 
+Thêm Cắt CAM ở top-q% với q = đúng tỷ lệ diện tích mask, 
+rồi đo bao nhiêu phần mask được phủ. Công bằng vì 
+đã khớp diện tích 
+Pixel-level AUROC Thêm Không phụ thuộc ngưỡng và là chuẩn trong đánh giá 
+saliency 
+Phần 6. Thứ tự thực hiện 
+# Việc Thời gian GPU 
+1 Kiểm tra prevalence tập test. Nếu sai, sửa trước mọi thứ 
+khác 
+2 phút Không 
+2 Sửa crop cho IDRiD XAI: áp crop_fundus_roi lên cả ảnh và 
+mask cùng một bbox 
+30 phút Không 
+3 Đổi bộ metric XAI: thêm mức ngẫu nhiên và area-matched 
+recall 
+1 giờ Không 
+4 Threshold Calibration trên val, xuất đường ROC đầy đủ + 
+bảng sens tại spec 95/90/85/80 
+1 giờ Không 
+5 Bản đồ attention-MIL: lưu (y0,x0), dựng saliency map, so với 
+Grad-CAM 
+Nửa ngày Ít 
+6 Train lại với warmup dài hơn + chống overfit, train đủ epoch 
+để hội tụ 
+Nhiều giờ Có 
+ 
+

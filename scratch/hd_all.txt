@@ -1,0 +1,664 @@
+===============================
+documents/HD_1.pdf
+Total pages: 2
+--- Page 1 ---
+Quyết định về lớp đầu ra: em có thể chuyển hẳn sang Ordinal head (CLM) làm mô hình chính. Giữ Softmax + CE làm baseline bắt buộc trong bảng ablation. Bảng đầu ra em cần chạy: bảng này em dùng chung một backbone đã cố định, đây là nhóm thí nghiệm em nên chạy sớm nhất. Head Loss Vai trò trong bài Softmax Cross-Entropy Baseline gốc, mốc so sánh bắt buộc Softmax CE + QWK giữ Softmax nhưng đổi loss, điểu này để chứng minh sửa loss là chưa đủ. CORAL Ordinal CE Kiểu bài Hashmi (2026), đảm bảo đơn điệu thứ hạng bằng chia sẻ trọng số. CORN Conditional CE Bản cải tiến của CORAL (Shi, 2021), nới lỏng ràng buộc chia sẻ trọng số. CLM (logit / probit / cloglog) QWK Mô hình chính đề xuất kiểu bài Vargas  Mình có thể xây dựng câu hỏi nghiên cứu:  “Thành phần nào của mô hình chấm điểm DR thực sự SỐNG SÓT qua domain shift?” Đây có thể xem như một gap: bài Hashmi mở ra vấn đề (QWK 0.88 → 0.68) nhưng chỉ báo cáo một con số tổng, chưa ai phân rã xem sự sụp đổ đó xảy ra ở grade nào, và do thành phần kiến trúc nào. Các giả thuyết kiểm chứng được để xây khung xương của bài Giả thuyết Nội dung Nhóm ablation tương ứng H1 Grade 1 sụp vì MẤT ĐỘ PHÂN GIẢI → nhánh Local MIL cứu được Có/không nhánh Local; độ phân giải 300 vs 512 vs 640 H2 Grade 3 sụp vì MẤT NGỮ CẢNH và khả năng đếm → attention toàn cục / Quadrant Tokens cứu được Có/không Non-local; có/không Quadrant Tokens H3 Softmax KHUẾCH ĐẠI cả hai vì vứt bỏ thông tin thứ tự → ordinal head cứu được, và lợi ích này chủ yếu xuất hiện ở NGOẠI MIỀN chứ không phải nội miền  
+Ba giả thuyết này độc lập, mỗi cái tương ứng một nhóm ablation. Mọi module em đã code đều được tái định nghĩa thành công cụ đo. Giao thức đánh giá: Leave-One-Dataset-Out Em có 6 dataset, song song với cách trộn hết vào một pool rồi chia 70/15/15, em có thể thử chia thực hiện như sau • LODO: lần lượt giữ mỗi dataset ra ngoài làm test, train trên 5 cái còn lại. • Chưa ai làm LODO 6 dataset DR với ordinal head. Đây mới là điểm khác biệt thật sự của bài em, không phải kiến trúc. • Metric chính không phải QWK nội bộ, mà là Δ = (nội bộ − ngoại miền). 
+--- Page 2 ---
+Framing này an toàn hơn cho em Cách framing Nếu số đẹp Nếu số không đẹp "Chúng tôi đề xuất kiến trúc mới đạt QWK cao nhất" Có bài Không có bài "Chúng tôi phân rã xem cái gì sống sót qua domain shift" Có bài Vẫn có bài, kết quả âm tính vẫn công bố được Ví dụ một kết quả "âm tính" nhưng vẫn rất mạnh: "Ordinal head không cải thiện nội miền nhưng thu hẹp khoảng cách ngoại miền 8 điểm QWK" Bộ metric bắt buộc Metric Lý do QWK — nội bộ và từng fold LODO Metric chuẩn của lĩnh vực, để so sánh với các bài khác Per-grade recall Bắt buộc. Toàn bộ luận điểm H1/H2 nằm ở grade 1 và grade 3. Chỉ báo QWK tổng thì không chứng minh được gì. Within-1-grade accuracy Chỉ số an toàn lâm sàng, lỗi lệch 1 cấp chấp nhận được, lệch 3 cấp thì không Độ nhạy DR cần chuyển tuyến (≥2) tại độ đặc hiệu cố định Chỉ số lâm sàng thật của bài toán sàng lọc Số vi phạm tính đơn điệu thứ hạng Chỉ ordinal head đo được, đây là bằng chứng trực tiếp cho H3 IoU / pointing game vs mask IDRiD Biến XAI thành kết quả định lượng thay vì hình minh họa Δ = nội bộ − ngoại miền Metric headline của bài  
+===============================
+documents/HD_2.pdf
+Total pages: 7
+--- Page 1 ---
+Em rà soát một số lỗi sau nhé: 
+Lỗi 1: Toàn bộ 516 ảnh IDRiD bị gom thành một bệnh nhân 
+merge-dataset.ipynb · hàm parse_patient_and_side 
+MÃ HIỆN TẠI 
+clean_id = img_str.replace("_left","").replace("_right","")...   # "IDRiD_001" -> 
+"idrid_001" 
+patient_id = clean_id.rsplit("_", 1)[0] if "_" in clean_id else clean_id 
+#                    ^^^^^^^^^^^^^^^^^ lấy phần TRƯỚC gạch dưới cuối -> "idrid" 
+Kết quả kiểm chứng bằng cách chạy hàm: 
+IDRiD_001  ->  patient_id = "idrid" 
+IDRiD_002  ->  patient_id = "idrid" 
+IDRiD_413  ->  patient_id = "idrid" 
+  
+Số patient_id duy nhất trên 516 ảnh IDRiD = 1 
+Hậu quả: GroupShuffleSplit coi cả 516 ảnh là một nhóm duy nhất, nên toàn bộ IDRiD rơi hết vào 
+một split. Kiểm tra lại log chạy sẽ thấy IDRiD chỉ xuất hiện ở train hoặc test, không có ở cả ba. 
+Lỗi 2: patient_id đụng nhau giữa các dataset 
+Hàm parse không gắn tên dataset vào patient_id, nên các ID trùng số bị gộp chung: 
+EyePACS  "10_left"  ->  patient_id = "10" 
+DeepDRiD "10_l1"    ->  patient_id = "10"   <-- cùng nhóm với EyePACS 
+  
+Kiểm tra va chạm EyePACS_10 vs DeepDRiD_10 : True 
+Lỗi này không gây leakage (nó gom quá tay nên an toàn hơn, không nguy hiểm hơn) nhưng nó phá tỷ 
+lệ 70/15/15 và làm con số thống kê số bệnh nhân trở nên vô nghĩa. 
+Cách sửa cả lỗi 1 và lỗi 2 
+def parse_patient_and_side(image_id: str, dataset_key: str) -> tuple[str, str]: 
+    img_str = str(image_id).lower() 
+    k = dataset_key.lower() 
+  
+    if "idrid" in k: 
+        # IDRiD_001 -> "001"  (lấy phần SAU gạch dưới, không phải trước) 
+        base = img_str.replace(".jpg","").replace(".png","") 
+        pid  = base.split("_")[-1] 
+  
+    elif "eyepacs" in k or "deepdrid" in k: 
+        pid = img_str.split("_")[0] 
+  
+    elif "ddr" in k: 
+        # DDR dùng gạch NGANG: 007-0004-000 -> nhóm theo trường giữa 
+        parts = img_str.replace(".jpg","").split("-") 
+        pid = "-".join(parts[:2]) if len(parts) >= 2 else img_str 
+  
+    elif "messidor" in k: 
+        # Messidor-2 CÓ cặp 2 mắt: 20051020_43808_0100_PP 
+--- Page 2 ---
+        # -> nhóm theo trường ngày khám (trường đầu) 
+        pid = img_str.split("_")[0] 
+  
+    else:                      # APTOS: 1 ảnh = 1 bệnh nhân 
+        pid = img_str 
+  
+    side = "left" if "left" in img_str or "_l" in img_str else \ 
+           "right" if "right" in img_str or "_r" in img_str else "unknown" 
+  
+    return f"{dataset_key}::{pid}", side     # <-- BẮT BUỘC có prefix dataset 
+Kiểm chứng bắt buộc sau khi sửa 
+In ra bảng số bệnh nhân duy nhất theo từng dataset. IDRiD phải ra ~400+ chứ không phải 1: 
+df.groupby("dataset_name")["patient_id"].nunique() 
+ 
+Lỗi 3: Cân bằng lớp trước khi chia split (nghiêm trọng) 
+ merge-dataset.ipynb ở cell thực thi cuối 
+# THỨ TỰ HIỆN TẠI 
+master_balanced_df = create_balanced_master_pool(master_df, target_range=(1500,2500)) 
+train_raw_df, val_raw_df, test_raw_df = 
+split_master_pool_patient_level(master_balanced_df) 
+#                                                                      
+^^^^^^^^^^^^^^^^^ 
+#                             cân bằng ĐÃ chạy trước -> val/test cũng bị cân bằng 
+Mâu thuẫn nội tại: markdown ở cell 9 ghi "Validation & Test sets: Left untouched in raw distribution" 
+nhưng code đang làm điều ngược lại. 
+Vấn đề Hệ quả 
+Test set bị cân bằng nhân tạo (mỗi 
+grade ~20%) 
+Thực tế lâm sàng grade 0 chiếm 70–75% sàng lọc. Referable DR 
+specificity bị thổi phồng vì số ca âm tính bị cắt đi hàng chục lần. 
+QWK tính trên phân bố nhân tạo Không so sánh được với bất kỳ bài báo nào, kể cả bài Hashmi 
+dùng làm đối chứng. 
+53.977 ảnh → còn ~10.000 Vứt bỏ 80% dữ liệu, gần như toàn bộ EyePACS. Mất đi lợi thế quy 
+mô của bài. 
+Không trả lời được câu hỏi reviewer "Prevalence của test set là bao nhiêu?", hiện không có câu trả lời 
+hợp lệ. 
+Cách sửa 
+# THỨ TỰ ĐÚNG: chia trước -> chỉ cân bằng trên TRAIN 
+  
+train_raw, val_raw, test_raw = split_master_pool_patient_level(master_df)   # dùng 
+master_df ĐẦY ĐỦ 
+  
+train_bal = create_balanced_master_pool(train_raw, target_range=(1500,2500))  # chỉ 
+train 
+val_final  = val_raw      # GIỮ NGUYÊN phân bố tự nhiên 
+--- Page 3 ---
+test_final = test_raw     # GIỮ NGUYÊN phân bố tự nhiên 
+  
+# In prevalence để đưa vào bài báo 
+print(test_final["diagnosis"].value_counts(normalize=True).sort_index()) 
+Lỗi phụ trong cùng hàm 
+Đoạn top-up cuối hàm ‘create_balanced_master_pool’ so sánh index sai: 
+selected_subset = pd.concat(sampled_datasets, ignore_index=True)   # index đã reset về 
+0..N-1 
+... 
+remaining = 
+grade_subset_existing[~grade_subset_existing.index.isin(selected_subset.index)] 
+#                                                                  
+^^^^^^^^^^^^^^^^^^^^^^ 
+#           so index đã reset với index gốc -> lọc sai -> có thể thêm TRÙNG ảnh 
+Sửa: giữ một cột định danh ổn định (ví dụ `raw_full_path`) và lọc theo cột đó thay vì theo index. 
+Lỗi 4: Mask ground-truth của XAI được tạo từ chính Grad-CAM 
+main_model.ipynb ở hàm compute_quantitative_xai 
+cam, _ = grad_cam.generate_cam(g_img, l_patch) 
+cam_resized = cv2.resize(cam, (300, 300)) 
+  
+# 2. Extract ground-truth lesion segmentation mask (e.g. from IDRiD benchmark) 
+_, mask_gt = cv2.threshold(np.uint8(cam_resized * 255), 150, 255, cv2.THRESH_BINARY) 
+#                                   ^^^^^^^^^^^ mask "ground truth" tạo TỪ CHÍNH CAM 
+mask_gt = mask_gt / 255.0 
+  
+cam_binary = (cam_resized >= 0.5).astype(np.float32) 
+iou = intersection / (union + 1e-7)      # so CAM với mask-của-CAM 
+Đây là phép tự so sánh không phải kiểm định. IoU và Pointing Game sẽ luôn ra rất cao một cách 
+tự động, và con số đó không mang bất kỳ ý nghĩa nào. 
+Cách sửa: 
+1. Vô hiệu hoá hàm này ngay (comment lại cell 72 phần XAI) cho tới khi có mask thật. 
+2. Tải mask thật từ IDRiD: thư mục Segmentation Groundtruths/ gồm 4 loại tổn thương 
+(MA / HE / EX / SE) cho 81 ảnh. 
+3. Hợp nhất 4 loại mask thành một mask nhị phân "có tổn thương", resize về cùng kích thước với 
+CAM. 
+4. Đây chính là lý do IDRiD không được dùng làm test set, nó là dataset duy nhất có mask pixel-
+level. 
+Lỗi 5: calculate_monotonicity_violations luôn trả về 0.0 
+Đây là metric duy nhất chứng minh giả thuyết H3 của em và nó đang hỏng. 
+cum_probs = np.cumsum(probs, axis=1)          # probs là xác suất KHÔNG ÂM 
+--- Page 4 ---
+diffs     = np.diff(cum_probs, axis=1)        # -> cumsum LUÔN không giảm 
+violations = np.any(diffs < -1e-4, axis=1)    # -> diffs LUÔN >= 0 -> LUÔN False 
+Kiểm chứng trên 10.000 mẫu ngẫu nhiên cho mỗi head: 
+Softmax ngẫu nhiên : violation rate = 0.0000   (min diff = 0.000012) 
+CORAL              : violation rate = 0.0000   (min diff = 0.000002) 
+CORN               : violation rate = 0.0000   (min diff = 0.000020) 
+CLM                : violation rate = 0.0000   (min diff = 0.000007) 
+Nghĩa là con số "0.0% violations" em đặt làm mốc cho H3 là artifact của bug, không phải kết quả thí 
+nghiệm. 
+Cách sửa 
+Phải đo trên xác suất tích lũy P(y > k) của CORAL và phải đo TRƯỚC bước ‘F.relu’ vì relu đang che 
+mất chính cái vi phạm cần đếm. 
+def rank_monotonicity_violations(rank_probs: np.ndarray) -> float: 
+    """ 
+    rank_probs: (N, C-1) = P(y > k), k = 0..C-2 
+    Ràng buộc thứ hạng: P(y>0) >= P(y>1) >= ... >= P(y>C-2)   (KHÔNG TĂNG) 
+    """ 
+    diffs = np.diff(rank_probs, axis=1)        # phải <= 0 
+    return float(np.mean(np.any(diffs > 1e-4, axis=1))) 
+• CORAL là head duy nhất có thể vi phạm (các ngưỡng bias học độc lập). 
+• CORN dùng cumprod nên đảm bảo về mặt toán học. 
+• CLM dùng softplus tích lũy nên cũng đảm bảo. 
+Chính vì vậy kết quả kỳ vọng của H3 phải là: CORAL có tỷ lệ vi phạm > 0, còn CORN và CLM bằng 0. 
+Nếu tất cả đều bằng 0 thì metric vẫn đang hỏng. 
+Lỗi 6: Em cần thiết lập lại để có kết quả thực nhé 
+main_model_head_ablation.ipynb ở cell 0, bảng "Research Hypotheses Verification Mapping" 
+Giả thuyết "Target Benchmark" đang ghi trong file Tình trạng 
+H1 +36.9% over Global Baseline Chưa chạy thí nghiệm nào 
+H2 +18.2% Grade 3 Recall Chưa chạy thí nghiệm nào 
+H3 0.0% Violations, +0.041 QWK Chưa chạy  và metric đang hỏng (Lỗi 
+5) 
+H4 ≤ 0.052 Generalization Gap Chưa có external test set nào 
+H5 IoU ≥ 0.45, Pointing ≥ 88% Chưa có mask thật (Lỗi 4) 
+Đồng thời sửa nhãn sai trong cả hai notebook: tập test hiện tại được gọi là "OOD Test" / "Out-of-
+Domain" nhưng thực chất là 15% ngẫu nhiên in-domain. Chưa có external hold-out, chưa có LODO 
+trong code. Để nguyên tên này thì mọi kết luận về domain shift (tức toàn bộ câu chuyện của bài) đều 
+sai nhãn. 
+ 
+--- Page 5 ---
+Nhánh Local MIL chưa đủ để chứng minh H1 
+extract_mil_patches hiện đang chia lưới 4×4 đều trên bounding box 
+Tính toán độ bao phủ thực tế: 
+Kích thước ảnh gốc K=16 patch phủ được Khoảng cách giữa 2 patch 
+cạnh nhau 
+Vùng bỏ trống 
+1500 × 1500 14,8% vùng võng mạc 457 px 329 px 
+2000 × 2000 8,3% vùng võng mạc 624 px 496 px 
+3000 × 3000 3,7% vùng võng mạc 957 px 829 px 
+4000 × 4000 2,1% vùng võng mạc 1290 px 1162 px 
+Một vi phình mạch kích thước 20–60 px nằm trong khoảng trống 500–800 px đó thì mô hình không 
+bao giờ nhìn thấy. H1 không thể chứng minh được với thiết kế này. 
+• Thêm nữa là chưa lọc FOV. Ảnh đáy mắt là hình tròn nội tiếp khung vuông nên ít nhất 4 patch ở 
+4 góc bounding box gần như toàn nền đen. 
+• Đã thống nhất chuyển sang sliding-window MIL nhưng code vẫn là grid 4×4 cũ. Em cần tăng K, 
+giảm stride, lọc patch theo tỷ lệ pixel nằm trong FOV và lấy mẫu ngẫu nhiên M = 32–64 patch 
+mỗi epoch khi train (quét toàn bộ lưới khi inference). 
+H2 chưa có thành phần kiến trúc nào để kiểm chứng 
+Markdown gán H2 cho "Global Branch + CBAM" nhưng CBAM spatial chỉ là một conv 7×7 trên bản đồ 
+đã pooled, đúng cơ chế đã được phân tích là không giải được quy tắc 4-2-1 của grade 3. Hiện chưa có 
+Non-local, chưa có Quadrant Tokens. Nếu chạy thí nghiệm bây giờ thì H2 sẽ ra kết quả âm tính vì lý 
+do kiến trúc chứ không phải vì giả thuyết sai. 
+Các lỗi kỹ thuật cần sửa 
+Vị trí Vấn đề Cách sửa 
+FundusDualBranchDataset.__ge
+titem__ 
+row["native_path"].split("\\")[
+-1] hard-code dấu phân cách 
+Windows → vỡ trên Linux/Colab 
+Dùng 
+Path(row["native_path"]
+).name 
+fusion_layer + train_loader nn.BatchNorm1d(1024) với 
+batch_size=8: thống kê nhiễu và 
+batch cuối có thể còn 1 mẫu → crash 
+ở train mode 
+Thêm drop_last=True cho 
+train_loader, hoặc đổi sang 
+LayerNorm 
+LocalMILBranch.forward Chỉ dùng torch.max, đúng cho grade 
+1 nhưng không đếm được nên grade 
+3 không có cơ chế nào hỗ trợ 
+Dual pooling: 
+concat(max_pool, 
+gated_attention_pool) 
+Global branch Vẫn ở 300×300, grade 1 gần như vô 
+hình ở độ phân giải này 
+Nâng lên 512 tối thiểu 
+generate_feature_cache (cell 
+52) 
+Gọi 
+model.extractor.extract_feature
+s(...), DRFullModel không có 
+.extractor, DualBranchMILModel 
+Xóa hẳn cell 52. Bản đúng đã 
+có ở cell 64. 
+--- Page 6 ---
+Vị trí Vấn đề Cách sửa 
+không có .extract_features → 
+AttributeError 
+CumulativeLinkModelQWKHead qwk_weight=1.2 bật ngay từ epoch 1 
+→ đúng vấn đề stagnation mà bài 
+Vargas cảnh báo 
+Cho λ tăng tuyến tính từ 0 
+trong 3–5 epoch đầu 
+FundusGradCAM.__init__ register_full_backward_hook 
+không bao giờ được gỡ → gọi nhiều 
+lần sẽ chồng hook, rò rỉ bộ nhớ 
+Lưu handle và gọi 
+.remove() hoặc dùng 
+context manager 
+cell 62 epochs=3 và csv_train_path trỏ vào 
+sample_50_metadata.csv 
+Đây là smoke test. Kết quả 
+tuyệt đối không đưa vào 
+bài. 
+ 
+Về câu hỏi của em 
+Có nên lưu dataset đã merge xuống ổ rồi mới train? 
+Mình nên lưu nhưng nguyên nhân 1,5 giờ không nằm ở chỗ em nghĩ 
+Gốc rễ là em đang ghi file ảnh vào thư mục theo split: 
+save_dir = os.path.join(NATIVE_PROCESSED_DIR, split_name, str(row["diagnosis"])) 
+out_name = f"{split_name}_g{row['diagnosis']}_{image_id}.png" 
+#            ^^^^^^^^^^^^^^^^^^^^^^^ tên file và thư mục DÍNH vào split và nhãn 
+Vì file ảnh dính chặt vào split, mỗi lần đổi fold là phải ghi lại toàn bộ ảnh. Đó là lý do LODO tốn 1,5 
+giờ × 6 vòng. 
+Kiến trúc đúng: tách làm hai tầng độc lập 
+# ---- TẦNG 1: tiền xử lý, chạy ĐÚNG MỘT LẦN trong đời dự án ---- 
+# Lưu theo dataset + image_id. KHÔNG theo split. KHÔNG theo grade. 
+out = f"{PROC}/{dataset_key}/{image_id}.jpg" 
+if os.path.exists(out):        # resume được nếu chạy đứt giữa chừng 
+    continue 
+  
+# ---- TẦNG 2: split chỉ là file CSV ---- 
+folds/fold_lodo_messidor2.csv    # cột: image_path, diagnosis, patient_id, dataset, 
+split 
+folds/fold_lodo_idrid.csv 
+folds/fold_internal_70_15_15.csv 
+# Sinh 6 file CSV này mất VÀI GIÂY, vì chỉ gán nhãn split trên DataFrame. 
+Ba tối ưu thêm để 1,5 giờ xuống còn khoảng 10 phút: 
+1. Dùng joblib.Parallel(n_jobs=8) cho vòng lặp đọc–crop–ghi. Hiện đang chạy tuần tự 
+bằng df.iterrows() 
+2. Lưu JPEG quality 95 thay vì PNG. PNG encode ảnh 3000×2000 rất tốn mà ảnh đáy mắt gốc vốn 
+đã là JPEG. 
+3. Bỏ .iterrows() dùng list of dict rồi tạo DataFrame một lần ở cuối. 
+--- Page 7 ---
+Load backbone rồi gắn 5 head có hợp lý không? 
+Hợp lý về kỹ thuật (tiết kiệm khoảng 5× compute) nhưng không hợp lệ về mặt khoa học cho bảng kết 
+quả cuối cùng. 
+Nhìn lại thứ tự thực thi trong main_model.ipynb: 
+# cell 62 
+main_model = build_model(head_type="CLM_QWK", ...)   # train backbone CÙNG head CLM 
+main_trainer.fit(...) 
+  
+# cell 63-64 
+backbone = main_model.backbone 
+backbone.eval(); freeze 
+extract_and_cache_latents(backbone, ...)             # cache latent 
+  
+# -> head_ablation.ipynb: so 5 head trên latent này 
+Backbone đã được huấn luyện cùng CLM_QWK nên latent 512 chiều đó đã tối ưu riêng cho CLM. Em 
+đem latent đó đi so 5 head rồi kết luận CLM tốt nhất, đó là thiên vị có hệ thống cho đúng cái head 
+em muốn chứng minh. Reviewer có thể sẽ bắt chỗ này. 
+Mục đích sử dụng Dùng latent 
+cache? 
+Ghi chú 
+Sàng lọc nhanh: tuning λ, learning 
+rate, chọn link function 
+Được Giữ nguyên cách làm hiện tại, rất hiệu quả 
+Bảng kết quả cuối trong bài báo Không Bắt buộc train end-to-end riêng cho từng head, 5 
+lần. Không có đường tắt 
+Phương án B nếu máy không 
+kham nổi 
+Được, có điều 
+kiện 
+Train backbone bằng Softmax_CE (head trung lập, 
+không phải head đề xuất) rồi mới đóng băng và 
+ghi rõ trong Limitations 
+Lỗi phụ trong khâu cache latent 
+Latent tập train đang trích từ train_loader vốn có augmentation ngẫu nhiên → mỗi ảnh chỉ 
+có MỘT latent của một lần augment duy nhất. Head sẽ overfit rất nhanh và latent không đại 
+diện. Cách sửa: em tạo riêng một loader cho tập train với split="val" (tắt augmentation) chỉ 
+để trích latent. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+===============================
+documents/HD_3.pdf
+Total pages: 4
+--- Page 1 ---
+Nguyên nhân gốc của lỗi patch
+FOV mask đang được tính trên ảnh ĐÃ qua Ben Graham, thay vì trên ảnh gốc.
+Chuỗi gọi hiện tại:
+# Cell 20 — __getitem__
+processed_np = apply_green_channel_ablation(img_rgb) # Ben Graham
+local_native_np = processed_np # <-- ảnh ĐÃ xử lý
+# Cell 23 — collate_fn
+extract_mil_patches_sliding(item["local_native_image"])
+└── compute_fov_mask(img_np) # Otsu chạy trên ảnh Ben Graham
+Vấn đề: Ben Graham biến nền đen thành xám 128. Công thức 4g − 4·blur + 128, ở vùng nền thì g ≈
+blur ≈ 0 nên kết quả ≈ 128 — đúng bằng giá trị trung bình của võng mạc. Otsu mất hoàn toàn khả
+năng tách nền khỏi mô võng mạc.
+Mô phỏng trên ảnh đáy mắt tổng hợp (nền đen + đĩa võng mạc tròn), chạy đúng chuỗi hàm trong code
+của em:
+=== TRƯỚC Ben Graham ===
+Nền (góc ảnh) : 0
+Võng mạc (tâm) : 106
+Otsu -> tỷ lệ pixel được coi là FOV: 0.601 (đúng, ~0.60)
+=== SAU Ben Graham (đầu vào thực tế của compute_fov_mask) ===
+Nền (góc ảnh) : 128 <-- đen 0 đã thành XÁM 128
+Võng mạc (tâm) : 128 <-- trùng luôn với nền
+Viền halo (biên): 0 <-- chỉ còn vành biên là tối
+Otsu -> tỷ lệ pixel được coi là FOV: 0.061 <-- SAI
+Otsu chỉ còn nhận ra 6,1% số pixel và đám pixel đó chính là vành halo tối ở rìa FOV (thứ duy nhất
+còn tối sau Ben Graham)
+Một lỗi với bốn triệu chứng
+Hiện tượng em quan sát được Giải thích
+36 patch trông giống hệt nhau, đều là
+dải tối chéo
+Bounding box bị co về đúng vành halo. Mọi candidate đều nằm
+trên cùng một vành nên nhìn như nhau.
+Patch "còn dính viền đen" Cái "viền đen" đó chính là halo do Ben Graham tạo ra, không
+phải nền gốc còn sót.
+Ảnh Global có mảng trắng lớn và dải đen addWeighted(g, 4, ...) khuếch đại 4× nên mọi lệch cục bộ vượt
+±32 đều bão hoà về 0 hoặc 255.
+Patch bị trùng vị trí Số candidate hợp lệ tụt rất thấp → len(candidates) < m_target
+→ np.random.choice bật replace=True → lấy lặp.
+Cách sửa
+Tách hai đường: FOV mask tính trên ảnh gốc, Ben Graham chỉ dùng cho nội dung ảnh.
+--- Page 2 ---
+# __getitem__
+img_rgb = cv2.cvtColor(cv2.imread(img_path), cv2.COLOR_BGR2RGB)
+fov_mask = compute_fov_mask(img_rgb, erode_px=15) # <-- TRÊN ẢNH GỐC
+processed_np = apply_green_channel_ablation(img_rgb)
+return {...,
+"local_native_image": processed_np,
+"fov_mask": fov_mask} # truyền mask xuống collate
+# extract_mil_patches_sliding: nhận mask từ ngoài, KHÔNG tự tính lại
+def extract_mil_patches_sliding(img_np, fov_mask, ...):
+...
+stride = 48 với patch_size = 128 là chồng lấn 62,5%, hai patch cạnh nhau dùng chung 62% pixel.
+Kể cả khi mask đã đúng, patch vẫn sẽ trông na ná nhau. Nâng lên stride = 96 (chồng 25%) là đủ để
+không bỏ sót mà vẫn đa dạng.
+Khi len(candidates) < m_target , đừng lấy lặp âm thầm. Ghi logger.warning kèm native_path
+để biết ảnh nào có vấn đề thay vì phải đi visualize mò.
+Cách xác nhận đã sửa đúng
+Chạy lại đúng cell visualize 36 patch. Nếu các patch trở nên đa dạng và nằm rải khắp vùng võng
+mạc (thay vì cùng một dải tối) là em đã sửa xong. Không cần đo gì thêm.
+Nút thắt tốc độ
+GPU đang rảnh hơn 98% thời gian
+Ước lượng tải GPU cho mỗi bước huấn luyện với cấu hình hiện tại (batch 48, M tối đa 64):
+Thành phần Khối lượng FLOPs (forward)
+Global 48 ảnh × ResNet-50 @ 512² ≈ 1,03 TFLOPs
+Local 48 × 64 = 3.072 patch × EfficientNet-B0 @ 128² ≈ 0,39 TFLOPs
+Tổng kể cả
+backward
+≈ 4,2 TFLOPs / bước
+A100 với AMP đạt thực tế khoảng 100 TFLOPS → khoảng 0,04 giây mỗi bước . Với 146 bước một
+epoch, GPU chỉ cần dưới 1 phút/epoch. Em đang mất 90 phút. Nghĩa là nút thắt nằm hoàn toàn ở
+CPU và đường truyền dữ liệu, không nằm ở kiến trúc mô hình.
+Thủ phạm 1, truyền 755 MB mỗi batch qua shared memory
+patch : 48 × 64 × 3 × 128 × 128 × float32 = 604 MB
+global : 48 × 3 × 512 × 512 × float32 = 151 MB
+tổng ≈ 755 MB / batch
+× 146 batch -> ~110 GB/epoch đi qua IPC worker -> main process,
+rồi bị pin_memory copy thêm một lần nữa.
+--- Page 3 ---
+Đây gần như chắc chắn là chi phí lớn nhất hiện nay.
+Cách sửa: trả về uint8 từ collate, chuẩn hoá trên GPU. Giảm 4 lần ngay lập tức (755 MB → 189 MB).
+# collate: giữ uint8, không chia 255, không chuẩn hoá
+patches_u8 = torch.from_numpy(patches_np).permute(0, 3, 1, 2).contiguous()
+# trong training loop, sau khi .to(device):
+x = patches.float().div_(255).sub_(mean_gpu).div_(std_gpu)
+Thủ phạm 2, OpenCV tự mở thread bên trong mỗi worker
+Colab A100 có khoảng 12 vCPU. Em đang chạy 8 worker, mỗi worker OpenCV mặc định lại mở thêm
+khoảng 12 thread → xấp xỉ 96 thread trên 12 core. Thrashing nặng có thể làm chậm 3–5 lần.
+Sửa một dòng
+cv2.setNumThreads(0) # BẮT BUỘC khi dùng OpenCV trong DataLoader worker
+# Đặt ở đầu notebook, ngay sau import cv2
+Thủ phạm 3, tính lại thứ đã biết trước, 100 lần
+apply_green_channel_ablation và compute_fov_mask là hàm tất định, cùng input luôn cho
+cùng output. Em đang tính lại chúng mỗi epoch.
+Đo trên ảnh 3000×2000, một luồng CPU:
+bilateralFilter(d=9, 75, 75) : 187 ms
+GaussianBlur(sigma=30) : 354 ms
+compute_fov_mask : 242 ms
+vòng lặp 2.400 vị trí : 23 ms -> 1.187 candidate
+------------------------------------------
+TỔNG CPU / ảnh : 0,81 s
+Nhân 7.000 ảnh × 100 epoch = khoảng 158 giờ CPU bị đốt để tính đi tính lại cùng một kết quả.
+Cách sửa: chạy một lần, lưu xuống.
+# Chạy 1 lần với joblib.Parallel(n_jobs=12), ~10 phút cho toàn bộ dataset
+np.savez_compressed(f"{CACHE}/{dataset_key}/{img_id}.npz",
+img = processed_u8, # ảnh Ben Graham, uint8
+anchors = valid_anchors) # mảng (N,2) toạ độ patch hợp lệ
+Chú ý: chỉ lưu TOẠ ĐỘ ANCHOR, không lưu pixel của patch. Khi đó __getitem__ chỉ còn: đọc
+npz → chọn ngẫu nhiên M anchor → slice. Còn khoảng 20–30 ms/ảnh thay vì 810 ms.
+Một bug nữa cần sửa cùng lúc
+val_loader = DataLoader(val_dataset, batch_size=BATCH_SIZE, ...,
+collate_fn=train_collate_fn) # <-- mode="train"!
+--- Page 4 ---
+Val đang dùng train_collate_fn, tức lấy ngẫu nhiên 32–64 patch mỗi lần. Hệ quả: val QWK dao
+động giữa các epoch do random patch chứ không do model nên ModelCheckpoint chọn "best val
+QWK" một phần là đang chọn nhiễu.
+• Sửa: val_loader phải dùng eval_collate_fn.
+• Dòng print bên dưới đang ghi "Val: mode='eval'", sai so với code. Sửa luôn cho khớp.
+Viết bài song song với thực nghiệm
+Ba phần sau viết được ngay hôm nay không phụ thuộc vào bất kỳ con số kết quả nào. Thậm chí trong
+trường hợp mình chưa có kết quả thực nghiệm nhưng những gì mình phân tích trình bày lập luận
+trước đó xem như kịch bản và là story cho bài rồi nên em cứ viết song song nhé
+Phần Vì sao viết được ngay
+Related Work Em đã đọc và đánh giá nhiều bài rồi. Dùng khung phân loại 5 nhóm phương pháp
+ordinal ở mục 2.1–2.4 của bài Vargas làm dàn ý có sẵn.
+Method Toàn bộ kiến trúc đã cố định: dual-branch, CBAM, Non-local, Quadrant tokens,
+sliding-window MIL, dual pooling, CLM head. Viết được đầy đủ.
+Experimental Setup Dataset, bảng ánh xạ nhãn, chiến lược split theo patient ID, giao thức LODO, bộ
+metric, đã cố định hết.
+Ba phần đó là khoảng 60% số chữ của bài báo, viết trong lúc chờ job chạy em nhé.
+===============================
+documents/HD_4.pdf
+Total pages: 5
+--- Page 1 ---
+Chẩn đoán của em Nhận xét 
+Referable Sensitivity thấp do Ordinal 
+Loss chỉ phạt nhẹ sai số ±1 grade 
+Đúng hướng nhưng sai cơ chế. Ref-AUC = 0,9063 chứng minh 
+vấn đề nằm ở vị trí ngưỡng, không nằm ở khả năng phân biệt. 
+Em xem Phần 1. 
+XAI giảm mạnh do collate_fn chưa 
+truyền toạ độ patch [y0, x0] 
+Sai vị trí. Grad-CAM đang chạy trên nhánh Global, không đụng 
+tới patch nào. Có 3 nguyên nhân thật, khác hẳn. Em xem Phần 
+2. 
+Nên ưu tiên Threshold Calibration hay 
+Class-weight? 
+Ưu tiên Threshold Calibration nhưng không phải vì nó rẻ hơn. 
+Xem Phần 3. 
+P1. Referable Sensitivity — chẩn đoán lại 
+Con số quyết định nằm ngay trong log của em 
+Test Ref-AUC: 0.9063 
+AUC 0,906 nghĩa là thang điểm liên tục P(y≥2) đã phân tách referable / non-referable rất tốt. Vấn đề 
+không nằm ở khả năng phân biệt của mô hình mà nó nằm hoàn toàn ở vị trí ngưỡng quyết định. 
+Đường vận hành suy ra từ AUC 
+Từ AUC = 0,9063 suy ra d′ = 1,864 (mô hình binormal) cho ra bảng sau: 
+Độ đặc hiệu Độ nhạy kỳ vọng Ghi chú 
+95% 58,7% Gần điểm argmax hiện tại của em 
+90% 72,0%  
+85% 79,6% Sát mục tiêu 
+80% 84,7% Vượt mục tiêu 80% mà em đặt ra 
+75% 88,3%  
+Em đang báo cáo Ref-Sens 64,8% tại điểm argmax mà điểm argmax rơi vào khoảng specificity 95%. 
+Chỉ cần đổi điểm vận hành là đạt ≥80% độ nhạy, không cần train lại một epoch nào. 
+Điểm sâu hơn (xét về phương pháp) 
+Báo cáo độ nhạy sàng lọc tại điểm argmax là sai v ề phương pháp ngay từ đầu. Argmax của bài 
+toán phân lo ại 5 l ớp không ph ải là đi ểm vận hành c ủa bài toán sàng l ọc nhị phân. Đó là hai bài 
+toán khác nhau với hai ngưỡng khác nhau. Dù em có train lại bao nhiêu lần, cách báo cáo đó vẫn 
+sai. 
+ 
+Vì sao Class-weight là công cụ sai 
+Phân bố lớp của tập train: 
+G0: 1602   G1: 2336   G2: 2288   G3: 1326   G4: 1527 
+           ^^^^^^^^^^^^^^^^^^^^  hai lớp LỚN NHẤT 
+--- Page 2 ---
+G2 recall chỉ 37,5% không phải do thiếu mẫu mà đó là vấn đề phân biệt thật sự ở ranh giới G1/G2, 
+ranh giới khó nhất về lâm sàng (moderate NPDR đòi hỏi đếm tổn thương ngoài vi phình mạch). 
+ Threshold Calibration Class-weight 1,3–1,5 
+Tác dụng thực tế Dịch chuyển biên quyết định Dịch chuyển biên quyết định, cùng một việc 
+Chi phí 0 giờ GPU Train lại toàn bộ 
+Kiểm soát Chính xác, chọn được điểm vận 
+hành mong muốn 
+Không kiểm soát được dịch bao nhiêu 
+Rủi ro Không có Có thể làm giảm AUC, tức làm hỏng thứ đang 
+tốt 
+Dùng class-weight để sửa một vấn đề ngưỡng là kiểu như “dùng búa tạ để đóng đinh ghim” 
+Phần 2. XAI, chẩn đoán lại 
+Vì sao giả thuyết toạ độ patch không đúng 
+# trong compute_quantitative_xai 
+target_layer = model.backbone.global_branch.layer4[-1] 
+#                              ^^^^^^^^^^^^^ nhánh GLOBAL 
+Grad-CAM đang chạy trên nhánh Global. Toạ độ patch không xuất hiện ở bất kỳ dòng nào trong hàm 
+đó nên nó không thể là nguyên nhân. 
+Nguyên nhân 1: IoU bị chặn trần, không phải mô hình sai 
+IoU tối đa (khi CAM phủ trọn mask) = diện tích mask ÷ diện tích CAM: 
+Mask phủ CAM 20% CAM 30% CAM 40% 
+1,0% 0,050 0,033 0,025 
+1,5% 0,075 0,050 0,038 
+2,0% 0,100 0,067 0,050 
+Mask IDRiD phủ khoảng 1–2%, CAM ở ngưỡng 0,5 phủ khoảng 30% → trần lý thuyết là 0,05. Em đạt 
+0,0199, tức 40% của trần. Kể cả một mô hình hoàn hảo cũng không vượt được 0,05. 
+IoU là metric SAI cho tổn thương siêu nhỏ. Đừng báo cáo nó như một thất bại. 
+Nguyên nhân 2: giới hạn vật lý của Grad-CAM tại layer4 
+Input 512  ->  feature map layer4 = 16 x 16 
+1 ô CAM = 32 x 32 px ở ảnh 512 
+        = 268 x 268 px ở ảnh gốc IDRiD (4288 px) 
+  
+Vi phình mạch ~ 30-60 px  ->  MỘT ô CAM chứa khoảng 35 vi phình mạch 
+Đây là giới hạn vật lý của kiến trúc, không phải bug. Muốn định vị mịn hơn phải lấy CAM ở layer3 
+(32×32) hoặc dùng LayerCAM / Grad-CAM++. 
+Nguyên nhân 3: bug thật, gần với trực giác của em 
+idrid_seg_image_dirs = [f"{idrid_seg_root}/DR_Testing_Set/Fundus Images", ...] 
+--- Page 3 ---
+#                                                        ^^^^^^^^^^^^^^ 
+#                        ảnh IDRiD GỐC, chưa qua crop_fundus_roi 
+Mô hình được train trên native_cropped (đã cắt viền đen). IDRiD gốc là 4288×2848 với dải đen 
+lớn hai bên, đĩa võng mạc chỉ chiếm phần giữa. Nên lúc eval XAI, mô hình nhìn thấy khung ảnh khác 
+hẳn lúc train: võng mạc chiếm tỷ lệ nhỏ hơn, scale khác. 
+Đây chính là "lệch scale" em cảm nhận được nhưng nằm ở khâu crop ảnh, không phải toạ độ patch. 
+# Sửa: crop cả ảnh VÀ mask bằng đúng MỘT bounding box, rồi mới resize 
+ys, xs = np.where(compute_fov_mask(img_np, erode_px=0)) 
+y0, y1, x0, x1 = ys.min(), ys.max()+1, xs.min(), xs.max()+1 
+img_np      = img_np[y0:y1, x0:x1] 
+lesion_mask = lesion_mask[y0:y1, x0:x1]     # <-- cùng bbox 
+ 
+Pointing Game 11,11% không tệ như em nghĩ 
+Mask phủ Mức ngẫu nhiên Kết quả của em Tỷ lệ vượt 
+1,0% 1,0% 11,11% 11× 
+1,5% 1,5% 11,11% 7,4× 
+2,0% 2,0% 11,11% 5,6× 
+Con số cần báo cáo là "11,1% so với mức ngẫu nhiên 1,5%", không phải "11,1%" trần trụi. Mọi metric 
+localization đều phải kèm mức ngẫu nhiên. 
+Phần 3. Sự ưu tiên? 
+Threshold Calibration trước nhưng không phải vì nó rẻ hơn mà vì nó là việc đúng phải làm bất 
+kể tài nguyên. 
+1. AUC 0,9063 đã chứng minh vấn đề nằm ở ngưỡng, không nằm ở biểu diễn đặc trưng. 
+2. Báo cáo sàng lọc BẮT BUỘC phải là AUC + đường ROC + độ nhạy tại độ đặc hiệu cố định. Một 
+con số tại argmax là không đủ dù em có train lại bao nhiêu lần. 
+3. Class-weight và Threshold Calibration làm cùng một việc. Một cái tốn 0 giờ và kiểm soát được 
+chính xác; cái kia tốn nhiều giờ và không kiểm soát được. 
+Hiệu chỉnh ngưỡng trên tập VAL, báo cáo trên tập TEST. Tuyệt đối không chỉnh trên test. 
+ 
+Phải báo cáo trung thực chỗ này 
+Chuẩn sàng lọc DR của UK NSC là độ nhạy ≥80% VÀ độ đặc hiệu ≥95% đồng thời. 
+Chỉ tiêu Yêu cầu Mô hình hiện tại 
+Độ nhạy tại spec 95% ≥ 80% ~59–63%, chưa đạt 
+Ref-AUC cần có để đạt cả hai ≥ 0,961 0,906 
+--- Page 4 ---
+Đừng chọn spec 80% rồi báo "đạt 84,7% độ nhạy" như thể đã đạt chuẩn. Cách mình nên viết là: báo 
+cáo cả đường ROC, nêu rõ điểm vận hành đã chọn và lý do chọn rồi ghi vào Limitations rằng mô hình 
+chưa đạt đồng thời chuẩn 80/95. 
+Phần 4. Nếu train lại, sửa cái khác chứ không phải class weight 
+Chỗ có headroom thật sự 
+Train QWK: 0.8295  ->  0.8797     (leo đều) 
+Val   QWK: 0.6327  ->  0.6904     (dao động dữ dội) 
+           ------------------ 
+           khoảng cách ~ 0.20     <-- đây mới là vấn đề 
+ 
+Val QWK dao động (nguyên nhân đã xác định) 
+Epoch 08: 0.5638 
+Epoch 10: 0.6761 
+Epoch 11: 0.5917 
+Epoch 12: 0.6559 
+Epoch 15: 0.5893 
+Epoch 16: 0.6904 
+Dao động bắt đầu đúng từ epoch 7, tức ngay sau khi warmup 5 epoch kết thúc và QWK loss vào full 
+weight λ = 1,2. Đây chính xác là vấn đề bất ổn định mà bài Vargas cảnh báo: QWK loss tính trên ma 
+trận nhầm lẫn mềm ở mức batch nên gradient có phương sai rất cao. 
+Ba việc em nên làm, xếp theo ưu tiên 
+# Việc Chi tiết 
+1 Ổn định QWK loss Kéo dài warmup từ 5 lên 15 epoch, hoặc giảm λ từ 1,2 xuống 0,3–0,5 
+2 Chống overfit Tăng weight decay, tăng dropout, augmentation mạnh hơn, layer-wise 
+LR decay cho backbone pretrained 
+3 Sửa tiêu chí dừng EarlyStopping đang theo val loss (dừng ở epoch 16) trong khi 
+ModelCheckpoint theo val QWK. Hai tiêu chí khác nhau nên nó dừng 
+lúc QWK còn đang cải thiện. Thống nhất cả hai theo val QWK, patience 
+15–20 
+Em mới chạy 16/100 epoch. LR mới đi từ 1e-4 xuống 9,43e-5, giảm đúng 6%. Mô hình CHƯA 
+HỘI TỤ. 
+Con số QWK 0,700 hiện tại chưa phải giới hạn của kiến trúc này. 
+Phần 5. Ý tưởng toạ độ patch (em dùng đúng chỗ thì rất hay) 
+Trực giác của em đúng, chỉ đặt sai chỗ. Lưu (y0, x0) không dùng để sửa Grad-CAM mà để xây một 
+bản đồ saliency mới từ trọng số attention MIL. 
+1. Mỗi patch có toạ độ (y0, x0) và trọng số αₖ từ GatedAttentionPool 
+2. Vẽ αₖ lên đúng vị trí đó → bản đồ định vị ở độ phân giải 128 px, thay vì 268 px của Grad-CAM 
+layer4 
+--- Page 5 ---
+3. Đây là XAI sinh ra từ chính kiến trúc chứ không phải gắn thêm từ ngoài 
+Vì sao đây là một đóng góp cho bài báo 
+So sánh "Grad-CAM (nhánh Global) vs Attention-MIL (nhánh Local)" trên cùng bộ mask IDRiD. 
+Nếu Attention-MIL định vị tốt hơn thì em có thêm một bằng chứng độc lập cho H1, tức nhánh 
+Local thực sự bắt được tổn thương vi mô. 
+ 
+Bộ metric XAI nên đổi 
+Metric Xử lý Lý do 
+Pointing Game Giữ, báo kèm mức 
+ngẫu nhiên 
+Phù hợp với tổn thương nhỏ, dễ diễn giải 
+Mean IoU thô Bỏ Bị chặn trần ở ~0,05, không phân biệt được mô hình 
+tốt và xấu 
+Saliency recall @ area-
+matched 
+Thêm Cắt CAM ở top-q% với q = đúng tỷ lệ diện tích mask, 
+rồi đo bao nhiêu phần mask được phủ. Công bằng vì 
+đã khớp diện tích 
+Pixel-level AUROC Thêm Không phụ thuộc ngưỡng và là chuẩn trong đánh giá 
+saliency 
+Phần 6. Thứ tự thực hiện 
+# Việc Thời gian GPU 
+1 Kiểm tra prevalence tập test. Nếu sai, sửa trước mọi thứ 
+khác 
+2 phút Không 
+2 Sửa crop cho IDRiD XAI: áp crop_fundus_roi lên cả ảnh và 
+mask cùng một bbox 
+30 phút Không 
+3 Đổi bộ metric XAI: thêm mức ngẫu nhiên và area-matched 
+recall 
+1 giờ Không 
+4 Threshold Calibration trên val, xuất đường ROC đầy đủ + 
+bảng sens tại spec 95/90/85/80 
+1 giờ Không 
+5 Bản đồ attention-MIL: lưu (y0,x0), dựng saliency map, so với 
+Grad-CAM 
+Nửa ngày Ít 
+6 Train lại với warmup dài hơn + chống overfit, train đủ epoch 
+để hội tụ 
+Nhiều giờ Có 
+ 

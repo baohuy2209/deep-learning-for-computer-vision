@@ -1,9 +1,53 @@
-py-env
-.venv
-.venv-win
-/data/processed/hybrid
-/data/raw
-.specify
-.agents
-specs
-.claude
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+.venv-win/
+py-env/
+env/
+venv/
+
+# Environment variables & secrets
+.env
+.env.local
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Raw and preprocessed medical images (per reproducibility guidelines)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Checkpoints, model weights & large caches
+checkpoints/
+data/models/
+notebooks/**/checkpoints/
+notebooks/**/checkpoints_main/
+checkpoints_head_ablation/
+checkpoints_main/
+cache/
+outputs/
+wandb/
+*.pth
+*.pt
+*.ckpt
+*.h5
+*.keras
+*.zip
+*.tar.gz
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/

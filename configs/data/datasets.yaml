@@ -1,0 +1,65 @@
+# Multi-center Retinal Fundus Dataset Configurations
+# 6 Cohorts: APTOS 2019, DDR, DeepDRiD, IDRiD, Messidor-2, EyePACS
+
+datasets:
+  APTOS:
+    name: "APTOS 2019"
+    csv_path: "aptos/aptos_total.csv"
+    img_dir: "aptos/aptos_total_images"
+    id_col: "id_code"
+    label_col: "diagnosis"
+    id_suffix: ".png"
+    fold_key: "aptos"
+
+  DDR:
+    name: "DDR Dataset"
+    csv_path: "ddr/DR_grading.csv"
+    img_dir: "ddr/DR_grading/DR_grading"
+    id_col: "id_code"
+    label_col: "diagnosis"
+    id_suffix: ".jpg"
+    fold_key: "ddr"
+
+  DeepDRiD:
+    name: "DeepDRiD"
+    csv_path: "deepdrid/deepdrid_total.csv"
+    img_dir: "deepdrid/deepdrid_total_images"
+    id_col: "image_id"
+    label_col: "patient_DR_Level"
+    id_suffix: ".jpg"
+    fold_key: "deepdrid"
+
+  IDRiD:
+    name: "IDRiD"
+    csv_path: "idrid/idrid_total.csv"
+    img_dir: "idrid/idrid_total_images"
+    id_col: "image_id"
+    label_col: "diagnosis"
+    id_suffix: ".jpg"
+    fold_key: "idrid"
+
+  Messidor-2:
+    name: "Messidor-2"
+    csv_path: "messidor2preprocess/messidor_data.csv"
+    img_dir: "messidor2preprocess/messidor-2/messidor-2/preprocess"
+    id_col: "id_code"
+    label_col: "diagnosis"
+    id_suffix: ".png"
+    fold_key: "messidor2"
+
+  EyePACS:
+    name: "EyePACS"
+    csv_path: "zipEyepacs/trainLabels.csv/trainLabels.csv"
+    img_dir: "zipEyepacs/train"
+    id_col: "image"
+    label_col: "level"
+    id_suffix: ".jpeg"
+    fold_key: "eyepacs"
+
+preprocessing:
+  roi_crop:
+    tolerance: 7
+    jpeg_quality: 95
+  global_img_size: 512
+  local_patch_size: 224
+  num_patches: 4

@@ -1,0 +1,2290 @@
+{
+  "V3_PlusOrdinalHead_H3_Champion": {
+    "aptos": {
+      "variant": "V3_PlusOrdinalHead_H3_Champion",
+      "held_out_dataset": "APTOS 2019",
+      "held_out_key": "aptos",
+      "fold": 1,
+      "in_domain_val_qwk": 0.6880358327190261,
+      "ood_test_qwk": 0.8119376963494507,
+      "delta_lodo": -0.12390186363042455,
+      "delta_qwk": -0.12390186363042455,
+      "val_per_grade_recall": {
+        "grade_0": 0.42359616513402465,
+        "grade_1": 0.7369308600337268,
+        "grade_2": 0.49256505576208176,
+        "grade_3": 0.4726027397260274,
+        "grade_4": 0.6654804270462633
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.49916897506925206,
+        "grade_1": 0.1891891891891892,
+        "grade_2": 0.5865865865865866,
+        "grade_3": 0.6010362694300518,
+        "grade_4": 0.6203389830508474
+      },
+      "val_within_1_grade_acc": 0.9557723989354961,
+      "ood_within_1_grade_acc": 0.958219552157291,
+      "val_referable_sensitivity_at_95spec": 0.7581161408321903,
+      "ood_referable_sensitivity_at_95spec": 0.7908540685944856,
+      "val_referable_sensitivity_at_90spec": 0.8331047096479195,
+      "ood_referable_sensitivity_at_90spec": 0.9408204438466712,
+      "val_referable_sensitivity_at_85spec": 0.869684499314129,
+      "ood_referable_sensitivity_at_85spec": 0.9939475453934096,
+      "val_referable_sensitivity_at_80spec": 0.8998628257887518,
+      "ood_referable_sensitivity_at_80spec": 0.9979825151311366,
+      "val_monotonicity_violations": 0.0,
+      "ood_monotonicity_violations": 0.0,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.1698674112558365,
+          "Val_Sensitivity": 0.8998628257887518,
+          "Val_Specificity": 0.8003155680224404,
+          "Test_Sensitivity": 0.9986550100874243,
+          "Test_Specificity": 0.7232183908045977,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.20085492730140686,
+          "Val_Sensitivity": 0.8705989940557842,
+          "Val_Specificity": 0.8506311360448808,
+          "Test_Sensitivity": 0.9986550100874243,
+          "Test_Specificity": 0.752183908045977,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.2650517225265503,
+          "Val_Sensitivity": 0.8331047096479195,
+          "Val_Specificity": 0.9021739130434783,
+          "Test_Sensitivity": 0.9986550100874243,
+          "Test_Specificity": 0.7857471264367816,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.44162753224372864,
+          "Val_Sensitivity": 0.7581161408321903,
+          "Val_Specificity": 0.9500350631136045,
+          "Test_Sensitivity": 0.9966375252185609,
+          "Test_Specificity": 0.8285057471264368,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V3_PlusOrdinalHead_H3_Champion__aptos.npz",
+      "val_per_grade_support": {
+        "grade_0": 5111,
+        "grade_1": 593,
+        "grade_2": 1614,
+        "grade_3": 292,
+        "grade_4": 281
+      },
+      "val_referable_auc": 0.924804210908396,
+      "ood_per_grade_support": {
+        "grade_0": 1805,
+        "grade_1": 370,
+        "grade_2": 999,
+        "grade_3": 193,
+        "grade_4": 295
+      },
+      "ood_referable_auc": 0.9692903245754392
+    },
+    "idrid": {
+      "variant": "V3_PlusOrdinalHead_H3_Champion",
+      "held_out_dataset": "IDRiD",
+      "held_out_key": "idrid",
+      "fold": 2,
+      "in_domain_val_qwk": 0.6879934745495635,
+      "ood_test_qwk": 0.8031021822532074,
+      "delta_lodo": -0.1151087077036439,
+      "delta_qwk": -0.1151087077036439,
+      "val_per_grade_recall": {
+        "grade_0": 0.5007572889057176,
+        "grade_1": 0.7046548956661316,
+        "grade_2": 0.4192665571975917,
+        "grade_3": 0.370242214532872,
+        "grade_4": 0.6309523809523809
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.5654761904761905,
+        "grade_1": 0.84,
+        "grade_2": 0.5892857142857143,
+        "grade_3": 0.21505376344086022,
+        "grade_4": 0.5
+      },
+      "val_within_1_grade_acc": 0.9502213713054924,
+      "ood_within_1_grade_acc": 0.9573643410852714,
+      "val_referable_sensitivity_at_95spec": 0.6933115823817292,
+      "ood_referable_sensitivity_at_95spec": 0.8947368421052632,
+      "val_referable_sensitivity_at_90spec": 0.8034257748776509,
+      "ood_referable_sensitivity_at_90spec": 0.9442724458204335,
+      "val_referable_sensitivity_at_85spec": 0.8421696574225123,
+      "ood_referable_sensitivity_at_85spec": 0.9442724458204335,
+      "val_referable_sensitivity_at_80spec": 0.8727569331158238,
+      "ood_referable_sensitivity_at_80spec": 0.9566563467492261,
+      "val_monotonicity_violations": 0.0,
+      "ood_monotonicity_violations": 0.0,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.23719637095928192,
+          "Val_Sensitivity": 0.8747960848287113,
+          "Val_Specificity": 0.8,
+          "Test_Sensitivity": 0.9566563467492261,
+          "Test_Specificity": 0.7927461139896373,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.2792414426803589,
+          "Val_Sensitivity": 0.8417618270799347,
+          "Val_Specificity": 0.8501270110076207,
+          "Test_Sensitivity": 0.9442724458204335,
+          "Test_Specificity": 0.8652849740932642,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.3441987931728363,
+          "Val_Sensitivity": 0.8030179445350734,
+          "Val_Specificity": 0.9014394580863675,
+          "Test_Sensitivity": 0.9318885448916409,
+          "Test_Specificity": 0.927461139896373,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.4755340814590454,
+          "Val_Sensitivity": 0.6953507340946167,
+          "Val_Specificity": 0.9500423370025403,
+          "Test_Sensitivity": 0.8699690402476781,
+          "Test_Specificity": 0.9689119170984456,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "PASSED"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V3_PlusOrdinalHead_H3_Champion__idrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5282,
+        "grade_1": 623,
+        "grade_2": 1827,
+        "grade_3": 289,
+        "grade_4": 336
+      },
+      "val_referable_auc": 0.9097537409196452,
+      "ood_per_grade_support": {
+        "grade_0": 168,
+        "grade_1": 25,
+        "grade_2": 168,
+        "grade_3": 93,
+        "grade_4": 62
+      },
+      "ood_referable_auc": 0.9739007683793452
+    },
+    "messidor2": {
+      "variant": "V3_PlusOrdinalHead_H3_Champion",
+      "held_out_dataset": "Messidor-2",
+      "held_out_key": "messidor2",
+      "fold": 3,
+      "in_domain_val_qwk": 0.6949421652503094,
+      "ood_test_qwk": 0.6690290542805228,
+      "delta_lodo": 0.025913110969786546,
+      "delta_qwk": 0.025913110969786546,
+      "val_per_grade_recall": {
+        "grade_0": 0.4857142857142857,
+        "grade_1": 0.8074204946996466,
+        "grade_2": 0.3875370919881306,
+        "grade_3": 0.31690140845070425,
+        "grade_4": 0.7647058823529411
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.6239316239316239,
+        "grade_1": 0.48792270531400966,
+        "grade_2": 0.32413793103448274,
+        "grade_3": 0.4084507042253521,
+        "grade_4": 0.2857142857142857
+      },
+      "val_within_1_grade_acc": 0.9533341520324204,
+      "ood_within_1_grade_acc": 0.9479659413434248,
+      "val_referable_sensitivity_at_95spec": 0.7478184991273996,
+      "ood_referable_sensitivity_at_95spec": 0.7303664921465969,
+      "val_referable_sensitivity_at_90spec": 0.8294066317626527,
+      "ood_referable_sensitivity_at_90spec": 0.7853403141361257,
+      "val_referable_sensitivity_at_85spec": 0.8673647469458988,
+      "ood_referable_sensitivity_at_85spec": 0.837696335078534,
+      "val_referable_sensitivity_at_80spec": 0.8887434554973822,
+      "ood_referable_sensitivity_at_80spec": 0.8638743455497382,
+      "val_monotonicity_violations": 0.0,
+      "ood_monotonicity_violations": 0.0,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.24354387819766998,
+          "Val_Sensitivity": 0.8887434554973822,
+          "Val_Specificity": 0.8020851136557854,
+          "Test_Sensitivity": 0.8272251308900523,
+          "Test_Specificity": 0.8592592592592593,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.26324263215065,
+          "Val_Sensitivity": 0.868237347294939,
+          "Val_Specificity": 0.8504529140317895,
+          "Test_Sensitivity": 0.806282722513089,
+          "Test_Specificity": 0.88,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.29503676295280457,
+          "Val_Sensitivity": 0.8307155322862129,
+          "Val_Specificity": 0.9003589130063236,
+          "Test_Sensitivity": 0.7801047120418848,
+          "Test_Specificity": 0.914074074074074,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.3933468163013458,
+          "Val_Sensitivity": 0.7478184991273996,
+          "Val_Specificity": 0.9504358229362502,
+          "Test_Sensitivity": 0.6701570680628273,
+          "Test_Specificity": 0.9718518518518519,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V3_PlusOrdinalHead_H3_Champion__messidor2.npz",
+      "val_per_grade_support": {
+        "grade_0": 5285,
+        "grade_1": 566,
+        "grade_2": 1685,
+        "grade_3": 284,
+        "grade_4": 323
+      },
+      "val_referable_auc": 0.920841196579514,
+      "ood_per_grade_support": {
+        "grade_0": 468,
+        "grade_1": 207,
+        "grade_2": 290,
+        "grade_3": 71,
+        "grade_4": 21
+      },
+      "ood_referable_auc": 0.9052666278844288
+    },
+    "ddr": {
+      "variant": "V3_PlusOrdinalHead_H3_Champion",
+      "held_out_dataset": "DDR",
+      "held_out_key": "ddr",
+      "fold": 4,
+      "in_domain_val_qwk": 0.6975497487834643,
+      "ood_test_qwk": 0.5868494242949802,
+      "delta_lodo": 0.1107003244884841,
+      "delta_qwk": 0.1107003244884841,
+      "val_per_grade_recall": {
+        "grade_0": 0.7448933272809805,
+        "grade_1": 0.6130841121495327,
+        "grade_2": 0.3482758620689655,
+        "grade_3": 0.12213740458015267,
+        "grade_4": 0.26903553299492383
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.8491860836259176,
+        "grade_1": 0.2777777777777778,
+        "grade_2": 0.22135358498994862,
+        "grade_3": 0.3389830508474576,
+        "grade_4": 0.35268346111719606
+      },
+      "val_within_1_grade_acc": 0.9478658536585366,
+      "ood_within_1_grade_acc": 0.8145663632007667,
+      "val_referable_sensitivity_at_95spec": 0.7134033353922175,
+      "ood_referable_sensitivity_at_95spec": 0.5709207252044081,
+      "val_referable_sensitivity_at_90spec": 0.8029647930821495,
+      "ood_referable_sensitivity_at_90spec": 0.6429079274795592,
+      "val_referable_sensitivity_at_85spec": 0.8517603458925262,
+      "ood_referable_sensitivity_at_85spec": 0.6827230714539637,
+      "val_referable_sensitivity_at_80spec": 0.8764669549104386,
+      "ood_referable_sensitivity_at_80spec": 0.7095627444009954,
+      "val_monotonicity_violations": 0.0,
+      "ood_monotonicity_violations": 0.0,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.16430997848510742,
+          "Val_Sensitivity": 0.8764669549104386,
+          "Val_Specificity": 0.8002428658166363,
+          "Test_Sensitivity": 0.6685033771773907,
+          "Test_Specificity": 0.8720997679814385,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.2019653618335724,
+          "Val_Sensitivity": 0.8517603458925262,
+          "Val_Specificity": 0.8506375227686703,
+          "Test_Sensitivity": 0.6464628510487025,
+          "Test_Specificity": 0.8950116009280742,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.2594129741191864,
+          "Val_Sensitivity": 0.8029647930821495,
+          "Val_Specificity": 0.9018417324428254,
+          "Test_Sensitivity": 0.6134020618556701,
+          "Test_Specificity": 0.9261890951276102,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.3445452153682709,
+          "Val_Sensitivity": 0.7134033353922175,
+          "Val_Specificity": 0.9500101194090265,
+          "Test_Sensitivity": 0.5549235691432635,
+          "Test_Specificity": 0.9576566125290024,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V3_PlusOrdinalHead_H3_Champion__ddr.npz",
+      "val_per_grade_support": {
+        "grade_0": 4406,
+        "grade_1": 535,
+        "grade_2": 1160,
+        "grade_3": 262,
+        "grade_4": 197
+      },
+      "val_referable_auc": 0.9158530199279228,
+      "ood_per_grade_support": {
+        "grade_0": 6266,
+        "grade_1": 630,
+        "grade_2": 4477,
+        "grade_3": 236,
+        "grade_4": 913
+      },
+      "ood_referable_auc": 0.8145691088276753
+    },
+    "eyepacs": {
+      "variant": "V3_PlusOrdinalHead_H3_Champion",
+      "held_out_dataset": "EyePACS",
+      "held_out_key": "eyepacs",
+      "fold": 5,
+      "in_domain_val_qwk": 0.8189615846724192,
+      "ood_test_qwk": 0.5360824974212229,
+      "delta_lodo": 0.28287908725119626,
+      "delta_qwk": 0.28287908725119626,
+      "val_per_grade_recall": {
+        "grade_0": 0.7430604982206406,
+        "grade_1": 0.6666666666666666,
+        "grade_2": 0.5076923076923077,
+        "grade_3": 0.2868217054263566,
+        "grade_4": 0.7429906542056075
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.5672994963192561,
+        "grade_1": 0.6295538272615636,
+        "grade_2": 0.3125472411186697,
+        "grade_3": 0.08018327605956473,
+        "grade_4": 0.4646892655367232
+      },
+      "val_within_1_grade_acc": 0.956844234659474,
+      "ood_within_1_grade_acc": 0.9352900985025338,
+      "val_referable_sensitivity_at_95spec": 0.7769347496206374,
+      "ood_referable_sensitivity_at_95spec": 0.48406809253601046,
+      "val_referable_sensitivity_at_90spec": 0.8657056145675266,
+      "ood_referable_sensitivity_at_90spec": 0.6569183762549106,
+      "val_referable_sensitivity_at_85spec": 0.9051593323216995,
+      "ood_referable_sensitivity_at_85spec": 0.7458169649352538,
+      "val_referable_sensitivity_at_80spec": 0.9339908952959028,
+      "ood_referable_sensitivity_at_80spec": 0.796449876327659,
+      "val_monotonicity_violations": 0.0,
+      "ood_monotonicity_violations": 0.0,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.2698410153388977,
+          "Val_Sensitivity": 0.9339908952959028,
+          "Val_Specificity": 0.8003640776699029,
+          "Test_Sensitivity": 0.876618652698967,
+          "Test_Specificity": 0.6839981594874881,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.3218654990196228,
+          "Val_Sensitivity": 0.9051593323216995,
+          "Val_Specificity": 0.8507281553398058,
+          "Test_Sensitivity": 0.8335515786410592,
+          "Test_Specificity": 0.7559905142816692,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.3857009708881378,
+          "Val_Sensitivity": 0.8657056145675266,
+          "Val_Specificity": 0.9004854368932039,
+          "Test_Sensitivity": 0.7397060963189291,
+          "Test_Specificity": 0.8537500442430892,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.45878565311431885,
+          "Val_Sensitivity": 0.7769347496206374,
+          "Val_Specificity": 0.9520631067961165,
+          "Test_Sensitivity": 0.5792230467044959,
+          "Test_Specificity": 0.9292110572328602,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V3_PlusOrdinalHead_H3_Champion__eyepacs.npz",
+      "val_per_grade_support": {
+        "grade_0": 1405,
+        "grade_1": 243,
+        "grade_2": 975,
+        "grade_3": 129,
+        "grade_4": 214
+      },
+      "val_referable_auc": 0.9449090818686743,
+      "ood_per_grade_support": {
+        "grade_0": 25810,
+        "grade_1": 2443,
+        "grade_2": 5292,
+        "grade_3": 873,
+        "grade_4": 708
+      },
+      "ood_referable_auc": 0.8677759983039492
+    },
+    "deepdrid": {
+      "variant": "V3_PlusOrdinalHead_H3_Champion",
+      "held_out_dataset": "DeepDRiD",
+      "held_out_key": "deepdrid",
+      "fold": 6,
+      "in_domain_val_qwk": 0.7042484955238573,
+      "ood_test_qwk": 0.7329132069347902,
+      "delta_lodo": -0.028664711410932964,
+      "delta_qwk": -0.028664711410932964,
+      "val_per_grade_recall": {
+        "grade_0": 0.6098205854579792,
+        "grade_1": 0.6932849364791288,
+        "grade_2": 0.37234687689508794,
+        "grade_3": 0.33490566037735847,
+        "grade_4": 0.7809187279151943
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.40147058823529413,
+        "grade_1": 0.6235955056179775,
+        "grade_2": 0.461734693877551,
+        "grade_3": 0.26785714285714285,
+        "grade_4": 0.6722222222222223
+      },
+      "val_within_1_grade_acc": 0.9464330413016271,
+      "ood_within_1_grade_acc": 0.9195,
+      "val_referable_sensitivity_at_95spec": 0.6972947761194029,
+      "ood_referable_sensitivity_at_95spec": 0.504149377593361,
+      "val_referable_sensitivity_at_90spec": 0.8073694029850746,
+      "ood_referable_sensitivity_at_90spec": 0.8205394190871369,
+      "val_referable_sensitivity_at_85spec": 0.8479477611940298,
+      "ood_referable_sensitivity_at_85spec": 0.8827800829875518,
+      "val_referable_sensitivity_at_80spec": 0.871268656716418,
+      "ood_referable_sensitivity_at_80spec": 0.9253112033195021,
+      "val_monotonicity_violations": 0.0,
+      "ood_monotonicity_violations": 0.0,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.2259518951177597,
+          "Val_Sensitivity": 0.871268656716418,
+          "Val_Specificity": 0.800205268559699,
+          "Test_Sensitivity": 0.9854771784232366,
+          "Test_Specificity": 0.527992277992278,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.26058024168014526,
+          "Val_Sensitivity": 0.8479477611940298,
+          "Val_Specificity": 0.8522066370167636,
+          "Test_Sensitivity": 0.975103734439834,
+          "Test_Specificity": 0.5974903474903475,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.30619528889656067,
+          "Val_Sensitivity": 0.8073694029850746,
+          "Val_Specificity": 0.9007868628121792,
+          "Test_Sensitivity": 0.9657676348547718,
+          "Test_Specificity": 0.6698841698841699,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.4022531807422638,
+          "Val_Sensitivity": 0.6972947761194029,
+          "Val_Specificity": 0.9500513171399247,
+          "Test_Sensitivity": 0.9315352697095436,
+          "Test_Specificity": 0.7818532818532818,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V3_PlusOrdinalHead_H3_Champion__deepdrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5295,
+        "grade_1": 551,
+        "grade_2": 1649,
+        "grade_3": 212,
+        "grade_4": 283
+      },
+      "val_referable_auc": 0.9085423171731151,
+      "ood_per_grade_support": {
+        "grade_0": 680,
+        "grade_1": 356,
+        "grade_2": 392,
+        "grade_3": 392,
+        "grade_4": 180
+      },
+      "ood_referable_auc": 0.9278129455774684
+    }
+  },
+  "V0_Baseline_Softmax_GlobalOnly": {
+    "aptos": {
+      "variant": "V0_Baseline_Softmax_GlobalOnly",
+      "held_out_dataset": "APTOS 2019",
+      "held_out_key": "aptos",
+      "fold": 1,
+      "in_domain_val_qwk": 0.6988262408356152,
+      "ood_test_qwk": 0.8185005401220297,
+      "delta_lodo": -0.11967429928641449,
+      "delta_qwk": -0.11967429928641449,
+      "val_per_grade_recall": {
+        "grade_0": 0.5930346311876346,
+        "grade_1": 0.5463743676222597,
+        "grade_2": 0.5700123915737298,
+        "grade_3": 0.5582191780821918,
+        "grade_4": 0.7366548042704626
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.7739612188365651,
+        "grade_1": 0.07027027027027027,
+        "grade_2": 0.44644644644644643,
+        "grade_3": 0.6580310880829016,
+        "grade_4": 0.6847457627118644
+      },
+      "val_within_1_grade_acc": 0.9154733240400457,
+      "ood_within_1_grade_acc": 0.9188967777170944,
+      "val_referable_sensitivity_at_95spec": 0.7526291723822588,
+      "ood_referable_sensitivity_at_95spec": 0.7404169468728985,
+      "val_referable_sensitivity_at_90spec": 0.8267032464563329,
+      "ood_referable_sensitivity_at_90spec": 0.9394754539340955,
+      "val_referable_sensitivity_at_85spec": 0.8669410150891632,
+      "ood_referable_sensitivity_at_85spec": 0.991930060524546,
+      "val_referable_sensitivity_at_80spec": 0.8948331047096479,
+      "ood_referable_sensitivity_at_80spec": 0.9986550100874243,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.15596291422843933,
+          "Val_Sensitivity": 0.8943758573388203,
+          "Val_Specificity": 0.801367461430575,
+          "Test_Sensitivity": 1.0,
+          "Test_Specificity": 0.7218390804597701,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.21668541431427002,
+          "Val_Sensitivity": 0.8669410150891632,
+          "Val_Specificity": 0.8511570827489481,
+          "Test_Sensitivity": 0.9993275050437121,
+          "Test_Specificity": 0.751264367816092,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.340994656085968,
+          "Val_Sensitivity": 0.8271604938271605,
+          "Val_Specificity": 0.9005960729312763,
+          "Test_Sensitivity": 0.9986550100874243,
+          "Test_Specificity": 0.782528735632184,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.6392476558685303,
+          "Val_Sensitivity": 0.7526291723822588,
+          "Val_Specificity": 0.9500350631136045,
+          "Test_Sensitivity": 0.995965030262273,
+          "Test_Specificity": 0.8285057471264368,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V0_Baseline_Softmax_GlobalOnly__aptos.npz",
+      "val_per_grade_support": {
+        "grade_0": 5111,
+        "grade_1": 593,
+        "grade_2": 1614,
+        "grade_3": 292,
+        "grade_4": 281
+      },
+      "val_referable_auc": 0.931433215590532,
+      "ood_per_grade_support": {
+        "grade_0": 1805,
+        "grade_1": 370,
+        "grade_2": 999,
+        "grade_3": 193,
+        "grade_4": 295
+      },
+      "ood_referable_auc": 0.967727508135643
+    },
+    "idrid": {
+      "variant": "V0_Baseline_Softmax_GlobalOnly",
+      "held_out_dataset": "IDRiD",
+      "held_out_key": "idrid",
+      "fold": 2,
+      "in_domain_val_qwk": 0.7550373268122019,
+      "ood_test_qwk": 0.7137617171579949,
+      "delta_lodo": 0.04127560965420707,
+      "delta_qwk": 0.04127560965420707,
+      "val_per_grade_recall": {
+        "grade_0": 0.6724725482771677,
+        "grade_1": 0.5906902086677368,
+        "grade_2": 0.5336617405582923,
+        "grade_3": 0.740484429065744,
+        "grade_4": 0.6934523809523809
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.6369047619047619,
+        "grade_1": 0.88,
+        "grade_2": 0.31547619047619047,
+        "grade_3": 0.2903225806451613,
+        "grade_4": 0.4838709677419355
+      },
+      "val_within_1_grade_acc": 0.9346655498384587,
+      "ood_within_1_grade_acc": 0.9089147286821705,
+      "val_referable_sensitivity_at_95spec": 0.7654975530179445,
+      "ood_referable_sensitivity_at_95spec": 0.8235294117647058,
+      "val_referable_sensitivity_at_90spec": 0.8376835236541599,
+      "ood_referable_sensitivity_at_90spec": 0.8575851393188855,
+      "val_referable_sensitivity_at_85spec": 0.8780587275693311,
+      "ood_referable_sensitivity_at_85spec": 0.8761609907120743,
+      "val_referable_sensitivity_at_80spec": 0.9029363784665579,
+      "ood_referable_sensitivity_at_80spec": 0.9071207430340558,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.07078909873962402,
+          "Val_Sensitivity": 0.9025285481239804,
+          "Val_Specificity": 0.8006773920406436,
+          "Test_Sensitivity": 0.8080495356037152,
+          "Test_Specificity": 0.9585492227979274,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "PASSED"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.12532909214496613,
+          "Val_Sensitivity": 0.8784665579119086,
+          "Val_Specificity": 0.8516511430990685,
+          "Test_Sensitivity": 0.7647058823529411,
+          "Test_Specificity": 0.9792746113989638,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.2600054442882538,
+          "Val_Sensitivity": 0.8384991843393148,
+          "Val_Specificity": 0.9009314140558848,
+          "Test_Sensitivity": 0.6873065015479877,
+          "Test_Specificity": 0.9844559585492227,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.6050146222114563,
+          "Val_Sensitivity": 0.765089722675367,
+          "Val_Specificity": 0.9502116850127011,
+          "Test_Sensitivity": 0.5572755417956656,
+          "Test_Specificity": 0.9896373056994818,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V0_Baseline_Softmax_GlobalOnly__idrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5282,
+        "grade_1": 623,
+        "grade_2": 1827,
+        "grade_3": 289,
+        "grade_4": 336
+      },
+      "val_referable_auc": 0.9383694797866712,
+      "ood_per_grade_support": {
+        "grade_0": 168,
+        "grade_1": 25,
+        "grade_2": 168,
+        "grade_3": 93,
+        "grade_4": 62
+      },
+      "ood_referable_auc": 0.936556569723608
+    },
+    "messidor2": {
+      "variant": "V0_Baseline_Softmax_GlobalOnly",
+      "held_out_dataset": "Messidor-2",
+      "held_out_key": "messidor2",
+      "fold": 3,
+      "in_domain_val_qwk": 0.74955787195855,
+      "ood_test_qwk": 0.6489365628036854,
+      "delta_lodo": 0.10062130915486456,
+      "delta_qwk": 0.10062130915486456,
+      "val_per_grade_recall": {
+        "grade_0": 0.7687795648060549,
+        "grade_1": 0.607773851590106,
+        "grade_2": 0.4142433234421365,
+        "grade_3": 0.5246478873239436,
+        "grade_4": 0.7832817337461301
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.38675213675213677,
+        "grade_1": 0.5942028985507246,
+        "grade_2": 0.4103448275862069,
+        "grade_3": 0.6338028169014085,
+        "grade_4": 0.3333333333333333
+      },
+      "val_within_1_grade_acc": 0.924966228662655,
+      "ood_within_1_grade_acc": 0.9621570482497634,
+      "val_referable_sensitivity_at_95spec": 0.7369109947643979,
+      "ood_referable_sensitivity_at_95spec": 0.7617801047120419,
+      "val_referable_sensitivity_at_90spec": 0.8167539267015707,
+      "ood_referable_sensitivity_at_90spec": 0.8115183246073299,
+      "val_referable_sensitivity_at_85spec": 0.8551483420593369,
+      "ood_referable_sensitivity_at_85spec": 0.856020942408377,
+      "val_referable_sensitivity_at_80spec": 0.8769633507853403,
+      "ood_referable_sensitivity_at_80spec": 0.8795811518324608,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.026319436728954315,
+          "Val_Sensitivity": 0.8778359511343804,
+          "Val_Specificity": 0.8003760041018629,
+          "Test_Sensitivity": 0.7853403141361257,
+          "Test_Specificity": 0.9362962962962963,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.0435367077589035,
+          "Val_Sensitivity": 0.8551483420593369,
+          "Val_Specificity": 0.8509656468979662,
+          "Test_Sensitivity": 0.7539267015706806,
+          "Test_Specificity": 0.9629629629629629,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.08999208360910416,
+          "Val_Sensitivity": 0.8163176265270506,
+          "Val_Specificity": 0.9018971116048539,
+          "Test_Sensitivity": 0.7094240837696335,
+          "Test_Specificity": 0.9822222222222222,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.307758092880249,
+          "Val_Sensitivity": 0.7382198952879581,
+          "Val_Specificity": 0.9500940010254657,
+          "Test_Sensitivity": 0.6308900523560209,
+          "Test_Specificity": 0.9925925925925926,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V0_Baseline_Softmax_GlobalOnly__messidor2.npz",
+      "val_per_grade_support": {
+        "grade_0": 5285,
+        "grade_1": 566,
+        "grade_2": 1685,
+        "grade_3": 284,
+        "grade_4": 323
+      },
+      "val_referable_auc": 0.9236596614054131,
+      "ood_per_grade_support": {
+        "grade_0": 468,
+        "grade_1": 207,
+        "grade_2": 290,
+        "grade_3": 71,
+        "grade_4": 21
+      },
+      "ood_referable_auc": 0.9257514058561179
+    },
+    "ddr": {
+      "variant": "V0_Baseline_Softmax_GlobalOnly",
+      "held_out_dataset": "DDR",
+      "held_out_key": "ddr",
+      "fold": 4,
+      "in_domain_val_qwk": 0.763193658723147,
+      "ood_test_qwk": 0.724152880804666,
+      "delta_lodo": 0.03904077791848104,
+      "delta_qwk": 0.03904077791848104,
+      "val_per_grade_recall": {
+        "grade_0": 0.8234226055379028,
+        "grade_1": 0.5570093457943925,
+        "grade_2": 0.41810344827586204,
+        "grade_3": 0.7022900763358778,
+        "grade_4": 0.5228426395939086
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.9374401532077881,
+        "grade_1": 0.16825396825396827,
+        "grade_2": 0.5099396917578736,
+        "grade_3": 0.3516949152542373,
+        "grade_4": 0.6768893756845564
+      },
+      "val_within_1_grade_acc": 0.9399390243902439,
+      "ood_within_1_grade_acc": 0.8389234946494171,
+      "val_referable_sensitivity_at_95spec": 0.7411982705373688,
+      "ood_referable_sensitivity_at_95spec": 0.711340206185567,
+      "val_referable_sensitivity_at_90spec": 0.8066707844348363,
+      "ood_referable_sensitivity_at_90spec": 0.7907927479559189,
+      "val_referable_sensitivity_at_85spec": 0.840024706609018,
+      "ood_referable_sensitivity_at_85spec": 0.8373622467116957,
+      "val_referable_sensitivity_at_80spec": 0.871525633106856,
+      "ood_referable_sensitivity_at_80spec": 0.863846427301813,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.05460076034069061,
+          "Val_Sensitivity": 0.8721432983323039,
+          "Val_Specificity": 0.8000404776361061,
+          "Test_Sensitivity": 0.8330963384287238,
+          "Test_Specificity": 0.8567285382830626,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.0912674218416214,
+          "Val_Sensitivity": 0.840024706609018,
+          "Val_Specificity": 0.8506375227686703,
+          "Test_Sensitivity": 0.7998578030572343,
+          "Test_Specificity": 0.8918213457076566,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.16823862493038177,
+          "Val_Sensitivity": 0.8066707844348363,
+          "Val_Specificity": 0.9004250151791136,
+          "Test_Sensitivity": 0.7580874511198009,
+          "Test_Specificity": 0.9266241299303944,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.3885478973388672,
+          "Val_Sensitivity": 0.7424336009882644,
+          "Val_Specificity": 0.9500101194090265,
+          "Test_Sensitivity": 0.6990757198720228,
+          "Test_Specificity": 0.95707656612529,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V0_Baseline_Softmax_GlobalOnly__ddr.npz",
+      "val_per_grade_support": {
+        "grade_0": 4406,
+        "grade_1": 535,
+        "grade_2": 1160,
+        "grade_3": 262,
+        "grade_4": 197
+      },
+      "val_referable_auc": 0.9240215519035677,
+      "ood_per_grade_support": {
+        "grade_0": 6266,
+        "grade_1": 630,
+        "grade_2": 4477,
+        "grade_3": 236,
+        "grade_4": 913
+      },
+      "ood_referable_auc": 0.915832493403596
+    },
+    "eyepacs": {
+      "variant": "V0_Baseline_Softmax_GlobalOnly",
+      "held_out_dataset": "EyePACS",
+      "held_out_key": "eyepacs",
+      "fold": 5,
+      "in_domain_val_qwk": 0.8346028145636806,
+      "ood_test_qwk": 0.5326147234565155,
+      "delta_lodo": 0.30198809110716507,
+      "delta_qwk": 0.30198809110716507,
+      "val_per_grade_recall": {
+        "grade_0": 0.8341637010676156,
+        "grade_1": 0.5061728395061729,
+        "grade_2": 0.6205128205128205,
+        "grade_3": 0.7364341085271318,
+        "grade_4": 0.8084112149532711
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.8177838047268501,
+        "grade_1": 0.1833810888252149,
+        "grade_2": 0.2857142857142857,
+        "grade_3": 0.38029782359679265,
+        "grade_4": 0.6850282485875706
+      },
+      "val_within_1_grade_acc": 0.9254888739042482,
+      "ood_within_1_grade_acc": 0.8667084211125662,
+      "val_referable_sensitivity_at_95spec": 0.8277693474962063,
+      "ood_referable_sensitivity_at_95spec": 0.5141859450021824,
+      "val_referable_sensitivity_at_90spec": 0.8983308042488619,
+      "ood_referable_sensitivity_at_90spec": 0.6481885639458752,
+      "val_referable_sensitivity_at_85spec": 0.9385432473444613,
+      "ood_referable_sensitivity_at_85spec": 0.7180270624181581,
+      "val_referable_sensitivity_at_80spec": 0.9506828528072838,
+      "ood_referable_sensitivity_at_80spec": 0.7708424268878219,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.06125577166676521,
+          "Val_Sensitivity": 0.9506828528072838,
+          "Val_Specificity": 0.8052184466019418,
+          "Test_Sensitivity": 0.7896115233522479,
+          "Test_Specificity": 0.7746787951721941,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.10156837850809097,
+          "Val_Sensitivity": 0.9393019726858877,
+          "Val_Specificity": 0.8519417475728155,
+          "Test_Sensitivity": 0.7557107522188273,
+          "Test_Specificity": 0.8166212437617244,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.23262132704257965,
+          "Val_Sensitivity": 0.8990895295902883,
+          "Val_Specificity": 0.9010922330097088,
+          "Test_Sensitivity": 0.6864542412338135,
+          "Test_Specificity": 0.8735001592751213,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.5823793411254883,
+          "Val_Sensitivity": 0.8285280728376327,
+          "Val_Specificity": 0.9508495145631068,
+          "Test_Sensitivity": 0.564527862650953,
+          "Test_Specificity": 0.934414044526245,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V0_Baseline_Softmax_GlobalOnly__eyepacs.npz",
+      "val_per_grade_support": {
+        "grade_0": 1405,
+        "grade_1": 243,
+        "grade_2": 975,
+        "grade_3": 129,
+        "grade_4": 214
+      },
+      "val_referable_auc": 0.9618358390912974,
+      "ood_per_grade_support": {
+        "grade_0": 25810,
+        "grade_1": 2443,
+        "grade_2": 5292,
+        "grade_3": 873,
+        "grade_4": 708
+      },
+      "ood_referable_auc": 0.8550048408235229
+    },
+    "deepdrid": {
+      "variant": "V0_Baseline_Softmax_GlobalOnly",
+      "held_out_dataset": "DeepDRiD",
+      "held_out_key": "deepdrid",
+      "fold": 6,
+      "in_domain_val_qwk": 0.7254626997280285,
+      "ood_test_qwk": 0.7613713982109036,
+      "delta_lodo": -0.035908698482875145,
+      "delta_qwk": -0.035908698482875145,
+      "val_per_grade_recall": {
+        "grade_0": 0.6978281397544853,
+        "grade_1": 0.6116152450090744,
+        "grade_2": 0.4487568223165555,
+        "grade_3": 0.7405660377358491,
+        "grade_4": 0.8021201413427562
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.6132352941176471,
+        "grade_1": 0.4691011235955056,
+        "grade_2": 0.44387755102040816,
+        "grade_3": 0.4362244897959184,
+        "grade_4": 0.6833333333333333
+      },
+      "val_within_1_grade_acc": 0.9290362953692115,
+      "ood_within_1_grade_acc": 0.9135,
+      "val_referable_sensitivity_at_95spec": 0.7341417910447762,
+      "ood_referable_sensitivity_at_95spec": 0.770746887966805,
+      "val_referable_sensitivity_at_90spec": 0.8316231343283582,
+      "ood_referable_sensitivity_at_90spec": 0.8599585062240664,
+      "val_referable_sensitivity_at_85spec": 0.8763992537313433,
+      "ood_referable_sensitivity_at_85spec": 0.9221991701244814,
+      "val_referable_sensitivity_at_80spec": 0.8987873134328358,
+      "ood_referable_sensitivity_at_80spec": 0.9367219917012448,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.02494475245475769,
+          "Val_Sensitivity": 0.8987873134328358,
+          "Val_Specificity": 0.8008894970920287,
+          "Test_Sensitivity": 0.9626556016597511,
+          "Test_Specificity": 0.666023166023166,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.04870518669486046,
+          "Val_Sensitivity": 0.8754664179104478,
+          "Val_Specificity": 0.8520355798836812,
+          "Test_Sensitivity": 0.9574688796680498,
+          "Test_Specificity": 0.7268339768339769,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.13599102199077606,
+          "Val_Sensitivity": 0.8316231343283582,
+          "Val_Specificity": 0.9001026342798495,
+          "Test_Sensitivity": 0.9408713692946058,
+          "Test_Specificity": 0.7876447876447876,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.6356792449951172,
+          "Val_Sensitivity": 0.7336753731343284,
+          "Val_Specificity": 0.9502223742730072,
+          "Test_Sensitivity": 0.8983402489626556,
+          "Test_Specificity": 0.8812741312741312,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V0_Baseline_Softmax_GlobalOnly__deepdrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5295,
+        "grade_1": 551,
+        "grade_2": 1649,
+        "grade_3": 212,
+        "grade_4": 283
+      },
+      "val_referable_auc": 0.9311483071726554,
+      "ood_per_grade_support": {
+        "grade_0": 680,
+        "grade_1": 356,
+        "grade_2": 392,
+        "grade_3": 392,
+        "grade_4": 180
+      },
+      "ood_referable_auc": 0.9486885002963842
+    }
+  },
+  "V1_PlusLocalMIL_H1": {
+    "aptos": {
+      "variant": "V1_PlusLocalMIL_H1",
+      "held_out_dataset": "APTOS 2019",
+      "held_out_key": "aptos",
+      "fold": 1,
+      "in_domain_val_qwk": 0.693391599640032,
+      "ood_test_qwk": 0.79650203084971,
+      "delta_lodo": -0.103110431209678,
+      "delta_qwk": -0.103110431209678,
+      "val_per_grade_recall": {
+        "grade_0": 0.5691645470553708,
+        "grade_1": 0.6155143338954469,
+        "grade_2": 0.5545229244114003,
+        "grade_3": 0.5376712328767124,
+        "grade_4": 0.697508896797153
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.6642659279778393,
+        "grade_1": 0.10270270270270271,
+        "grade_2": 0.5555555555555556,
+        "grade_3": 0.5492227979274611,
+        "grade_4": 0.7220338983050848
+      },
+      "val_within_1_grade_acc": 0.918388037004182,
+      "ood_within_1_grade_acc": 0.9000546149645002,
+      "val_referable_sensitivity_at_95spec": 0.7055326931870142,
+      "ood_referable_sensitivity_at_95spec": 0.6415601882985877,
+      "val_referable_sensitivity_at_90spec": 0.7828074988568816,
+      "ood_referable_sensitivity_at_90spec": 0.902488231338265,
+      "val_referable_sensitivity_at_85spec": 0.823045267489712,
+      "ood_referable_sensitivity_at_85spec": 0.9737726967047747,
+      "val_referable_sensitivity_at_80spec": 0.848193872885231,
+      "ood_referable_sensitivity_at_80spec": 0.9946200403496974,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.03041260875761509,
+          "Val_Sensitivity": 0.848193872885231,
+          "Val_Specificity": 0.8017180925666199,
+          "Test_Sensitivity": 0.9993275050437121,
+          "Test_Specificity": 0.6896551724137931,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.06586988270282745,
+          "Val_Sensitivity": 0.823045267489712,
+          "Val_Specificity": 0.8502805049088359,
+          "Test_Sensitivity": 0.9979825151311366,
+          "Test_Specificity": 0.7236781609195402,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.22370412945747375,
+          "Val_Sensitivity": 0.7818930041152263,
+          "Val_Specificity": 0.9002454417952315,
+          "Test_Sensitivity": 0.9973100201748487,
+          "Test_Specificity": 0.7540229885057471,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.8457466959953308,
+          "Val_Sensitivity": 0.7064471879286695,
+          "Val_Specificity": 0.9502103786816269,
+          "Test_Sensitivity": 0.9932750504371217,
+          "Test_Specificity": 0.8073563218390805,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V1_PlusLocalMIL_H1__aptos.npz",
+      "val_per_grade_support": {
+        "grade_0": 5111,
+        "grade_1": 593,
+        "grade_2": 1614,
+        "grade_3": 292,
+        "grade_4": 281
+      },
+      "val_referable_auc": 0.8988647615547949,
+      "ood_per_grade_support": {
+        "grade_0": 1805,
+        "grade_1": 370,
+        "grade_2": 999,
+        "grade_3": 193,
+        "grade_4": 295
+      },
+      "ood_referable_auc": 0.9555490109686245
+    },
+    "idrid": {
+      "variant": "V1_PlusLocalMIL_H1",
+      "held_out_dataset": "IDRiD",
+      "held_out_key": "idrid",
+      "fold": 2,
+      "in_domain_val_qwk": 0.7442737753162281,
+      "ood_test_qwk": 0.8232359944855245,
+      "delta_lodo": -0.07896221916929647,
+      "delta_qwk": -0.07896221916929647,
+      "val_per_grade_recall": {
+        "grade_0": 0.9034456645210147,
+        "grade_1": 0.12359550561797752,
+        "grade_2": 0.6732348111658456,
+        "grade_3": 0.49480968858131485,
+        "grade_4": 0.46726190476190477
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.8869047619047619,
+        "grade_1": 0.4,
+        "grade_2": 0.8452380952380952,
+        "grade_3": 0.20430107526881722,
+        "grade_4": 0.5
+      },
+      "val_within_1_grade_acc": 0.8907502692353716,
+      "ood_within_1_grade_acc": 0.9244186046511628,
+      "val_referable_sensitivity_at_95spec": 0.7259380097879282,
+      "ood_referable_sensitivity_at_95spec": 0.9287925696594427,
+      "val_referable_sensitivity_at_90spec": 0.814437194127243,
+      "ood_referable_sensitivity_at_90spec": 0.9442724458204335,
+      "val_referable_sensitivity_at_85spec": 0.865415986949429,
+      "ood_referable_sensitivity_at_85spec": 0.9566563467492261,
+      "val_referable_sensitivity_at_80spec": 0.8923327895595432,
+      "ood_referable_sensitivity_at_80spec": 0.9597523219814241,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.25914135575294495,
+          "Val_Sensitivity": 0.8919249592169658,
+          "Val_Specificity": 0.8003386960203218,
+          "Test_Sensitivity": 0.9566563467492261,
+          "Test_Specificity": 0.844559585492228,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.30892616510391235,
+          "Val_Sensitivity": 0.8658238172920065,
+          "Val_Specificity": 0.8506350550381033,
+          "Test_Sensitivity": 0.9504643962848297,
+          "Test_Specificity": 0.8860103626943006,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.3851301372051239,
+          "Val_Sensitivity": 0.8136215334420881,
+          "Val_Specificity": 0.9002540220152413,
+          "Test_Sensitivity": 0.9411764705882353,
+          "Test_Specificity": 0.927461139896373,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.5299358367919922,
+          "Val_Sensitivity": 0.7255301794453507,
+          "Val_Specificity": 0.9500423370025403,
+          "Test_Sensitivity": 0.8854489164086687,
+          "Test_Specificity": 0.9792746113989638,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "PASSED"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V1_PlusLocalMIL_H1__idrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5282,
+        "grade_1": 623,
+        "grade_2": 1827,
+        "grade_3": 289,
+        "grade_4": 336
+      },
+      "val_referable_auc": 0.9278966314111552,
+      "ood_per_grade_support": {
+        "grade_0": 168,
+        "grade_1": 25,
+        "grade_2": 168,
+        "grade_3": 93,
+        "grade_4": 62
+      },
+      "ood_referable_auc": 0.9717833138163912
+    },
+    "messidor2": {
+      "variant": "V1_PlusLocalMIL_H1",
+      "held_out_dataset": "Messidor-2",
+      "held_out_key": "messidor2",
+      "fold": 3,
+      "in_domain_val_qwk": 0.7700426422215702,
+      "ood_test_qwk": 0.6981473839607422,
+      "delta_lodo": 0.07189525826082799,
+      "delta_qwk": 0.07189525826082799,
+      "val_per_grade_recall": {
+        "grade_0": 0.8121097445600757,
+        "grade_1": 0.568904593639576,
+        "grade_2": 0.3821958456973294,
+        "grade_3": 0.5704225352112676,
+        "grade_4": 0.7275541795665634
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.8247863247863247,
+        "grade_1": 0.2028985507246377,
+        "grade_2": 0.3931034482758621,
+        "grade_3": 0.7464788732394366,
+        "grade_4": 0.3333333333333333
+      },
+      "val_within_1_grade_acc": 0.9349134225715339,
+      "ood_within_1_grade_acc": 0.9082308420056765,
+      "val_referable_sensitivity_at_95spec": 0.762216404886562,
+      "ood_referable_sensitivity_at_95spec": 0.7356020942408377,
+      "val_referable_sensitivity_at_90spec": 0.8272251308900523,
+      "ood_referable_sensitivity_at_90spec": 0.7827225130890052,
+      "val_referable_sensitivity_at_85spec": 0.8595113438045375,
+      "ood_referable_sensitivity_at_85spec": 0.8429319371727748,
+      "val_referable_sensitivity_at_80spec": 0.8778359511343804,
+      "ood_referable_sensitivity_at_80spec": 0.8717277486910995,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.014762813225388527,
+          "Val_Sensitivity": 0.8778359511343804,
+          "Val_Specificity": 0.8037942232097077,
+          "Test_Sensitivity": 0.743455497382199,
+          "Test_Specificity": 0.9496296296296296,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.022761117666959763,
+          "Val_Sensitivity": 0.8595113438045375,
+          "Val_Specificity": 0.8523329345411041,
+          "Test_Sensitivity": 0.7329842931937173,
+          "Test_Specificity": 0.9525925925925925,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.04502984136343002,
+          "Val_Sensitivity": 0.8272251308900523,
+          "Val_Specificity": 0.900529823961716,
+          "Test_Sensitivity": 0.7225130890052356,
+          "Test_Specificity": 0.9629629629629629,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.15404371917247772,
+          "Val_Sensitivity": 0.7617801047120419,
+          "Val_Specificity": 0.9500940010254657,
+          "Test_Sensitivity": 0.6910994764397905,
+          "Test_Specificity": 0.9703703703703703,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V1_PlusLocalMIL_H1__messidor2.npz",
+      "val_per_grade_support": {
+        "grade_0": 5285,
+        "grade_1": 566,
+        "grade_2": 1685,
+        "grade_3": 284,
+        "grade_4": 323
+      },
+      "val_referable_auc": 0.9168869046713574,
+      "ood_per_grade_support": {
+        "grade_0": 468,
+        "grade_1": 207,
+        "grade_2": 290,
+        "grade_3": 71,
+        "grade_4": 21
+      },
+      "ood_referable_auc": 0.9186775256932326
+    },
+    "ddr": {
+      "variant": "V1_PlusLocalMIL_H1",
+      "held_out_dataset": "DDR",
+      "held_out_key": "ddr",
+      "fold": 4,
+      "in_domain_val_qwk": 0.7608783965736337,
+      "ood_test_qwk": 0.5952725627065096,
+      "delta_lodo": 0.16560583386712402,
+      "delta_qwk": 0.16560583386712402,
+      "val_per_grade_recall": {
+        "grade_0": 0.8654108034498411,
+        "grade_1": 0.5757009345794393,
+        "grade_2": 0.35086206896551725,
+        "grade_3": 0.6068702290076335,
+        "grade_4": 0.5634517766497462
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.6468241302266199,
+        "grade_1": 0.29365079365079366,
+        "grade_2": 0.3750279204824659,
+        "grade_3": 0.461864406779661,
+        "grade_4": 0.5585980284775466
+      },
+      "val_within_1_grade_acc": 0.9434451219512195,
+      "ood_within_1_grade_acc": 0.8277431720172497,
+      "val_referable_sensitivity_at_95spec": 0.7455219271155034,
+      "ood_referable_sensitivity_at_95spec": 0.6484180590117312,
+      "val_referable_sensitivity_at_90spec": 0.830142063001853,
+      "ood_referable_sensitivity_at_90spec": 0.7188055456807678,
+      "val_referable_sensitivity_at_85spec": 0.8709079678814082,
+      "ood_referable_sensitivity_at_85spec": 0.7616423746889441,
+      "val_referable_sensitivity_at_80spec": 0.8999382334774553,
+      "ood_referable_sensitivity_at_80spec": 0.7938144329896907,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.0522221215069294,
+          "Val_Sensitivity": 0.900555898702903,
+          "Val_Specificity": 0.8026715239829993,
+          "Test_Sensitivity": 0.76253110558123,
+          "Test_Specificity": 0.847592807424594,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.07135111838579178,
+          "Val_Sensitivity": 0.8702903026559605,
+          "Val_Specificity": 0.8502327464076098,
+          "Test_Sensitivity": 0.7396018485602559,
+          "Test_Specificity": 0.8754350348027842,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.10916132479906082,
+          "Val_Sensitivity": 0.8282890673255096,
+          "Val_Specificity": 0.9016393442622951,
+          "Test_Sensitivity": 0.7097404905794525,
+          "Test_Specificity": 0.9086426914153132,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.2171253263950348,
+          "Val_Sensitivity": 0.7461395923409512,
+          "Val_Specificity": 0.9502125075895568,
+          "Test_Sensitivity": 0.6491290437255599,
+          "Test_Specificity": 0.9493909512761021,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V1_PlusLocalMIL_H1__ddr.npz",
+      "val_per_grade_support": {
+        "grade_0": 4406,
+        "grade_1": 535,
+        "grade_2": 1160,
+        "grade_3": 262,
+        "grade_4": 197
+      },
+      "val_referable_auc": 0.9334024128321359,
+      "ood_per_grade_support": {
+        "grade_0": 6266,
+        "grade_1": 630,
+        "grade_2": 4477,
+        "grade_3": 236,
+        "grade_4": 913
+      },
+      "ood_referable_auc": 0.8697035969063092
+    },
+    "eyepacs": {
+      "variant": "V1_PlusLocalMIL_H1",
+      "held_out_dataset": "EyePACS",
+      "held_out_key": "eyepacs",
+      "fold": 5,
+      "in_domain_val_qwk": 0.8166955501776059,
+      "ood_test_qwk": 0.5513699485868337,
+      "delta_lodo": 0.2653256015907721,
+      "delta_qwk": 0.2653256015907721,
+      "val_per_grade_recall": {
+        "grade_0": 0.7259786476868327,
+        "grade_1": 0.5267489711934157,
+        "grade_2": 0.6143589743589744,
+        "grade_3": 0.6511627906976745,
+        "grade_4": 0.7897196261682243
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.7428516079039132,
+        "grade_1": 0.31109291854277527,
+        "grade_2": 0.4230914588057445,
+        "grade_3": 0.30698739977090495,
+        "grade_4": 0.5550847457627118
+      },
+      "val_within_1_grade_acc": 0.9291975724881996,
+      "ood_within_1_grade_acc": 0.882736434549906,
+      "val_referable_sensitivity_at_95spec": 0.7860394537177542,
+      "ood_referable_sensitivity_at_95spec": 0.49905427033318783,
+      "val_referable_sensitivity_at_90spec": 0.8611532625189682,
+      "ood_referable_sensitivity_at_90spec": 0.6163247490178961,
+      "val_referable_sensitivity_at_85spec": 0.909711684370258,
+      "ood_referable_sensitivity_at_85spec": 0.6912556380037829,
+      "val_referable_sensitivity_at_80spec": 0.9347496206373292,
+      "ood_referable_sensitivity_at_80spec": 0.7427615306270915,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.0010798111325129867,
+          "Val_Sensitivity": 0.9332321699544764,
+          "Val_Specificity": 0.8003640776699029,
+          "Test_Sensitivity": 0.8120180416121053,
+          "Test_Specificity": 0.7087388949846034,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.006400705315172672,
+          "Val_Sensitivity": 0.9081942336874052,
+          "Val_Specificity": 0.8519417475728155,
+          "Test_Sensitivity": 0.7522188272952132,
+          "Test_Specificity": 0.7892613173822249,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.10082707554101944,
+          "Val_Sensitivity": 0.8581183611532626,
+          "Val_Specificity": 0.9004854368932039,
+          "Test_Sensitivity": 0.6561908918958242,
+          "Test_Specificity": 0.8761193501575054,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.8889080882072449,
+          "Val_Sensitivity": 0.7883156297420334,
+          "Val_Specificity": 0.9508495145631068,
+          "Test_Sensitivity": 0.5136039575149134,
+          "Test_Specificity": 0.9462711924397409,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V1_PlusLocalMIL_H1__eyepacs.npz",
+      "val_per_grade_support": {
+        "grade_0": 1405,
+        "grade_1": 243,
+        "grade_2": 975,
+        "grade_3": 129,
+        "grade_4": 214
+      },
+      "val_referable_auc": 0.9514889984825493,
+      "ood_per_grade_support": {
+        "grade_0": 25810,
+        "grade_1": 2443,
+        "grade_2": 5292,
+        "grade_3": 873,
+        "grade_4": 708
+      },
+      "ood_referable_auc": 0.8505177972213399
+    },
+    "deepdrid": {
+      "variant": "V1_PlusLocalMIL_H1",
+      "held_out_dataset": "DeepDRiD",
+      "held_out_key": "deepdrid",
+      "fold": 6,
+      "in_domain_val_qwk": 0.7199873397900975,
+      "ood_test_qwk": 0.7384153259227473,
+      "delta_lodo": -0.018427986132649732,
+      "delta_qwk": -0.018427986132649732,
+      "val_per_grade_recall": {
+        "grade_0": 0.617752596789424,
+        "grade_1": 0.6896551724137931,
+        "grade_2": 0.4893875075803517,
+        "grade_3": 0.6367924528301887,
+        "grade_4": 0.7879858657243817
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.4985294117647059,
+        "grade_1": 0.6292134831460674,
+        "grade_2": 0.4719387755102041,
+        "grade_3": 0.3622448979591837,
+        "grade_4": 0.7388888888888889
+      },
+      "val_within_1_grade_acc": 0.9379224030037547,
+      "ood_within_1_grade_acc": 0.9175,
+      "val_referable_sensitivity_at_95spec": 0.7430037313432836,
+      "ood_referable_sensitivity_at_95spec": 0.766597510373444,
+      "val_referable_sensitivity_at_90spec": 0.8269589552238806,
+      "ood_referable_sensitivity_at_90spec": 0.8547717842323651,
+      "val_referable_sensitivity_at_85spec": 0.8591417910447762,
+      "ood_referable_sensitivity_at_85spec": 0.9128630705394191,
+      "val_referable_sensitivity_at_80spec": 0.8871268656716418,
+      "ood_referable_sensitivity_at_80spec": 0.9304979253112033,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.09511628746986389,
+          "Val_Sensitivity": 0.8871268656716418,
+          "Val_Specificity": 0.8037974683544304,
+          "Test_Sensitivity": 0.975103734439834,
+          "Test_Specificity": 0.5492277992277992,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.13732066750526428,
+          "Val_Sensitivity": 0.8591417910447762,
+          "Val_Specificity": 0.8501539514197742,
+          "Test_Sensitivity": 0.9678423236514523,
+          "Test_Specificity": 0.6158301158301158,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.23060739040374756,
+          "Val_Sensitivity": 0.8269589552238806,
+          "Val_Specificity": 0.9004447485460143,
+          "Test_Sensitivity": 0.9564315352697096,
+          "Test_Specificity": 0.7133204633204633,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.5050937533378601,
+          "Val_Sensitivity": 0.7430037313432836,
+          "Val_Specificity": 0.9503934314060897,
+          "Test_Sensitivity": 0.9232365145228216,
+          "Test_Specificity": 0.831081081081081,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V1_PlusLocalMIL_H1__deepdrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5295,
+        "grade_1": 551,
+        "grade_2": 1649,
+        "grade_3": 212,
+        "grade_4": 283
+      },
+      "val_referable_auc": 0.9230787826604234,
+      "ood_per_grade_support": {
+        "grade_0": 680,
+        "grade_1": 356,
+        "grade_2": 392,
+        "grade_3": 392,
+        "grade_4": 180
+      },
+      "ood_referable_auc": 0.9462513417388936
+    }
+  },
+  "V2_PlusGlobalContext_H2": {
+    "aptos": {
+      "variant": "V2_PlusGlobalContext_H2",
+      "held_out_dataset": "APTOS 2019",
+      "held_out_key": "aptos",
+      "fold": 1,
+      "in_domain_val_qwk": 0.6963534692749884,
+      "ood_test_qwk": 0.8003429647978584,
+      "delta_lodo": -0.10398949552286996,
+      "delta_qwk": -0.10398949552286996,
+      "val_per_grade_recall": {
+        "grade_0": 0.5298376051653296,
+        "grade_1": 0.6458684654300169,
+        "grade_2": 0.5941759603469641,
+        "grade_3": 0.5993150684931506,
+        "grade_4": 0.6761565836298933
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.5922437673130194,
+        "grade_1": 0.0891891891891892,
+        "grade_2": 0.5615615615615616,
+        "grade_3": 0.6321243523316062,
+        "grade_4": 0.559322033898305
+      },
+      "val_within_1_grade_acc": 0.9196553035103282,
+      "ood_within_1_grade_acc": 0.931185144729656,
+      "val_referable_sensitivity_at_95spec": 0.7508001828989483,
+      "ood_referable_sensitivity_at_95spec": 0.8177538668459986,
+      "val_referable_sensitivity_at_90spec": 0.813443072702332,
+      "ood_referable_sensitivity_at_90spec": 0.9542703429724277,
+      "val_referable_sensitivity_at_85spec": 0.8523090992226795,
+      "ood_referable_sensitivity_at_85spec": 0.9952925353059852,
+      "val_referable_sensitivity_at_80spec": 0.8715134887974394,
+      "ood_referable_sensitivity_at_80spec": 1.0,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.1528894305229187,
+          "Val_Sensitivity": 0.8715134887974394,
+          "Val_Specificity": 0.8003155680224404,
+          "Test_Sensitivity": 1.0,
+          "Test_Specificity": 0.7503448275862069,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.2259850651025772,
+          "Val_Sensitivity": 0.8527663465935071,
+          "Val_Specificity": 0.8501051893408135,
+          "Test_Sensitivity": 1.0,
+          "Test_Specificity": 0.7691954022988505,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.3830729126930237,
+          "Val_Sensitivity": 0.8139003200731596,
+          "Val_Specificity": 0.9004207573632539,
+          "Test_Sensitivity": 1.0,
+          "Test_Specificity": 0.7972413793103448,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.7071282267570496,
+          "Val_Sensitivity": 0.7503429355281207,
+          "Val_Specificity": 0.9500350631136045,
+          "Test_Sensitivity": 0.9979825151311366,
+          "Test_Specificity": 0.8344827586206897,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V2_PlusGlobalContext_H2__aptos.npz",
+      "val_per_grade_support": {
+        "grade_0": 5111,
+        "grade_1": 593,
+        "grade_2": 1614,
+        "grade_3": 292,
+        "grade_4": 281
+      },
+      "val_referable_auc": 0.9117753462863241,
+      "ood_per_grade_support": {
+        "grade_0": 1805,
+        "grade_1": 370,
+        "grade_2": 999,
+        "grade_3": 193,
+        "grade_4": 295
+      },
+      "ood_referable_auc": 0.9720871306108883
+    },
+    "idrid": {
+      "variant": "V2_PlusGlobalContext_H2",
+      "held_out_dataset": "IDRiD",
+      "held_out_key": "idrid",
+      "fold": 2,
+      "in_domain_val_qwk": 0.7517927061819275,
+      "ood_test_qwk": 0.8214721828750061,
+      "delta_lodo": -0.06967947669307861,
+      "delta_qwk": -0.06967947669307861,
+      "val_per_grade_recall": {
+        "grade_0": 0.6616811813706929,
+        "grade_1": 0.6532905296950241,
+        "grade_2": 0.4537493158182813,
+        "grade_3": 0.7093425605536332,
+        "grade_4": 0.6904761904761905
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.6666666666666666,
+        "grade_1": 0.84,
+        "grade_2": 0.47023809523809523,
+        "grade_3": 0.3333333333333333,
+        "grade_4": 0.7096774193548387
+      },
+      "val_within_1_grade_acc": 0.9451956443699893,
+      "ood_within_1_grade_acc": 0.9457364341085271,
+      "val_referable_sensitivity_at_95spec": 0.7736541598694943,
+      "ood_referable_sensitivity_at_95spec": 0.8699690402476781,
+      "val_referable_sensitivity_at_90spec": 0.8372756933115824,
+      "ood_referable_sensitivity_at_90spec": 0.9164086687306502,
+      "val_referable_sensitivity_at_85spec": 0.8731647634584013,
+      "ood_referable_sensitivity_at_85spec": 0.9411764705882353,
+      "val_referable_sensitivity_at_80spec": 0.9049755301794453,
+      "ood_referable_sensitivity_at_80spec": 0.9411764705882353,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.13433203101158142,
+          "Val_Sensitivity": 0.9041598694942904,
+          "Val_Specificity": 0.8015241320914479,
+          "Test_Sensitivity": 0.9411764705882353,
+          "Test_Specificity": 0.844559585492228,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.1841641366481781,
+          "Val_Sensitivity": 0.8731647634584013,
+          "Val_Specificity": 0.8508044030482642,
+          "Test_Sensitivity": 0.9226006191950464,
+          "Test_Specificity": 0.8860103626943006,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.27365270256996155,
+          "Val_Sensitivity": 0.8372756933115824,
+          "Val_Specificity": 0.9019475021168502,
+          "Test_Sensitivity": 0.9009287925696594,
+          "Test_Specificity": 0.9222797927461139,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.4604026675224304,
+          "Val_Sensitivity": 0.7732463295269169,
+          "Val_Specificity": 0.9505503810330229,
+          "Test_Sensitivity": 0.848297213622291,
+          "Test_Specificity": 0.9533678756476683,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "PASSED"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V2_PlusGlobalContext_H2__idrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5282,
+        "grade_1": 623,
+        "grade_2": 1827,
+        "grade_3": 289,
+        "grade_4": 336
+      },
+      "val_referable_auc": 0.9368958343980894,
+      "ood_per_grade_support": {
+        "grade_0": 168,
+        "grade_1": 25,
+        "grade_2": 168,
+        "grade_3": 93,
+        "grade_4": 62
+      },
+      "ood_referable_auc": 0.9671313303068705
+    },
+    "messidor2": {
+      "variant": "V2_PlusGlobalContext_H2",
+      "held_out_dataset": "Messidor-2",
+      "held_out_key": "messidor2",
+      "fold": 3,
+      "in_domain_val_qwk": 0.7143133482642623,
+      "ood_test_qwk": 0.695651476570245,
+      "delta_lodo": 0.01866187169401734,
+      "delta_qwk": 0.01866187169401734,
+      "val_per_grade_recall": {
+        "grade_0": 0.623841059602649,
+        "grade_1": 0.7208480565371025,
+        "grade_2": 0.3851632047477745,
+        "grade_3": 0.5492957746478874,
+        "grade_4": 0.7987616099071208
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.6645299145299145,
+        "grade_1": 0.3333333333333333,
+        "grade_2": 0.44482758620689655,
+        "grade_3": 0.676056338028169,
+        "grade_4": 0.3333333333333333
+      },
+      "val_within_1_grade_acc": 0.9319661058577919,
+      "ood_within_1_grade_acc": 0.9299905392620624,
+      "val_referable_sensitivity_at_95spec": 0.7216404886561955,
+      "ood_referable_sensitivity_at_95spec": 0.7696335078534031,
+      "val_referable_sensitivity_at_90spec": 0.7923211169284468,
+      "ood_referable_sensitivity_at_90spec": 0.8350785340314136,
+      "val_referable_sensitivity_at_85spec": 0.8481675392670157,
+      "ood_referable_sensitivity_at_85spec": 0.8664921465968587,
+      "val_referable_sensitivity_at_80spec": 0.8782722513089005,
+      "ood_referable_sensitivity_at_80spec": 0.8795811518324608,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.015403039753437042,
+          "Val_Sensitivity": 0.8795811518324608,
+          "Val_Specificity": 0.8005469150572552,
+          "Test_Sensitivity": 0.8272251308900523,
+          "Test_Specificity": 0.917037037037037,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.027639128267765045,
+          "Val_Sensitivity": 0.8472949389179756,
+          "Val_Specificity": 0.850111092121005,
+          "Test_Sensitivity": 0.8036649214659686,
+          "Test_Specificity": 0.9303703703703704,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.07030303031206131,
+          "Val_Sensitivity": 0.7918848167539267,
+          "Val_Specificity": 0.9001880020509314,
+          "Test_Sensitivity": 0.7670157068062827,
+          "Test_Specificity": 0.9525925925925925,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.3699931502342224,
+          "Val_Sensitivity": 0.7177137870855148,
+          "Val_Specificity": 0.9500940010254657,
+          "Test_Sensitivity": 0.7094240837696335,
+          "Test_Specificity": 0.9733333333333334,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V2_PlusGlobalContext_H2__messidor2.npz",
+      "val_per_grade_support": {
+        "grade_0": 5285,
+        "grade_1": 566,
+        "grade_2": 1685,
+        "grade_3": 284,
+        "grade_4": 323
+      },
+      "val_referable_auc": 0.9125460497646172,
+      "ood_per_grade_support": {
+        "grade_0": 468,
+        "grade_1": 207,
+        "grade_2": 290,
+        "grade_3": 71,
+        "grade_4": 21
+      },
+      "ood_referable_auc": 0.9284079891409733
+    },
+    "ddr": {
+      "variant": "V2_PlusGlobalContext_H2",
+      "held_out_dataset": "DDR",
+      "held_out_key": "ddr",
+      "fold": 4,
+      "in_domain_val_qwk": 0.7539893684686374,
+      "ood_test_qwk": 0.5885106497358605,
+      "delta_lodo": 0.16547871873277686,
+      "delta_qwk": 0.16547871873277686,
+      "val_per_grade_recall": {
+        "grade_0": 0.7837040399455288,
+        "grade_1": 0.5607476635514018,
+        "grade_2": 0.45689655172413796,
+        "grade_3": 0.6335877862595419,
+        "grade_4": 0.5786802030456852
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.8426428343440792,
+        "grade_1": 0.16666666666666666,
+        "grade_2": 0.31159258431985704,
+        "grade_3": 0.3940677966101695,
+        "grade_4": 0.5355969331872946
+      },
+      "val_within_1_grade_acc": 0.9423780487804878,
+      "ood_within_1_grade_acc": 0.7903689506468615,
+      "val_referable_sensitivity_at_95spec": 0.7411982705373688,
+      "ood_referable_sensitivity_at_95spec": 0.6073586917881265,
+      "val_referable_sensitivity_at_90spec": 0.8171710932674491,
+      "ood_referable_sensitivity_at_90spec": 0.6429079274795592,
+      "val_referable_sensitivity_at_85spec": 0.8523780111179741,
+      "ood_referable_sensitivity_at_85spec": 0.7052968361180235,
+      "val_referable_sensitivity_at_80spec": 0.8801729462631254,
+      "ood_referable_sensitivity_at_80spec": 0.7651972982580875,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.06042502820491791,
+          "Val_Sensitivity": 0.8807906114885732,
+          "Val_Specificity": 0.8010524185387573,
+          "Test_Sensitivity": 0.5869178812655528,
+          "Test_Specificity": 0.9659222737819025,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.08781663328409195,
+          "Val_Sensitivity": 0.8536133415688697,
+          "Val_Specificity": 0.8520542400323821,
+          "Test_Sensitivity": 0.5721649484536082,
+          "Test_Specificity": 0.970707656612529,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.15828901529312134,
+          "Val_Sensitivity": 0.8177887584928969,
+          "Val_Specificity": 0.9012345679012346,
+          "Test_Sensitivity": 0.553323853537149,
+          "Test_Specificity": 0.9767981438515081,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.36440375447273254,
+          "Val_Sensitivity": 0.7418159357628166,
+          "Val_Specificity": 0.9502125075895568,
+          "Test_Sensitivity": 0.5211517952364024,
+          "Test_Specificity": 0.9840487238979119,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V2_PlusGlobalContext_H2__ddr.npz",
+      "val_per_grade_support": {
+        "grade_0": 4406,
+        "grade_1": 535,
+        "grade_2": 1160,
+        "grade_3": 262,
+        "grade_4": 197
+      },
+      "val_referable_auc": 0.9207757155184731,
+      "ood_per_grade_support": {
+        "grade_0": 6266,
+        "grade_1": 630,
+        "grade_2": 4477,
+        "grade_3": 236,
+        "grade_4": 913
+      },
+      "ood_referable_auc": 0.8661932645333277
+    },
+    "eyepacs": {
+      "variant": "V2_PlusGlobalContext_H2",
+      "held_out_dataset": "EyePACS",
+      "held_out_key": "eyepacs",
+      "fold": 5,
+      "in_domain_val_qwk": 0.8102297748450895,
+      "ood_test_qwk": 0.5092536476449356,
+      "delta_lodo": 0.3009761272001539,
+      "delta_qwk": 0.3009761272001539,
+      "val_per_grade_recall": {
+        "grade_0": 0.7565836298932385,
+        "grade_1": 0.6172839506172839,
+        "grade_2": 0.5969230769230769,
+        "grade_3": 0.6201550387596899,
+        "grade_4": 0.8037383177570093
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.5602479659046881,
+        "grade_1": 0.5677445763405649,
+        "grade_2": 0.37339380196523053,
+        "grade_3": 0.2554410080183276,
+        "grade_4": 0.5790960451977402
+      },
+      "val_within_1_grade_acc": 0.9312204989885368,
+      "ood_within_1_grade_acc": 0.9082161361954109,
+      "val_referable_sensitivity_at_95spec": 0.7465857359635811,
+      "ood_referable_sensitivity_at_95spec": 0.4756292739706096,
+      "val_referable_sensitivity_at_90spec": 0.8573596358118362,
+      "ood_referable_sensitivity_at_90spec": 0.6171977302487996,
+      "val_referable_sensitivity_at_85spec": 0.8998482549317147,
+      "ood_referable_sensitivity_at_85spec": 0.6975120034919249,
+      "val_referable_sensitivity_at_80spec": 0.9180576631259484,
+      "ood_referable_sensitivity_at_80spec": 0.7507638585770406,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.014717346988618374,
+          "Val_Sensitivity": 0.917298937784522,
+          "Val_Specificity": 0.8046116504854369,
+          "Test_Sensitivity": 0.939764295067656,
+          "Test_Specificity": 0.4204509255654267,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.03452003747224808,
+          "Val_Sensitivity": 0.8983308042488619,
+          "Val_Specificity": 0.8513349514563107,
+          "Test_Sensitivity": 0.8962607303942965,
+          "Test_Specificity": 0.5609669769581991,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.13361215591430664,
+          "Val_Sensitivity": 0.858877086494689,
+          "Val_Specificity": 0.9004854368932039,
+          "Test_Sensitivity": 0.7554197584751928,
+          "Test_Specificity": 0.7959154780023361,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.7497886419296265,
+          "Val_Sensitivity": 0.7496206373292867,
+          "Val_Specificity": 0.9502427184466019,
+          "Test_Sensitivity": 0.44216499345264076,
+          "Test_Specificity": 0.9572788730400311,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V2_PlusGlobalContext_H2__eyepacs.npz",
+      "val_per_grade_support": {
+        "grade_0": 1405,
+        "grade_1": 243,
+        "grade_2": 975,
+        "grade_3": 129,
+        "grade_4": 214
+      },
+      "val_referable_auc": 0.9423166168216038,
+      "ood_per_grade_support": {
+        "grade_0": 25810,
+        "grade_1": 2443,
+        "grade_2": 5292,
+        "grade_3": 873,
+        "grade_4": 708
+      },
+      "ood_referable_auc": 0.8491076058825766
+    },
+    "deepdrid": {
+      "variant": "V2_PlusGlobalContext_H2",
+      "held_out_dataset": "DeepDRiD",
+      "held_out_key": "deepdrid",
+      "fold": 6,
+      "in_domain_val_qwk": 0.7219318580391896,
+      "ood_test_qwk": 0.7793618375753284,
+      "delta_lodo": -0.05742997953613882,
+      "delta_qwk": -0.05742997953613882,
+      "val_per_grade_recall": {
+        "grade_0": 0.5703493862134089,
+        "grade_1": 0.7404718693284936,
+        "grade_2": 0.4263189812007277,
+        "grade_3": 0.6273584905660378,
+        "grade_4": 0.773851590106007
+      },
+      "ood_per_grade_recall": {
+        "grade_0": 0.3941176470588235,
+        "grade_1": 0.7387640449438202,
+        "grade_2": 0.5204081632653061,
+        "grade_3": 0.3392857142857143,
+        "grade_4": 0.7222222222222222
+      },
+      "val_within_1_grade_acc": 0.9463078848560701,
+      "ood_within_1_grade_acc": 0.94,
+      "val_referable_sensitivity_at_95spec": 0.7276119402985075,
+      "ood_referable_sensitivity_at_95spec": 0.8392116182572614,
+      "val_referable_sensitivity_at_90spec": 0.7924440298507462,
+      "ood_referable_sensitivity_at_90spec": 0.8910788381742739,
+      "val_referable_sensitivity_at_85spec": 0.8269589552238806,
+      "ood_referable_sensitivity_at_85spec": 0.9097510373443983,
+      "val_referable_sensitivity_at_80spec": 0.851679104477612,
+      "ood_referable_sensitivity_at_80spec": 0.9253112033195021,
+      "val_monotonicity_violations": null,
+      "ood_monotonicity_violations": null,
+      "ood_calibrated_screening": [
+        {
+          "Target_Specificity": "80%",
+          "Calibrated_Threshold_tau": 0.1664837747812271,
+          "Val_Sensitivity": 0.851679104477612,
+          "Val_Specificity": 0.8005473828258638,
+          "Test_Sensitivity": 0.9553941908713693,
+          "Test_Specificity": 0.6998069498069498,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "85%",
+          "Calibrated_Threshold_tau": 0.20316162705421448,
+          "Val_Sensitivity": 0.8278917910447762,
+          "Val_Specificity": 0.8511802942182689,
+          "Test_Sensitivity": 0.9408713692946058,
+          "Test_Specificity": 0.7538610038610039,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "90%",
+          "Calibrated_Threshold_tau": 0.2718147337436676,
+          "Val_Sensitivity": 0.7910447761194029,
+          "Val_Specificity": 0.9014710913445091,
+          "Test_Sensitivity": 0.9159751037344398,
+          "Test_Specificity": 0.8204633204633205,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        },
+        {
+          "Target_Specificity": "95%",
+          "Calibrated_Threshold_tau": 0.41792216897010803,
+          "Val_Sensitivity": 0.7285447761194029,
+          "Val_Specificity": 0.9502223742730072,
+          "Test_Sensitivity": 0.9004149377593361,
+          "Test_Specificity": 0.8832046332046332,
+          "UK_NSC_Standard": ">=80% Sens & >=95% Spec",
+          "UK_NSC_Status": "SUB-OPTIMAL"
+        }
+      ],
+      "raw_preds_path": "/content/drive/MyDrive/Luận Văn Tốt Nghiệp 2026 - 2027/code/notebooks/diabetic_retinopathy/pipeline/results/lodo_benchmark/posthoc_fixed/raw_preds/V2_PlusGlobalContext_H2__deepdrid.npz",
+      "val_per_grade_support": {
+        "grade_0": 5295,
+        "grade_1": 551,
+        "grade_2": 1649,
+        "grade_3": 212,
+        "grade_4": 283
+      },
+      "val_referable_auc": 0.8896111833068664,
+      "ood_per_grade_support": {
+        "grade_0": 680,
+        "grade_1": 356,
+        "grade_2": 392,
+        "grade_3": 392,
+        "grade_4": 180
+      },
+      "ood_referable_auc": 0.9572445889873276
+    }
+  }
+}

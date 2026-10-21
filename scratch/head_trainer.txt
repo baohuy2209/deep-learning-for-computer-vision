@@ -1,0 +1,472 @@
+=== head_ablation (3) Cell 27 ===
+# ==============================================================================
+# 4.2 HIGH-PERFORMANCE DRHEADTRAINER (WITH COMPLETE DRTRAINER PARITY)
+# ==============================================================================
+class DRHeadTrainer:
+    """
+    High-throughput PyTorch training & evaluation engine optimized for NVIDIA GPUs (T4 / L4 / A100):
+      - Native bfloat16 / float16 Mixed Precision via torch.amp (Tensor Cores).
+      - Robust Dual Checkpointing on Local SSD: Saves '_best.pth' (Val QWK) and '_last.pth' (recovery).
+      - Full Resume Capability: Restores model_state, optimizer, scaler, scheduler, history, and counters.
+      - Adaptive Learning Rate Control: Supports external schedulers and manual ReduceLROnPlateau fallback.
+      - Gradient Clipping & EarlyStopping (patience-based on Val QWK).
+      - Centralized GPU Tensor Core Normalization & Step-Level QWK Loss Warmup.
+    """
+    def __init__(
+        self,
+        model: nn.Module,
+        optimizer: torch.optim.Optimizer,
+        lr_scheduler: Optional[Any] = None,
+        device: Union[str, torch.device] = "cuda",
+        use_amp: bool = USE_AMP,
+        class_weights: Optional[torch.Tensor] = None,
+        grad_clip: float = 1.0,
+        checkpoint_dir: str = CHECKPOINT_DIR_HEAD,
+        head_name: str = "CLM_QWK",
+        qwk_warmup_epochs: int = QWK_WARMUP_EPOCHS,
+    ):
+        self.device = torch.device(device)
+        self.model = model.to(self.device)
+        self.optimizer = optimizer
+        self.lr_scheduler = lr_scheduler
+        self.checkpoint_dir = checkpoint_dir
+        self.head_name = head_name
+        self.qwk_warmup_epochs = qwk_warmup_epochs
+        self.grad_clip = grad_clip
+        self.class_weights = class_weights.to(self.device) if class_weights is not None else None
+        os.makedirs(self.checkpoint_dir, exist_ok=True)
+
+        self.use_amp = use_amp and torch.cuda.is_available()
+        self.amp_dtype = torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16
+        self.scaler = torch.amp.GradScaler('cuda', enabled=(self.use_amp and self.amp_dtype == torch.float16))
+
+    def train_epoch(self, dataloader: DataLoader, epoch: int, epochs: int) -> Tuple[float, float]:
+        """Runs one full training epoch with step-level warmup, AMP, and gradient clipping."""
+        self.model.train()
+        total_loss = 0.0
+        all_preds, all_targets = [], []
+        total_warmup_steps = max(1, self.qwk_warmup_epochs * len(dataloader))
+
+        target_model = self.model.module if hasattr(self.model, "module") else self.model
+        head = getattr(target_model, "head", None)
+
+        pbar = tqdm(dataloader, desc=f"Training [{self.head_name}] (Epoch {epoch}/{epochs})", leave=False, unit="batch")
+        for batch_idx, batch in enumerate(pbar):
+            # Step-level continuous dynamic linear warmup for QWK lambda
+            if head is not None and hasattr(head, "set_qwk_weight") and hasattr(head, "target_qwk_weight"):
+                current_step = (epoch - 1) * len(dataloader) + batch_idx
+                step_progress = min(1.0, current_step / total_warmup_steps)
+                current_weight = step_progress * head.target_qwk_weight
+                head.set_qwk_weight(current_weight)
+
+            # Centralized GPU Tensor Core normalization
+            images = normalize_fundus_tensor(batch["image"], device=self.device)
+            labels = batch["label"].to(self.device, non_blocking=True)
+
+            self.optimizer.zero_grad(set_to_none=True)
+            with torch.amp.autocast('cuda', enabled=self.use_amp, dtype=self.amp_dtype):
+                outputs = self.model(images, targets=labels, class_weights=self.class_weights)
+                loss = outputs["loss"]
+
+            if self.scaler.is_enabled():
+                self.scaler.scale(loss).backward()
+                if self.grad_clip > 0:
+                    self.scaler.unscale_(self.optimizer)
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
+                self.scaler.step(self.optimizer)
+                self.scaler.update()
+            else:
+                loss.backward()
+                if self.grad_clip > 0:
+                    torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.grad_clip)
+                self.optimizer.step()
+
+            total_loss += loss.item() * len(labels)
+            all_preds.extend(outputs["preds"].detach().cpu().numpy())
+            all_targets.extend(labels.detach().cpu().numpy())
+            pbar.set_postfix({"loss": f"{loss.item():.4f}"})
+
+        n_samples = len(all_targets)
+        avg_loss = float(total_loss / max(1, n_samples))
+        train_qwk = float(cohen_kappa_score(np.array(all_targets), np.array(all_preds), weights="quadratic")) if n_samples > 0 else 0.0
+        return avg_loss, train_qwk
+
+    @torch.no_grad()
+    def evaluate(self, dataloader: DataLoader, desc: str = "Eval") -> Tuple[Dict[str, Any], np.ndarray, np.ndarray, np.ndarray]:
+        """Evaluates model performance on validation or test sets without gradient tracking."""
+        self.model.eval()
+        total_loss = 0.0
+        all_preds, all_targets, all_probs, all_rank_probs = [], [], [], []
+
+        pbar = tqdm(dataloader, desc=f"{desc} [{self.head_name}]", leave=False, unit="batch")
+        for batch in pbar:
+            images = normalize_fundus_tensor(batch["image"], device=self.device)
+            labels = batch["label"].to(self.device, non_blocking=True)
+
+            with torch.amp.autocast('cuda', enabled=self.use_amp, dtype=self.amp_dtype):
+                outputs = self.model(images, targets=labels, class_weights=self.class_weights)
+                loss = outputs["loss"] if "loss" in outputs else torch.tensor(0.0)
+
+            total_loss += loss.item() * len(labels)
+            probs = outputs["probs"].cpu().numpy()
+            preds = outputs["preds"].cpu().numpy()
+            rp = extract_rank_probs(outputs)
+
+            all_preds.extend(preds)
+            all_targets.extend(labels.cpu().numpy())
+            all_probs.extend(probs)
+            if rp is not None:
+                all_rank_probs.extend(rp)
+
+        y_true = np.array(all_targets)
+        y_pred = np.array(all_preds)
+        y_probs = np.array(all_probs)
+        rank_probs_np = np.array(all_rank_probs) if all_rank_probs else None
+
+        metrics = calculate_dr_metrics(y_true, y_pred, y_probs, rank_probs=rank_probs_np)
+        metrics["Loss"] = float(total_loss / max(1, len(y_true)))
+        return metrics, y_true, y_pred, y_probs
+
+    def fit(
+        self,
+        train_loader: DataLoader,
+        val_loader: DataLoader,
+        test_loader: Optional[DataLoader] = None,
+        epochs: int = ABLATION_EPOCHS,
+        patience_early_stopping: int = PATIENCE_EARLY_STOP,
+        patience_reduce_lr: int = 4,
+        reduce_lr_factor: float = 0.5,
+        min_lr: float = 1e-6,
+        resume_checkpoint_path: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Executes training loop with Dual Checkpointing (_best & _last on local SSD),
+        EarlyStopping on Val QWK, Adaptive LR Scheduling, and full Resume capability.
+        """
+        best_val_qwk = -1.0
+        best_val_loss = float("inf")
+        start_epoch = 1
+
+        epochs_no_improve_es = 0
+        epochs_no_improve_lr = 0
+        history: Dict[str, List[float]] = {
+            "train_loss": [], "val_loss": [],
+            "train_qwk": [], "val_qwk": [],
+            "val_within_1": [], "val_ref_sens": [],
+            "val_ref_sens_at_spec95": [],
+            "val_ref_sens_at_spec90": [],
+            "val_ref_sens_at_spec85": [],
+            "val_ref_sens_at_spec80": [],
+            "val_ref_auc": []
+        }
+
+        using_external_scheduler = (self.lr_scheduler is not None)
+        is_plateau_scheduler = using_external_scheduler and isinstance(
+            self.lr_scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau
+        )
+
+        best_checkpoint_path = os.path.join(self.checkpoint_dir, f"resnet50_{self.head_name}_best(2).pth")
+        last_checkpoint_path = os.path.join(self.checkpoint_dir, f"resnet50_{self.head_name}_last(2).pth")
+
+        # --- RESUME CAPABILITY ---
+        if resume_checkpoint_path and os.path.exists(resume_checkpoint_path):
+            logger.info(f"[RESUME] Loading checkpoint from: {resume_checkpoint_path}")
+            ckpt = torch.load(resume_checkpoint_path, map_location=self.device, weights_only=False)
+            target_model = self.model.module if hasattr(self.model, "module") else self.model
+            state_dict = ckpt["model_state_dict"] if "model_state_dict" in ckpt else ckpt.get("model_state", {})
+            clean_state = {k.replace("module.", ""): v for k, v in state_dict.items()}
+            target_model.load_state_dict(clean_state)
+
+            if "optimizer_state_dict" in ckpt and ckpt["optimizer_state_dict"] is not None:
+                self.optimizer.load_state_dict(ckpt["optimizer_state_dict"])
+            if self.scaler.is_enabled() and "scaler_state_dict" in ckpt and ckpt["scaler_state_dict"] is not None:
+                self.scaler.load_state_dict(ckpt["scaler_state_dict"])
+            if using_external_scheduler and "scheduler_state_dict" in ckpt and ckpt["scheduler_state_dict"] is not None:
+                self.lr_scheduler.load_state_dict(ckpt["scheduler_state_dict"])
+
+            start_epoch = ckpt.get("epoch", 0) + 1
+            best_val_qwk = ckpt.get("best_val_qwk", ckpt.get("val_qwk", -1.0))
+            best_val_loss = ckpt.get("best_val_loss", float("inf"))
+            history = ckpt.get("history", history)
+            epochs_no_improve_es = ckpt.get("epochs_no_improve_es", 0)
+            epochs_no_improve_lr = ckpt.get("epochs_no_improve_lr", 0)
+            logger.info(f"[RESUME] Continuing training from Epoch {start_epoch}/{epochs} (Previous Best Val QWK: {best_val_qwk:.4f})")
+
+        logger.info(f"[START] Starting training [{self.head_name}] from Epoch {start_epoch} to {epochs} on {self.device} ({self.amp_dtype})")
+
+        for epoch in range(start_epoch, epochs + 1):
+            t0 = time.time()
+            train_loss, train_qwk = self.train_epoch(train_loader, epoch, epochs)
+            val_metrics, _, _, _ = self.evaluate(val_loader, desc="Val")
+            elapsed = time.time() - t0
+
+            val_loss = val_metrics["Loss"]
+            val_qwk = val_metrics["QWK"]
+
+            # 1. Update Learning Rate
+            if using_external_scheduler:
+                if is_plateau_scheduler:
+                    self.lr_scheduler.step(val_loss)
+                else:
+                    self.lr_scheduler.step()
+
+            current_lr = self.optimizer.param_groups[0]['lr']
+
+            history["train_loss"].append(train_loss)
+            history["val_loss"].append(val_loss)
+            history["train_qwk"].append(train_qwk)
+            history["val_qwk"].append(val_qwk)
+            history["val_within_1"].append(val_metrics["Within_1_Grade_Acc"])
+            history["val_ref_sens"].append(val_metrics["Referable_Sensitivity"])
+            history.setdefault("val_ref_sens_at_spec95", []).append(val_metrics.get("Ref_Sensitivity_at_Spec95", float('nan')))
+            history.setdefault("val_ref_sens_at_spec90", []).append(val_metrics.get("Ref_Sensitivity_at_Spec90", float('nan')))
+            history.setdefault("val_ref_sens_at_spec85", []).append(val_metrics.get("Ref_Sensitivity_at_Spec85", float('nan')))
+            history.setdefault("val_ref_sens_at_spec80", []).append(val_metrics.get("Ref_Sensitivity_at_Spec80", float('nan')))
+            history["val_ref_auc"].append(val_metrics.get("Referable_AUC", float('nan')))
+
+            # 2. Save current checkpoint (_last.pth to local SSD)
+            target_model = self.model.module if hasattr(self.model, "module") else self.model
+            checkpoint_state = {
+                "epoch": epoch,
+                "model_state_dict": target_model.state_dict(),
+                "optimizer_state_dict": self.optimizer.state_dict(),
+                "scaler_state_dict": self.scaler.state_dict() if self.scaler.is_enabled() else None,
+                "scheduler_state_dict": self.lr_scheduler.state_dict() if using_external_scheduler else None,
+                "val_qwk": val_qwk,
+                "best_val_qwk": max(best_val_qwk, val_qwk),
+                "best_val_loss": min(best_val_loss, val_loss),
+                "history": history,
+                "val_metrics": val_metrics,
+                "epochs_no_improve_es": epochs_no_improve_es,
+                "epochs_no_improve_lr": epochs_no_improve_lr
+            }
+            torch.save(checkpoint_state, last_checkpoint_path)
+
+            # 3. Save _best.pth on local SSD when Val QWK achieves a new record
+            if val_qwk > best_val_qwk:
+                best_val_qwk = val_qwk
+                epochs_no_improve_es = 0
+                torch.save(checkpoint_state, best_checkpoint_path)
+                mark = " [* BEST]"
+            else:
+                epochs_no_improve_es += 1
+                mark = f" (No improvement for {epochs_no_improve_es} ep)"
+
+            log_msg = (
+                f"  [Epoch {epoch:02d}/{epochs:02d} | {elapsed:.1f}s] "
+                f"Train Loss: {train_loss:.4f} | Train QWK: {train_qwk:.4f} || "
+                f"Val Loss: {val_loss:.4f} | Val QWK: {val_qwk:.4f} | "
+                f"Val Within-1: {val_metrics['Within_1_Grade_Acc']*100:.1f}% | "
+                f"Val Ref-Sens: {val_metrics['Referable_Sensitivity']*100:.1f}% | "
+                f"Val Ref-Sens@Spec95: {val_metrics.get('Ref_Sensitivity_at_Spec95', float('nan'))*100:.1f}% | "
+                f"Val Ref-Sens@Spec90: {val_metrics.get('Ref_Sensitivity_at_Spec90', float('nan'))*100:.1f}% | "
+                f"Val Ref-Sens@Spec85: {val_metrics.get('Ref_Sensitivity_at_Spec85', float('nan'))*100:.1f}% | "
+                f"Val Ref-Sens@Spec80: {val_metrics.get('Ref_Sensitivity_at_Spec80', float('nan'))*100:.1f}% | "
+                f"Val Ref-AUC: {val_metrics.get('Referable_AUC', float('nan')):.4f} | "
+                f"LR: {current_lr:.2e}{mark}"
+            )
+            print(log_msg)
+
+            # 4. Manual ReduceLROnPlateau tracking (independent counter on val_loss)
+            if val_loss < best_val_loss - 1e-4:
+                best_val_loss = val_loss
+                epochs_no_improve_lr = 0
+            else:
+                epochs_no_improve_lr += 1
+                if not using_external_scheduler and epochs_no_improve_lr >= patience_reduce_lr:
+                    old_lr = current_lr
+                    new_lr = max(old_lr * reduce_lr_factor, min_lr)
+                    if old_lr > min_lr:
+                        for param_group in self.optimizer.param_groups:
+                            param_group['lr'] = new_lr
+                        logger.info(f"  -> [ReduceLROnPlateau] Val loss plateaued for {patience_reduce_lr} epochs. Reduced LR: {old_lr:.2e} -> {new_lr:.2e}")
+                    epochs_no_improve_lr = 0
+
+            # 5. Early Stopping check based on Val QWK
+            if patience_early_stopping > 0 and epochs_no_improve_es >= patience_early_stopping:
+                logger.info(f"[{self.head_name}] Early stopping triggered at Epoch {epoch} (Patience: {patience_early_stopping})")
+                break
+
+        # 6. EVALUATION ON HELD-OUT TEST DISTRIBUTION (Using Best Checkpoint from local SSD)
+        test_metrics = {}
+        if test_loader is not None and os.path.exists(best_checkpoint_path):
+            ckpt = torch.load(best_checkpoint_path, map_location=self.device, weights_only=False)
+            target_model = self.model.module if hasattr(self.model, "module") else self.model
+            state_dict = ckpt["model_state_dict"] if "model_state_dict" in ckpt else ckpt.get("model_state", {})
+            clean_state = {k.replace("module.", ""): v for k, v in state_dict.items()}
+            target_model.load_state_dict(clean_state)
+
+            # Evaluate on both Validation and Test sets with the restored best checkpoint
+            val_metrics_best, val_true, val_pred, val_probs = self.evaluate(val_loader, desc="Best Val")
+            test_metrics, test_true, test_pred, test_probs = self.evaluate(test_loader, desc="Test")
+            val_test_gap = best_val_qwk - test_metrics["QWK"]
+            test_metrics["Val_Test_Gap"] = val_test_gap
+
+            # Post-hoc screening threshold calibration strictly on Validation and evaluated on Test (HD_4 Part 1 & 3)
+            df_calib = calibrate_and_evaluate_screening(
+                val_probs=val_probs,
+                val_targets=val_true,
+                test_probs=test_probs,
+                test_targets=test_true,
+                target_specificities=(0.80, 0.85, 0.90, 0.95)
+            )
+            test_metrics["screening_calibration"] = df_calib
+            test_metrics["val_probs"] = val_probs
+            test_metrics["test_probs"] = test_probs
+
+            logger.info(
+                f"=== [{self.head_name}] HELD-OUT TEST RESULTS (IN-DISTRIBUTION) ===\n"
+                f"Test QWK: {test_metrics['QWK']:.4f} | "
+                f"Val QWK: {best_val_qwk:.4f} | "
+                f"Val-Test Gap: {val_test_gap:.4f} | "
+                f"Test Within-1: {test_metrics['Within_1_Grade_Acc']*100:.1f}% | "
+                f"Test Ref-Sens: {test_metrics['Referable_Sensitivity']*100:.1f}% | "
+                f"Test Ref-Sens@Spec95: {test_metrics.get('Ref_Sensitivity_at_Spec95', float('nan'))*100:.1f}% | "
+                f"Test Ref-Sens@Spec90: {test_metrics.get('Ref_Sensitivity_at_Spec90', float('nan'))*100:.1f}% | "
+                f"Test Ref-Sens@Spec85: {test_metrics.get('Ref_Sensitivity_at_Spec85', float('nan'))*100:.1f}% | "
+                f"Test Ref-Sens@Spec80: {test_metrics.get('Ref_Sensitivity_at_Spec80', float('nan'))*100:.1f}% | "
+                f"Test Ref-AUC: {test_metrics.get('Referable_AUC', float('nan')):.4f}"
+            )
+
+        return {
+            "best_val_qwk": best_val_qwk,
+            "best_checkpoint": best_checkpoint_path,
+            "last_checkpoint": last_checkpoint_path,
+            "history": history,
+            "test_metrics": test_metrics
+        }
+
+=== head_ablation (3) Cell 29 ===
+# ==============================================================================
+# 5. EXECUTE 5-ROUND INDEPENDENT RESNET-50 HEAD ABLATION (WITH VRAM CLEANUP & DRIVE SYNC)
+# ==============================================================================
+import shutil
+
+head_ablation_results = {}
+head_models_dict = {}
+
+print(f"\n{'='*80}")
+print("STARTING 5-ROUND END-TO-END RESNET-50 HEAD ABLATION BENCHMARK (512x512 RESOLUTION)")
+print(f"{'='*80}\n")
+
+for round_idx, head_name in enumerate(EVALUATED_HEADS, 1):
+    print(f"\n{'='*80}")
+    print(f"ROUND {round_idx}/5: Training Fresh ResNet-50 Backbone + [{head_name}] End-to-End")
+    print(f"{'='*80}")
+
+    last_ckpt_path = os.path.join(CHECKPOINT_DIR_HEAD, f"resnet50_{head_name}_last(2).pth")
+    best_ckpt_path = os.path.join(CHECKPOINT_DIR_HEAD, f"resnet50_{head_name}_best(2).pth")
+
+    fresh_model = ResNet50AblationModel(head_type=head_name, pretrained=True, num_classes=5, qwk_weight=TARGET_QWK_WEIGHT)
+    optimizer = torch.optim.AdamW(fresh_model.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
+    lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=ABLATION_EPOCHS, eta_min=MIN_LR)
+
+    trainer = DRHeadTrainer(
+        model=fresh_model,
+        optimizer=optimizer,
+        lr_scheduler=lr_scheduler,
+        device=device,
+        use_amp=USE_AMP,
+        checkpoint_dir=CHECKPOINT_DIR_HEAD,
+        head_name=head_name,
+        qwk_warmup_epochs=QWK_WARMUP_EPOCHS,
+        class_weights=class_weights_tensor
+    )
+    resume_path = None
+    if not FORCE_FRESH_TRAINING and os.path.exists(last_ckpt_path):
+        resume_path = last_ckpt_path
+        print(f'[*] Tìm thấy checkpoint dở dang tại: {resume_path} -> Đang tự động Resume...')
+    elif FORCE_FRESH_TRAINING:
+        print(f'[*] FORCE_FRESH_TRAINING = True: Khởi tạo mới ResNet-50 + [{head_name}] từ Epoch 1.')
+    history = trainer.fit(
+        train_loader=train_loader,
+        val_loader=val_loader,
+        test_loader=test_loader,
+        epochs=ABLATION_EPOCHS,
+        patience_early_stopping=PATIENCE_EARLY_STOP,
+        resume_checkpoint_path=resume_path
+    )
+
+    t_metrics = history["test_metrics"]
+    head_ablation_results[head_name] = {
+        "Head": head_name,
+        "Val_QWK": history["best_val_qwk"],
+        "Test_QWK": t_metrics.get("QWK", 0.0),
+        "Accuracy": t_metrics.get("Accuracy", 0.0) * 100,
+        "Within_1_Grade_Acc": t_metrics.get("Within_1_Grade_Acc", 0.0) * 100,
+        "Referable_Sensitivity": t_metrics.get("Referable_Sensitivity", 0.0) * 100,
+        "Referable_Specificity": t_metrics.get("Referable_Specificity", 0.0) * 100,
+        "Referable_AUC": t_metrics.get("Referable_AUC", float("nan")),
+        "Ref_Sens_Spec95": t_metrics.get("Ref_Sensitivity_at_Spec95", float("nan")) * 100,
+        "Ref_Sens_Spec90": t_metrics.get("Ref_Sensitivity_at_Spec90", float("nan")) * 100,
+        "Ref_Sens_Spec85": t_metrics.get("Ref_Sensitivity_at_Spec85", float("nan")) * 100,
+        "Ref_Sens_Spec80": t_metrics.get("Ref_Sensitivity_at_Spec80", float("nan")) * 100,
+        "Monotonicity_Violations": t_metrics.get("Monotonicity_Violations", 0.0) * 100,
+        "Recall_Grade_0": t_metrics.get("Recall_Grade_0", 0.0) * 100,
+        "Recall_Grade_1": t_metrics.get("Recall_Grade_1", 0.0) * 100,
+        "Recall_Grade_2": t_metrics.get("Recall_Grade_2", 0.0) * 100,
+        "Recall_Grade_3": t_metrics.get("Recall_Grade_3", 0.0) * 100,
+        "Recall_Grade_4": t_metrics.get("Recall_Grade_4", 0.0) * 100,
+        "Generalization_Gap": history["best_val_qwk"] - t_metrics.get("QWK", 0.0),
+        "Checkpoint_Path": history["best_checkpoint"]
+    }
+
+    # Save per-head screening calibration CSV to disk
+    if "screening_calibration" in t_metrics and isinstance(t_metrics["screening_calibration"], pd.DataFrame):
+        calib_csv_path = os.path.join(RESULTS_DIR_HEAD, f"screening_calibration_{head_name}.csv")
+        t_metrics["screening_calibration"].to_csv(calib_csv_path, index=False)
+        print(f"  [SAVED] Screening calibration table exported to: '{calib_csv_path}'")
+
+    # Offload finished model to CPU memory to completely prevent VRAM leak across rounds
+    head_models_dict[head_name] = fresh_model.cpu()
+
+    # Explicit memory garbage collection and VRAM cache clearance
+    del fresh_model, optimizer, lr_scheduler, trainer
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    print(f"\n>>> [FINAL RESULTS FOR {head_name}]:")
+    print(f"  • Validation QWK               : {history['best_val_qwk']:.4f}")
+    print(f"  • Held-Out Test QWK            : {t_metrics.get('QWK', 0.0):.4f}")
+    print(f"  • Generalization Gap (Delta QWK): {head_ablation_results[head_name]['Generalization_Gap']:.4f}")
+    print(f"  • Within-1-Grade Accuracy      : {head_ablation_results[head_name]['Within_1_Grade_Acc']:.1f}%")
+    print(f"  • Referable AUC                : {head_ablation_results[head_name]['Referable_AUC']:.4f}")
+    print(f"  • Sens @ Spec 95%              : {head_ablation_results[head_name]['Ref_Sens_Spec95']:.1f}%")
+    print(f"  • Sens @ Spec 90%              : {head_ablation_results[head_name]['Ref_Sens_Spec90']:.1f}%")
+    print(f"  • Sens @ Spec 85% (Target ~79.6%): {head_ablation_results[head_name]['Ref_Sens_Spec85']:.1f}%")
+    print(f"  • Sens @ Spec 80% (Target ~84.7%): {head_ablation_results[head_name]['Ref_Sens_Spec80']:.1f}%")
+    print(f"  • Rank Monotonicity Violations : {head_ablation_results[head_name]['Monotonicity_Violations']:.2f}%")
+    print(f"  [VRAM CLEANUP] Offloaded {head_name} to CPU & Cleared GPU Cache.")
+
+# Save structured summary to local SSD CSV and JSON
+df_heads = pd.DataFrame.from_dict(head_ablation_results, orient="index")
+df_heads.to_csv(os.path.join(RESULTS_DIR_HEAD, "head_ablation_summary.csv"), index=False)
+with open(os.path.join(RESULTS_DIR_HEAD, "head_ablation_summary.json"), "w", encoding="utf-8") as f:
+    json.dump(head_ablation_results, f, indent=2)
+
+print(f"\n{'='*80}")
+print(f"5-Round Head Ablation Benchmark Completed & Saved in Local SSD: '{RESULTS_DIR_HEAD}'!")
+print(f"{'='*80}\n")
+summary_cols = [
+    "Head", "Val_QWK", "Test_QWK", "Generalization_Gap", "Within_1_Grade_Acc",
+    "Ref_Sens_Spec95", "Ref_Sens_Spec90", "Ref_Sens_Spec85", "Ref_Sens_Spec80",
+    "Referable_AUC", "Monotonicity_Violations"
+]
+print(df_heads[summary_cols].to_string())
+
+# ==============================================================================
+# ONE-TIME AUTOMATIC SYNCHRONIZATION TO GOOGLE DRIVE (ELIMINATES NETWORK LATENCY DURING TRAINING)
+# ==============================================================================
+try:
+    drive_results_dir = f"{DRIVE_ROOT}/results/head_ablation"
+    drive_ckpt_dir    = f"{DRIVE_ROOT}/checkpoints_head_ablation"
+    os.makedirs(drive_results_dir, exist_ok=True)
+    os.makedirs(drive_ckpt_dir, exist_ok=True)
+
+    print(f"\n[DRIVE SYNC] Synchronizing results & checkpoints to Google Drive...")
+    shutil.copytree(RESULTS_DIR_HEAD, drive_results_dir, dirs_exist_ok=True)
+    shutil.copytree(CHECKPOINT_DIR_HEAD, drive_ckpt_dir, dirs_exist_ok=True)
+    print(f"-> Successfully synchronized all benchmark artifacts to '{DRIVE_ROOT}'!\n")
+except Exception as e:
+    logger.warning(f"[DRIVE SYNC] Could not synchronize to Drive ({e}). Results remain intact on local SSD.")

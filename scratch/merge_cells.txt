@@ -1,0 +1,133 @@
+
+# ============================== CELL 10 ==============================
+# 5. TẦNG 1: XỬ LÝ VÀ LƯU ẢNH THEO DATASET (ĐỘC LẬP VỚI SPLIT)
+print("\n>>> TẦNG 1: Xử lý và lưu kho ảnh Native Cropped độc lập...")
+
+# 1. Tạo đường dẫn đích chuẩn hóa cho từng ảnh
+master_df["native_path"] = master_df.apply(
+    lambda r: os.path.join(
+        NATIVE_PROCESSED_DIR, 
+        r["dataset_key"], 
+        f"{re.sub(r'[^\w\.-]', '_', str(r['image_id']))}.jpg"
+    ),
+    axis=1
+)
+
+# 2. Tạo sẵn thư mục con cho từng dataset để tránh xung đột I/O
+for key in master_df["dataset_key"].unique():
+    os.makedirs(os.path.join(NATIVE_PROCESSED_DIR, key), exist_ok=True)
+
+# 3. Tạo danh sách các cặp đường dẫn (raw_path, native_path)
+tasks = list(zip(master_df["raw_full_path"], master_df["native_path"]))
+
+# 4. Giới hạn số worker an toàn (tối đa 8 luồng để tránh nghẽn I/O và tràn RAM)
+num_workers = min(8, os.cpu_count() or 4)
+print(f"[INFO] Khởi chạy xử lý đa luồng với {num_workers} workers...")
+
+with ThreadPoolExecutor(max_workers=num_workers) as executor:
+    results = list(
+        tqdm(
+            executor.map(process_single_image, tasks),
+            total=len(tasks),
+            desc="Processing Native Images"
+        )
+    )
+
+# 5. Lọc lại các ảnh thực sự tồn tại thành công trên ổ cứng
+master_df = master_df[master_df["native_path"].apply(os.path.exists)].reset_index(drop=True)
+print(f" Hoàn tất Tầng 1: Đã lưu {len(master_df):,} ảnh vào kho Native Cropped.")
+# ============================== CELL 11 ==============================
+# ==========================================
+# 2. LẤY MẪU ĐẢM BẢO TỪNG DATASET KHÔNG BỊ BỎ SÓT (GUARANTEED MULTI-SOURCE SAMPLING)
+# ==========================================
+def create_balanced_train_pool(train_df: pd.DataFrame, target_range=(1500, 2500), seed=42) -> pd.DataFrame:
+    balanced_dfs = []
+    for grade in range(5):
+        grade_subset = train_df[train_df["diagnosis"] == grade].copy().reset_index(drop=True)
+        current_count = len(grade_subset)
+        if current_count == 0:
+            continue
+            
+        datasets_in_grade = grade_subset["dataset_name"].unique()
+        num_datasets = len(datasets_in_grade)
+        
+        if current_count > target_range[1]:
+            target_count = int(np.random.RandomState(seed + grade).randint(target_range[0], target_range[1] + 1))
+            base_quota = target_count // num_datasets
+            sampled_datasets = []
+            leftover_quota = 0
+            eligible = []
+            
+            for ds_name in datasets_in_grade:
+                ds_subset = grade_subset[grade_subset["dataset_name"] == ds_name]
+                if len(ds_subset) <= base_quota:
+                    sampled_datasets.append(ds_subset)
+                    leftover_quota += (base_quota - len(ds_subset))
+                else:
+                    eligible.append((ds_name, ds_subset, len(ds_subset)))
+                    
+            if eligible:
+                quota_large = base_quota + (leftover_quota // len(eligible))
+                for ds_name, ds_subset, count in eligible:
+                    sampled_datasets.append(ds_subset.sample(min(quota_large, count), random_state=seed))
+                    
+            selected = pd.concat(sampled_datasets, ignore_index=True)
+            if len(selected) > target_count:
+                selected = selected.sample(target_count, random_state=seed).reset_index(drop=True)
+            elif len(selected) < target_count:
+                rem = grade_subset[~grade_subset["native_path"].isin(selected["native_path"])]
+                if not rem.empty:
+                    extra = rem.sample(min(target_count - len(selected), len(rem)), random_state=seed)
+                    selected = pd.concat([selected, extra], ignore_index=True)
+            balanced_dfs.append(selected)
+        else:
+            balanced_dfs.append(grade_subset)
+            
+    return pd.concat(balanced_dfs, ignore_index=True)
+def split_master_pool_patient_level(df: pd.DataFrame, random_state=42):
+    gss_train = GroupShuffleSplit(n_splits=1, train_size=0.70, random_state=random_state)
+    train_idx, temp_idx = next(gss_train.split(df, groups=df['patient_id']))
+    
+    train_df = df.iloc[train_idx].copy().reset_index(drop=True)
+    temp_df = df.iloc[temp_idx].copy().reset_index(drop=True)
+    
+    gss_test = GroupShuffleSplit(n_splits=1, train_size=0.5, random_state=random_state)
+    val_idx, test_idx = next(gss_test.split(temp_df, groups=temp_df['patient_id']))
+    
+    val_df = temp_df.iloc[val_idx].copy().reset_index(drop=True)
+    test_df = temp_df.iloc[test_idx].copy().reset_index(drop=True)
+    
+    train_df["split"] = "train"
+    val_df["split"] = "val"
+    test_df["split"] = "test"
+    return train_df, val_df, test_df
+
+# ==========================================
+# 5. THỰC THI TOÀN BỘ QUY TRÌNH
+# ==========================================
+# THỨ TỰ ĐÚNG: Chia split trên master_df ĐẦY ĐỦ trước -> Chỉ cân bằng trên tập TRAIN
+print(">>> BƯỚC 1: Phân chia 70/15/15 ở cấp độ bệnh nhân trên toàn bộ Master DF (Chống Leakage)...")
+train_raw_df, val_raw_df, test_raw_df = split_master_pool_patient_level(master_df, random_state=SEED)
+
+print("\n>>> BƯỚC 2: Cân bằng lớp và đa nguồn CHỈ ÁP DỤNG TRÊN TẬP TRAIN...")
+train_balanced_df = create_balanced_train_pool(train_raw_df, target_range=(1500, 2500), seed=SEED)
+
+val_final_df = val_raw_df.copy()
+test_final_df = test_raw_df.copy()
+
+# 7. XUẤT FILE METADATA CSV (TỔNG KẾT)
+train_balanced_df.to_csv(os.path.join(HYBRID_RAW_REF, "train_metadata.csv"), index=False)
+val_final_df.to_csv(os.path.join(HYBRID_RAW_REF, "val_metadata.csv"), index=False)
+test_final_df.to_csv(os.path.join(HYBRID_RAW_REF, "test_metadata.csv"), index=False)
+
+print("\n" + "="*50)
+print("=== THỐNG KÊ DATASET SAU PIPELINE ===")
+print("="*50)
+print("Train Set (Balanced):\n", train_balanced_df["diagnosis"].value_counts().sort_index())
+print("\nVal Set (Natural Prevalence):\n", val_final_df["diagnosis"].value_counts().sort_index())
+print("\nTest Set (Natural Prevalence):\n", test_final_df["diagnosis"].value_counts().sort_index())
+print("\nTest Prevalence (%):\n", (test_final_df["diagnosis"].value_counts(normalize=True).sort_index() * 100).round(2))
+
+# ============================== CELL 12 ==============================
+## 6. Step 6: Pixel Normalization & Pipeline Verification
+
